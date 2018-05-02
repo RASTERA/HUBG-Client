@@ -6,21 +6,38 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
-import java.util.Random;
+import java.util.HashMap;
 
 public class Main extends JFrame implements ActionListener, ComponentListener {
 
+    public static String page = "menu";
+    public static Timer gameTimer;
+    public static HashMap<String, Class<JFrame>> screens = new HashMap<>();
     public static int w = 800;
     public static int h = 600;
 
     public Main() {
-        super("[RASTERA] HUBG");
+        super("HUBG - Henning's Unknown Battle Ground");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setSize(w, h);
         setMinimumSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
 
+        gameTimer = new Timer(50, this);
+        gameTimer.start();
+
+        getContentPane().addComponentListener(this);
+        setVisible(true);
+
+        startGraphics();
+
+    }
+
+    public void startGraphics() {
+        JPanel page = new Game(this);
+        add(page);
+        setVisible(true);
     }
 
     public void componentHidden(ComponentEvent ce) {

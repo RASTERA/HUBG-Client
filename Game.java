@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Game extends JFrame implements KeyListener {
+public class Game extends JPanel implements KeyListener {
 
     private Main parent;
 
@@ -23,5 +23,17 @@ public class Game extends JFrame implements KeyListener {
         this.parent = parent;
 
     }
+
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    public void keyReleased(KeyEvent e) {
+
+    }
+
 
 }
