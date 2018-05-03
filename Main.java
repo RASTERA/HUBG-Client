@@ -12,21 +12,22 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
     public enum Pages {MENU, GAME}
     public static Timer gameTimer;
-    public static HashMap<String, Class<? extends JPanel>> screens = new HashMap<>();
-    public static int w = 800;
-    public static int h = 600;
+    public static int w = 850;
+    public static int h = 500;
     public static JPanel panel;
     public static Pages page = Pages.GAME;
+
+    public static long prevFrame = 0;
 
     public Main() {
         super("HUBG - Henning's Unknown Battle Ground");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setSize(w, h);
-        setMinimumSize(new Dimension(800, 600));
+        setMinimumSize(new Dimension(850, 500));
         setLayout(new BorderLayout());
 
-        gameTimer = new Timer(50, this);
+        gameTimer = new Timer(5, this);
         gameTimer.start();
 
         getContentPane().addComponentListener(this);
@@ -42,6 +43,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
             switch (page) {
                 case GAME:
                     panel = new Game(this);
+
                     break;
             }
 
@@ -74,7 +76,14 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
         if (panel != null) {
             panel.repaint();
+
         }
+
+        //long currentTime = System.currentTimeMillis();
+
+        //System.out.println(currentTime - prevFrame);
+
+        //prevFrame = currentTime;
 
     }
 
