@@ -75,7 +75,6 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         startGraphics();
 
         if (panel != null) {
-            panel.repaint();
 
         }
 

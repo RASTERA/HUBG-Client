@@ -35,7 +35,6 @@ public class Game extends JPanel implements KeyListener {
 
         addKeyListener(this);
         setFocusable(true);
-
         /*
         for (int x = 0; x < 5000; x++) {
             for (int y = 0; y < 5000; y++) {
@@ -60,6 +59,8 @@ public class Game extends JPanel implements KeyListener {
             rotation -= 0.5;
             ///////System.out.println(rotation + " is da angle");
         }
+
+        this.repaint();
     }
 
     public void keyReleased(KeyEvent e) {
@@ -67,7 +68,8 @@ public class Game extends JPanel implements KeyListener {
     }
 
     public void paintComponent(Graphics graphics) {
-        rotation += 0.5;
+        System.out.println(rotation);
+        super.paintComponent(graphics);
 
         Graphics2D g = (Graphics2D) graphics;
 
@@ -75,8 +77,6 @@ public class Game extends JPanel implements KeyListener {
         g.fillRect(0, 0, Main.w, Main.h);
 
         g.rotate(Math.toRadians(rotation), Main.w / 2, Main.h / 2);
-
-        super.paintComponent(g);
 
         for (int x = 0; x < 50; x++) {
             for (int y = 0; y < 50; y++) {
