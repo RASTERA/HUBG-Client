@@ -60,7 +60,7 @@ public class Game extends JPanel implements KeyListener {
             ///////System.out.println(rotation + " is da angle");
         }
 
-        this.repaint();
+        // this.repaint();
     }
 
     public void keyReleased(KeyEvent e) {

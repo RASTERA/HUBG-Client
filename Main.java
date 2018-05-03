@@ -33,12 +33,12 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         getContentPane().addComponentListener(this);
         setVisible(true);
 
-        startGraphics();
-
     }
 
     public void startGraphics() {
         if (panel == null) {
+
+            System.out.println(123);
 
             switch (page) {
                 case GAME:
@@ -75,7 +75,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         startGraphics();
 
         if (panel != null) {
-
+            this.repaint();
         }
 
         //long currentTime = System.currentTimeMillis();
