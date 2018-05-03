@@ -10,9 +10,9 @@ import java.util.HashMap;
 
 public class Main extends JFrame implements ActionListener, ComponentListener {
 
-    public static String page = "menu";
+    public static String page = "game";
     public static Timer gameTimer;
-    public static HashMap<String, Class<JFrame>> screens = new HashMap<>();
+    public static HashMap<String, Class<? extends JPanel>> screens = new HashMap<>();
     public static int w = 800;
     public static int h = 600;
 
@@ -30,14 +30,21 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         getContentPane().addComponentListener(this);
         setVisible(true);
 
+        screens.put("game", Game.class);
+
         startGraphics();
 
     }
 
     public void startGraphics() {
-        JPanel page = new Game(this);
-        add(page);
-        setVisible(true);
+        try {
+            JPanel panel = (JPanel) screens.get(page).getDeclaredConstructor(Main.class).newInstance(this);
+            add(panel);
+            setVisible(true);
+        }
+        catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
     }
 
     public void componentHidden(ComponentEvent ce) {
