@@ -18,12 +18,24 @@ import java.util.HashMap;
 public class Game extends JPanel implements KeyListener {
 
     private Main parent;
+    private Tile[][] map = new Tile[5000][5000];
+    private int tileSize = 10;
+    private float x = 2500;
+    private float y = 2500;
+    private float rotation = 0;
 
     public Game(Main parent) {
         this.parent = parent;
 
         addKeyListener(this);
         setFocusable(true);
+
+        /*
+        for (int x = 0; x < 5000; x++) {
+            for (int y = 0; y < 5000; y++) {
+                map[x][y] = new Tile(Tile.Types.GRASS);
+            }
+        }*/
 
     }
 
@@ -41,16 +53,17 @@ public class Game extends JPanel implements KeyListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        for (int y = 0; y < 14; y+=2) {
-            g.setColor(Color.WHITE);
-            g.fillRect(0, y * Main.h / 13, Main.w, Main.h / 13);
-
-            g.setColor(Color.RED);
-            g.fillRect(0, (y + 1) * Main.h / 13, Main.w, Main.h / 13);
-        }
-
         g.setColor(Color.BLUE);
-        g.fillRect(0, 0, Main.w / 2, Main.h / 2);
+
+        Tile tile;
+
+        for (int x = 0; x < 500; x++) {
+            for (int y = 0; y < 500; y++) {
+                tile = map[x][y];
+
+                g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+            }
+        }
 
     }
 

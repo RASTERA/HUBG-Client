@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class Main extends JFrame implements ActionListener, ComponentListener {
 
-    public static enum Pages {MENU, GAME};
+    public enum Pages {MENU, GAME}
     public static Timer gameTimer;
     public static HashMap<String, Class<? extends JPanel>> screens = new HashMap<>();
     public static int w = 800;
