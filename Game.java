@@ -22,6 +22,9 @@ public class Game extends JPanel implements KeyListener {
     public Game(Main parent) {
         this.parent = parent;
 
+        addKeyListener(this);
+        setFocusable(true);
+
     }
 
     public void keyTyped(KeyEvent e) {
@@ -32,6 +35,22 @@ public class Game extends JPanel implements KeyListener {
     }
 
     public void keyReleased(KeyEvent e) {
+
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        for (int y = 0; y < 14; y+=2) {
+            g.setColor(Color.WHITE);
+            g.fillRect(0, y * Main.h / 13, Main.w, Main.h / 13);
+
+            g.setColor(Color.RED);
+            g.fillRect(0, (y + 1) * Main.h / 13, Main.w, Main.h / 13);
+        }
+
+        g.setColor(Color.BLUE);
+        g.fillRect(0, 0, Main.w / 2, Main.h / 2);
 
     }
 

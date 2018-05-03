@@ -10,11 +10,13 @@ import java.util.HashMap;
 
 public class Main extends JFrame implements ActionListener, ComponentListener {
 
-    public static String page = "game";
+    public static enum Pages {MENU, GAME};
     public static Timer gameTimer;
     public static HashMap<String, Class<? extends JPanel>> screens = new HashMap<>();
     public static int w = 800;
     public static int h = 600;
+    public static JPanel panel;
+    public static Pages page = Pages.GAME;
 
     public Main() {
         super("HUBG - Henning's Unknown Battle Ground");
@@ -30,20 +32,23 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         getContentPane().addComponentListener(this);
         setVisible(true);
 
-        screens.put("game", Game.class);
-
         startGraphics();
 
     }
 
     public void startGraphics() {
-        try {
-            JPanel panel = (JPanel) screens.get(page).getDeclaredConstructor(Main.class).newInstance(this);
+        if (panel == null) {
+
+            switch (page) {
+                case GAME:
+                    panel = new Game(this);
+                    break;
+            }
+
             add(panel);
             setVisible(true);
-        }
-        catch (Exception e) {
-            e.printStackTrace(System.out);
+            panel.repaint();
+
         }
     }
 
@@ -65,6 +70,11 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     }
 
     public void actionPerformed(ActionEvent evt) {
+        startGraphics();
+
+        if (panel != null) {
+            panel.repaint();
+        }
 
     }
 
