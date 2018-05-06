@@ -14,15 +14,22 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Game extends JPanel implements KeyListener {
 
     private Main parent;
-    private Tile[][] map = new Tile[5000][5000];
-    private int tileSize = 30;
-    private float x = 2500;
-    private float y = 2500;
+
+    private float x = 0;
+    private float y = 0;
+
     private double rotation = 50;
+    private double rotationVelocity = 0;
+
+    private Tile[][] map = new Tile[500][500];
+    private int mapWidth = 50;
+    private int mapHeight = 50;
+    private int tileSize = 20;
 
     private class MenuBar {
         public int x, y, w, h;
@@ -35,12 +42,28 @@ public class Game extends JPanel implements KeyListener {
 
         addKeyListener(this);
         setFocusable(true);
-        /*
-        for (int x = 0; x < 5000; x++) {
-            for (int y = 0; y < 5000; y++) {
-                map[x][y] = new Tile(Tile.Types.GRASS);
+
+        for (int x = 0; x < 500; x++) {
+            for (int y = 0; y < 500; y++) {
+                map[x][y] = new Tile((x + y) % 2 == 0 ? Tile.Types.GRASS : Tile.Types.WATER);
             }
-        }*/
+        }
+
+        /*
+        try {
+            Scanner stdin = new Scanner(new File("out.rah"));
+            for (int x = 0; x < 1000; x++) {
+                for (int y = 0; y < 1000; y++) {
+                    map[x][y] = new Tile(stdin.next());
+                    //System.out.println("X:" + x + " Y:" + y + " " + map[x][y]);
+                }
+            }
+        }
+        catch (Exception e) {
+            System.out.println("No");
+        }
+
+        System.out.println("Ya"); */
 
     }
 
@@ -48,19 +71,25 @@ public class Game extends JPanel implements KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
-        System.out.println("geii" + rotation);
 
         if (e.getKeyCode() == e.VK_D) {
-            rotation += 0.5;
-            ///System.out.println(rotation + " is da angle");
+            this.rotationVelocity += (this.rotationVelocity > 2) ? 0 : 0.5;
         }
 
         if (e.getKeyCode() == e.VK_A) {
-            rotation -= 0.5;
-            ///////System.out.println(rotation + " is da angle");
+            this.rotationVelocity -= (this.rotationVelocity < -2) ? 0 : 0.5;
         }
 
-        // this.repaint();
+        if (e.getKeyCode() == e.VK_W) {
+            this.x += Math.cos(Math.toRadians(rotation)) * 10;
+            this.y += Math.sin(Math.toRadians(rotation)) * 10;
+        }
+
+        if (e.getKeyCode() == e.VK_S) {
+            this.x -= Math.cos(Math.toRadians(rotation)) * 10;
+            this.y -= Math.sin(Math.toRadians(rotation)) * 10;
+        }
+
     }
 
     public void keyReleased(KeyEvent e) {
@@ -68,38 +97,39 @@ public class Game extends JPanel implements KeyListener {
     }
 
     public void paintComponent(Graphics graphics) {
-        System.out.println(rotation);
-        super.paintComponent(graphics);
+
+        this.rotation += this.rotationVelocity;
+
+        if (Math.abs(this.rotationVelocity) > 0) {
+            this.rotationVelocity += (this.rotationVelocity > 0 ? -1 : 1) * 0.01;
+        }
+        else if (Math.abs(this.rotationVelocity) <= 0.1) {
+            this.rotationVelocity = 0;
+        }
+
+        //super.paintComponent(graphics);
 
         Graphics2D g = (Graphics2D) graphics;
 
-        g.setColor(Color.RED);
-        g.fillRect(0, 0, Main.w, Main.h);
+        //g.setColor(Color.BLUE);
+        g.fillRect(0, 0, getWidth(), getHeight());
 
-        g.rotate(Math.toRadians(rotation), Main.w / 2, Main.h / 2);
+        g.rotate(Math.toRadians(rotation), getWidth() / 2, getHeight());
 
-        for (int x = 0; x < 50; x++) {
-            for (int y = 0; y < 50; y++) {
-                g.setColor(new Color(x * 2, y * 2, x + y));
-                g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+        //g.setColor(Color.GREEN);
+        //g.fillRect(getWidth() / 2 - getWidth() / 8, getHeight() / 2 - getHeight() / 8, getWidth() / 4, getHeight() / 4);
+
+
+        // System.out.println(x + " " + y + " " + rotation);
+
+        for (int v = 0; v < this.mapWidth; v++) {
+            for (int c = 0; c < this.mapHeight; c++) {
+                g.setColor(map[v][c].color);
+                g.fillRect((int) x + v * tileSize, (int) y + c * tileSize, tileSize, tileSize);
             }
         }
 
-
-        /*
-        Tile tile;
-
-        for (int x = 0; x < 500; x++) {
-            for (int y = 0; y < 500; y++) {
-                tile = map[x][y];
-
-                g.setColor(new Color(x / 2, y / 2, 0));
-
-                g.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-            }
-        }*/
-
-        g.rotate(Math.toRadians(-1 * rotation), Main.w / 2, Main.h / 2);
+        g.rotate(Math.toRadians(-1 * rotation), getWidth() / 2, getHeight());
 
         g.setColor(Color.RED);
         g.fillRect(400, 400, 50, 50);

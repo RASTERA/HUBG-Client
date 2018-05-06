@@ -10,12 +10,13 @@ import java.util.HashMap;
 
 public class Main extends JFrame implements ActionListener, ComponentListener {
 
-    public enum Pages {MENU, GAME}
+    public enum Pages {MENU, GAME, LOGIN}
     public static Timer gameTimer;
-    public static int w = 850;
-    public static int h = 500;
+    public static int w = 900;
+    public static int h = 600;
     public static JPanel panel;
-    public static Pages page = Pages.GAME;
+    public static Pages page = Pages.LOGIN;
+    public static String user, pass;
 
     public static long prevFrame = 0;
 
@@ -24,7 +25,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setSize(w, h);
-        setMinimumSize(new Dimension(850, 500));
+        setMinimumSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
 
         gameTimer = new Timer(5, this);
@@ -35,12 +36,26 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
     }
 
-    public void startGraphics() {
-        if (panel == null) {
+    public void startPage(Pages page) {
+        this.getContentPane().remove(this.panel);
+        this.panel = null;
+        this.page = page;
+    }
 
-            System.out.println(123);
+    public void startGraphics() {
+        if (panel == null || !panel.getClass().getName().toUpperCase().equals(page.toString())) {
+
+            System.out.println("Switch Pages " + page.toString());
 
             switch (page) {
+                case LOGIN:
+                    panel = new Login(this);
+
+                    break;
+                case MENU:
+                    panel = new Menu(this);
+
+                    break;
                 case GAME:
                     panel = new Game(this);
 
@@ -48,6 +63,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
             }
 
             add(panel);
+            panel.requestFocus();
             setVisible(true);
             panel.repaint();
 
