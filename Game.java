@@ -31,6 +31,8 @@ public class Game extends JPanel implements KeyListener {
     private int mapHeight = 100;
     private int tileSize = 50;
 
+    private boolean paused = false;
+
     private class MenuBar {
         public int x, y, w, h;
 
@@ -72,22 +74,28 @@ public class Game extends JPanel implements KeyListener {
 
     public void keyPressed(KeyEvent e) {
 
-        if (e.getKeyCode() == e.VK_D) {
-            this.rotationVelocity += (this.rotationVelocity > 2) ? 0 : 0.5;
+        if (e.getKeyCode() == e.VK_ESCAPE) {
+            this.paused = !this.paused;
         }
 
-        if (e.getKeyCode() == e.VK_A) {
-            this.rotationVelocity -= (this.rotationVelocity < -2) ? 0 : 0.5;
-        }
+        if (!this.paused) {
+            if (e.getKeyCode() == e.VK_D) {
+                this.rotationVelocity += (this.rotationVelocity > 2) ? 0 : 0.5;
+            }
 
-        if (e.getKeyCode() == e.VK_W) {
-            this.x += Math.cos(Math.toRadians(rotation)) * 10;
-            this.y += Math.sin(Math.toRadians(rotation)) * 10;
-        }
+            if (e.getKeyCode() == e.VK_A) {
+                this.rotationVelocity -= (this.rotationVelocity < -2) ? 0 : 0.5;
+            }
 
-        if (e.getKeyCode() == e.VK_S) {
-            this.x -= Math.cos(Math.toRadians(rotation)) * 10;
-            this.y -= Math.sin(Math.toRadians(rotation)) * 10;
+            if (e.getKeyCode() == e.VK_W) {
+                this.x += Math.cos(Math.toRadians(rotation)) * 10;
+                this.y += Math.sin(Math.toRadians(rotation)) * 10;
+            }
+
+            if (e.getKeyCode() == e.VK_S) {
+                this.x -= Math.cos(Math.toRadians(rotation)) * 10;
+                this.y -= Math.sin(Math.toRadians(rotation)) * 10;
+            }
         }
 
     }
@@ -133,6 +141,14 @@ public class Game extends JPanel implements KeyListener {
 
         g.setColor(Color.RED);
         g.fillRect(getWidth() / 2 - 25, getHeight() - 50, 50, 50);
+
+        if (this.paused) {
+            g.setColor(new Color(10, 10, 10, 100));
+            g.fillRect(0, 0, Main.w, Main.h);
+
+            g.setColor(new Color(255, 255, 255));
+            g.drawString("PAUSED U GEIIIII", 200, 200);
+        }
 
     }
 
