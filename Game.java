@@ -27,9 +27,9 @@ public class Game extends JPanel implements KeyListener {
     private double rotationVelocity = 0;
 
     private Tile[][] map = new Tile[500][500];
-    private int mapWidth = 50;
-    private int mapHeight = 50;
-    private int tileSize = 20;
+    private int mapWidth = 100;
+    private int mapHeight = 100;
+    private int tileSize = 50;
 
     private class MenuBar {
         public int x, y, w, h;
@@ -132,7 +132,7 @@ public class Game extends JPanel implements KeyListener {
         g.rotate(Math.toRadians(-1 * rotation), getWidth() / 2, getHeight());
 
         g.setColor(Color.RED);
-        g.fillRect(400, 400, 50, 50);
+        g.fillRect(getWidth() / 2 - 25, getHeight() - 50, 50, 50);
 
     }
 

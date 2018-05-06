@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
@@ -16,16 +18,49 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class Login extends JPanel implements KeyListener {
+public class Login extends JPanel implements ActionListener, KeyListener {
 
     private Main parent;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JLabel usernameLabel;
+    private JLabel passwordLabel;
+    private JButton loginButton;
 
     public Login(Main parent) {
         this.parent = parent;
 
         addKeyListener(this);
         setFocusable(true);
+        setLayout(null);
 
+        usernameField = new JTextField();
+        passwordField = new JPasswordField();
+
+        usernameLabel = new JLabel("Username");
+        passwordLabel = new JLabel("Password");
+
+        loginButton = new JButton("Login");
+        loginButton.setActionCommand("login");
+
+        loginButton.addActionListener(this);
+
+        add(usernameLabel);
+        add(passwordLabel);
+
+        add(usernameField);
+        add(passwordField);
+
+        add(loginButton);
+
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+            case "login":
+                System.out.println("geiii");
+                break;
+        }
     }
 
     public void keyTyped(KeyEvent e) {
@@ -53,6 +88,15 @@ public class Login extends JPanel implements KeyListener {
     public void paintComponent(Graphics g) {
 
 
+        // Position is updated every frame
+
+        usernameLabel.setBounds(Main.w / 2 - 150, 10, 200, 20);
+        usernameField.setBounds(Main.w / 2 - 150, 30, 300, 30);
+
+        passwordLabel.setBounds(Main.w / 2 - 150, 60, 200, 20);
+        passwordField.setBounds(Main.w / 2 - 150, 80, 300, 30);
+
+        loginButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
     }
 
 
