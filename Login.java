@@ -58,8 +58,17 @@ public class Login extends JPanel implements ActionListener, KeyListener {
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case "login":
-                Communicator.login(usernameField.getText(), String.valueOf(passwordField.getPassword()));
-                break;
+                Session session = Communicator.login(usernameField.getText(), String.valueOf(passwordField.getPassword()));
+
+                if (session != null) {
+                    System.out.println("Login Successful");
+                    Main.session = session;
+                    removeKeyListener(this);
+                    this.parent.startPage(Main.Pages.MENU);
+                }
+                else {
+                    System.out.println("U got rejected bro");
+                }
         }
     }
 

@@ -18,6 +18,7 @@ public class Tile {
         {
             put(Tile.Types.GRASS, new Color(0, 255, 0));
             put(Tile.Types.WATER, new Color(0, 0, 255));
+            put(Tile.Types.WALL, new Color(255, 0, 0));
         }
     };
 

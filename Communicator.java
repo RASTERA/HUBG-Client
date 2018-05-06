@@ -13,6 +13,7 @@ public class Communicator {
 
             // Header stuff
             socket.setRequestMethod("POST");
+            socket.setConnectTimeout(5000);
             socket.setRequestProperty("User-Agent", "Mozilla/5.0");
             socket.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
             socket.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -52,7 +53,7 @@ public class Communicator {
 
             System.out.println(sb.toString());
 
-            return null;
+            return new Session("test", "test");
 
         } catch (Exception e) {
             // Something went wrong :'(
