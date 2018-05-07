@@ -65,7 +65,9 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
             add(panel);
             panel.requestFocus();
             setVisible(true);
+            //panel.updateSize();
             panel.repaint();
+
 
         }
     }
@@ -85,6 +87,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     public void componentResized(ComponentEvent ce) {
         w = getWidth();
         h = getHeight();
+
     }
 
     public void actionPerformed(ActionEvent evt) {

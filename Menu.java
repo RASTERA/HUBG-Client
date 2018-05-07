@@ -71,8 +71,8 @@ public class Menu extends JPanel implements KeyListener, ActionListener {
     }
 
     public void paintComponent(Graphics g) {
-        g.drawString("Yoyoyoyo", 0, 100);
         startButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
+        g.drawString("Yoyoyoyo", 0, 100);
     }
 
 

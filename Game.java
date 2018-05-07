@@ -23,6 +23,9 @@ public class Game extends JPanel implements KeyListener {
     private float x = 0;
     private float y = 0;
 
+    private float vx = 0;
+    private float vy = 0;
+
     private double rotation = 0;
     private double rotationVelocity = 0;
 
@@ -45,6 +48,8 @@ public class Game extends JPanel implements KeyListener {
         addKeyListener(this);
         setFocusable(true);
 
+
+        /*
         for (int x = 0; x < 500; x++) {
             for (int y = 0; y < 500; y++) {
                 if (x == 0 && y == 0) {
@@ -54,13 +59,12 @@ public class Game extends JPanel implements KeyListener {
                     map[x][y] = new Tile((x + y) % 2 == 0 ? Tile.Types.GRASS : Tile.Types.WATER);
                 }
             }
-        }
+        }*/
 
-        /*
         try {
             Scanner stdin = new Scanner(new File("out.rah"));
-            for (int x = 0; x < 1000; x++) {
-                for (int y = 0; y < 1000; y++) {
+            for (int x = 0; x < 500; x++) {
+                for (int y = 0; y < 500; y++) {
                     map[x][y] = new Tile(stdin.next());
                     //System.out.println("X:" + x + " Y:" + y + " " + map[x][y]);
                 }
@@ -70,7 +74,7 @@ public class Game extends JPanel implements KeyListener {
             System.out.println("No");
         }
 
-        System.out.println("Ya"); */
+        System.out.println("Ya");
 
     }
 
@@ -93,23 +97,23 @@ public class Game extends JPanel implements KeyListener {
             }
 
             if (e.getKeyCode() == e.VK_W) {
-                this.y += Math.sin(Math.toRadians(90 - rotation)) * 10;
-                this.x += Math.cos(Math.toRadians(90 - rotation)) * 10;
-
-                //this.y +=10;
+                this.vy += (this.vy > 2) ? 0 : Math.sin(Math.toRadians(90 - rotation));
+                this.vx += (this.vx > 2) ? 0 : Math.cos(Math.toRadians(90 - rotation));
             }
 
             if (e.getKeyCode() == e.VK_S) {
-                this.y -= Math.sin(Math.toRadians(90 - rotation)) * 10;
-                this.x -= Math.cos(Math.toRadians(90 - rotation)) * 10;
+                this.vy -= (this.vy < -2) ? 0 : Math.sin(Math.toRadians(90 - rotation));
+                this.vx -= (this.vx < -2) ? 0 : Math.cos(Math.toRadians(90 - rotation));
             }
 
             if (e.getKeyCode() == e.VK_A) {
-                this.x +=10;
+                this.vy += (this.vy > 2) ? 0 : Math.sin(Math.toRadians(-1 * rotation));
+                this.vx += (this.vx > 2) ? 0 : Math.cos(Math.toRadians(-1 * rotation));
             }
 
             if (e.getKeyCode() == e.VK_D) {
-                this.x -=10;
+                this.vy -= (this.vy < -2) ? 0 : Math.sin(Math.toRadians(-1 * rotation));
+                this.vx -= (this.vx < -2) ? 0 : Math.cos(Math.toRadians(-1 * rotation));
             }
             /*
             if (e.getKeyCode() == e.VK_W) {
@@ -131,9 +135,20 @@ public class Game extends JPanel implements KeyListener {
 
     public void paintComponent(Graphics graphics) {
 
-        System.out.println(rotation + " X:" + x + " Y:" + y);
+        //System.out.println(rotation + " X:" + x + " Y:" + y);
 
         this.rotation += this.rotationVelocity;
+        this.x += this.vx;
+        this.y += this.vy;
+
+
+        if (Math.abs(this.vx) > 0) {
+            this.vx += (this.vx > 0 ? -1 : 1) * 0.01;
+        }
+
+        if (Math.abs(this.vy) > 0) {
+            this.vy += (this.vy > 0 ? -1 : 1) * 0.01;
+        }
 
         if (Math.abs(this.rotationVelocity) > 0) {
             this.rotationVelocity += (this.rotationVelocity > 0 ? -1 : 1) * 0.01;
@@ -169,6 +184,8 @@ public class Game extends JPanel implements KeyListener {
 
         g.setColor(Color.RED);
         g.fillRect(getWidth() / 2 - 25, getHeight() - 50, 50, 50);
+
+        g.drawString(rotation + " X:" + x + " Y:" + y, 10, 10);
 
         if (this.paused) {
             g.setColor(new Color(10, 10, 10, 100));

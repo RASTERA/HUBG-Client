@@ -24,7 +24,7 @@ def gen():
 
 		x, y = q.get()
 
-		if map[x][y] != 'w':
+		if x >= w or x < 0 or y >= h or y < 0 or map[x][y] != 'w':
 			continue
 
 		if random.randint(0, 100 + max(dist(w // 2, h // 2, w, h) // 2, 5) // 4) == 0:
@@ -37,8 +37,8 @@ def gen():
 				q.put([x + p[0], y + p[1]])
 				meh.add((x + p[0], y + p[1]))
 
-while len(meh) < w * h * 0.2:
-	print((w * h * 0.2) - len(meh))
+while len(meh) < w * h * 0.8:
+	print((w * h * 0.8) - len(meh))
 	gen()
 
 for fill in range(10, 3, -1):

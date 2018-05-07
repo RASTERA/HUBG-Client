@@ -95,10 +95,6 @@ public class Login extends JPanel implements ActionListener, KeyListener {
     }
 
     public void paintComponent(Graphics g) {
-
-
-        // Position is updated every frame
-
         usernameLabel.setBounds(Main.w / 2 - 150, 10, 200, 20);
         usernameField.setBounds(Main.w / 2 - 150, 30, 300, 30);
 
@@ -106,6 +102,7 @@ public class Login extends JPanel implements ActionListener, KeyListener {
         passwordField.setBounds(Main.w / 2 - 150, 80, 300, 30);
 
         loginButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
+
     }
 
 
