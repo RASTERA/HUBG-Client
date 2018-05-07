@@ -2,7 +2,7 @@ public class Session {
 
     private String token, username;
 
-    public Session(String token, String username) {
+    public Session(String username, String token) {
         this.token = token;
         this.username = username;
     }

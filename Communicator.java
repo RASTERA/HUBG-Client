@@ -42,22 +42,14 @@ public class Communicator {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            StringBuilder sb = new StringBuilder();
-            String line;
+            String data = reader.readLine().trim();
 
-            while ((line = reader.readLine()) != null) {
-                sb.append(line+"\n");
+            System.out.println(data);
 
-            }
-            reader.close();
-
-            System.out.println(sb.toString());
-
-            return new Session("test", "test");
+            return new Session(data.contains("Error") ? "" : username, data);
 
         } catch (Exception e) {
-            // Something went wrong :'(
-            //e.printStackTrace();
+            e.printStackTrace();
             return null;
         }
     }

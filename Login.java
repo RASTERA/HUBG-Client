@@ -60,14 +60,17 @@ public class Login extends JPanel implements ActionListener, KeyListener {
             case "login":
                 Session session = Communicator.login(usernameField.getText(), String.valueOf(passwordField.getPassword()));
 
-                if (session != null) {
+                if (session.getUsername().equals("")) {
+                    JOptionPane.showMessageDialog(this.parent, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
+                }
+                else if (session != null) {
                     System.out.println("Login Successful");
                     Main.session = session;
                     removeKeyListener(this);
                     this.parent.startPage(Main.Pages.MENU);
                 }
                 else {
-                    System.out.println("U got rejected bro");
+                    JOptionPane.showMessageDialog(this.parent, "An error occured while connecting to the authentication service. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                 }
         }
     }
