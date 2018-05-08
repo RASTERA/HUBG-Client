@@ -49,7 +49,7 @@ public class Communicator {
             return new Session(data.contains("Error") ? "" : username, data);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("lol something went wrong");
             return null;
         }
     }

@@ -12,8 +12,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
     public enum Pages {MENU, GAME, LOGIN}
     public static Timer gameTimer;
-    public static int w = 900;
-    public static int h = 600;
+    public static int w = 1280;
+    public static int h = 720;
     public static JPanel panel;
     public static Pages page = Pages.LOGIN;
     public static Session session;
@@ -25,7 +25,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setSize(w, h);
-        setMinimumSize(new Dimension(800, 600));
+        setMinimumSize(new Dimension(1280, 720));
         setLayout(new BorderLayout());
 
         gameTimer = new Timer(5, this);
