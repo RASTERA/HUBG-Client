@@ -36,6 +36,7 @@ public class Login extends JPanel implements ActionListener, KeyListener, MouseL
     private JButton loginButton;
 
     private BufferedImage background;
+    private BufferedImage rasteraLogo;
 
     public Login(Main parent) {
         this.parent = parent;
@@ -45,7 +46,8 @@ public class Login extends JPanel implements ActionListener, KeyListener, MouseL
         setLayout(null);
 
         try {
-            background = ImageIO.read(new File("images/splash.png"));
+            background = ImageIO.read(new File("images/background.png"));
+            rasteraLogo = ImageIO.read(new File("images/rastera.png"));
         }
         catch (Exception e) {
             System.out.println("ur bad");
@@ -225,7 +227,8 @@ public class Login extends JPanel implements ActionListener, KeyListener, MouseL
 
     public void paintComponent(Graphics g) {
 
-        g.drawImage(background, 0, 0, Main.w - 250, Main.h, this);
+        g.drawImage(background, 0, 0, Math.max(Main.w - 250, Main.h), Math.max(Main.w - 250, Main.h), this);
+        g.drawImage(rasteraLogo, 30, getHeight() - 55, 150, 25, this);
 
         g.setColor(new Color(1, 10, 19));
         g.fillRect(Main.w - 250, 0, 250, Main.h);

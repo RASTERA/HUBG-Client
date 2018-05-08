@@ -23,6 +23,7 @@ public class Menu extends JPanel implements KeyListener, ActionListener {
     private Main parent;
     private JButton startButton;
 
+
     public Menu(Main parent) {
         this.parent = parent;
 
@@ -52,16 +53,6 @@ public class Menu extends JPanel implements KeyListener, ActionListener {
     }
 
     public void keyPressed(KeyEvent e) {
-
-
-
-        if (e.getKeyCode() == e.VK_W) {
-            System.out.println("SWITCH");
-
-            removeKeyListener(this);
-            this.parent.startPage(Main.Pages.GAME);
-        }
-
 
 
     }

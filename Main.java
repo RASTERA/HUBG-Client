@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class Main extends JFrame implements ActionListener, ComponentListener {
 
     public enum Pages {MENU, GAME, LOGIN}
-    public static Timer gameTimer;
+    public static Timer masterTimer;
     public static int w = 1280;
     public static int h = 720;
     public static JPanel panel;
@@ -28,8 +28,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         setMinimumSize(new Dimension(1280, 720));
         setLayout(new BorderLayout());
 
-        gameTimer = new Timer(5, this);
-        gameTimer.start();
+        masterTimer = new Timer(5, this);
+        masterTimer.start();
 
         getContentPane().addComponentListener(this);
         setVisible(true);
