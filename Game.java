@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
@@ -16,7 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class Game extends JPanel implements KeyListener {
+public class Game extends JPanel implements KeyListener, ActionListener {
 
     private Main parent;
 
@@ -33,7 +35,6 @@ public class Game extends JPanel implements KeyListener {
     private int mapWidth = 100;
     private int mapHeight = 100;
     private int tileSize = 50;
-
     private boolean paused = false;
 
     private class MenuBar {
@@ -47,7 +48,6 @@ public class Game extends JPanel implements KeyListener {
 
         addKeyListener(this);
         setFocusable(true);
-
 
         /*
         for (int x = 0; x < 500; x++) {
@@ -78,7 +78,13 @@ public class Game extends JPanel implements KeyListener {
 
     }
 
+
+    public void actionPerformed(ActionEvent evt) {
+
+    }
+
     public void keyTyped(KeyEvent e) {
+
     }
 
     public void keyPressed(KeyEvent e) {
