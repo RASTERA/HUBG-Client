@@ -8,6 +8,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
@@ -19,13 +23,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class Login extends JPanel implements ActionListener, KeyListener {
+
+public class Login extends JPanel implements ActionListener, KeyListener, MouseListener {
 
     private Main parent;
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JLabel usernameLabel;
     private JLabel passwordLabel;
+    private JLabel forgetPasswordLabel;
+    private JLabel createAccountLabel;
     private JButton loginButton;
 
     private BufferedImage background;
@@ -49,14 +56,73 @@ public class Login extends JPanel implements ActionListener, KeyListener {
 
         usernameLabel = new JLabel("Username");
         passwordLabel = new JLabel("Password");
+        forgetPasswordLabel = new JLabel("Forgot your password?");
+        createAccountLabel = new JLabel("Create an account");
+
+        usernameLabel.setForeground(Color.WHITE);
+        passwordLabel.setForeground(Color.WHITE);
 
         loginButton = new JButton("SIGN IN");
         loginButton.setActionCommand("login");
-
+        loginButton.setEnabled(false);
+        loginButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         loginButton.addActionListener(this);
+
+        // Submit on enter
+        usernameField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                loginButton.doClick();
+            }
+        });
+
+        passwordField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                loginButton.doClick();
+            }
+        });
+
+        // Validate text
+        usernameField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        usernameField.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+
+                if (e.getKeyCode() != e.VK_ENTER) {
+                    validateText();
+                }
+            }
+        });
+
+        passwordField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        passwordField.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+
+                if (e.getKeyCode() != e.VK_ENTER) {
+                    validateText();
+                }
+            }
+        });
+
+
+        forgetPasswordLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        forgetPasswordLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                Rah.webbrowserOpen("https://rastera.xyz");
+            }
+        });
+
+        createAccountLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        createAccountLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                Rah.webbrowserOpen("https://rastera.xyz");
+            }
+        });
 
         add(usernameLabel);
         add(passwordLabel);
+        add(forgetPasswordLabel);
+        add(createAccountLabel);
 
         add(usernameField);
         add(passwordField);
@@ -65,11 +131,19 @@ public class Login extends JPanel implements ActionListener, KeyListener {
 
     }
 
+    public void validateText() {
+        if (usernameField.getText().length() > 0 && String.valueOf(passwordField.getPassword()).length() > 0) {
+            loginButton.setEnabled(true);
+        } else {
+            loginButton.setEnabled(false);
+        }
+    }
+
     public void disableLogin() {
+        loginButton.setEnabled(false);
         passwordField.setEditable(false);
         usernameField.setEditable(false);
         loginButton.setText("Authenticating...");
-        loginButton.setEnabled(false);
     }
 
     public void enableLogin() {
@@ -77,7 +151,6 @@ public class Login extends JPanel implements ActionListener, KeyListener {
         usernameField.setEditable(true);
         passwordField.setText("");
         loginButton.setText("SIGN IN");
-        loginButton.setEnabled(true);
     }
 
     public void startMenu(Session session) {
@@ -87,13 +160,33 @@ public class Login extends JPanel implements ActionListener, KeyListener {
         this.parent.startPage(Main.Pages.MENU);
     }
 
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case "login":
 
                 disableLogin();
 
-                // Seperate thread so that UI thread is not blocked
+                // Separate thread so that UI thread is not blocked
                 Thread authentication = new Thread() {
                     public void run() {
 
@@ -124,17 +217,6 @@ public class Login extends JPanel implements ActionListener, KeyListener {
 
     public void keyPressed(KeyEvent e) {
 
-
-
-        if (e.getKeyCode() == e.VK_W) {
-            System.out.println("SWITCH");
-
-            removeKeyListener(this);
-            this.parent.startPage(Main.Pages.MENU);
-        }
-
-
-
     }
 
     public void keyReleased(KeyEvent e) {
@@ -155,6 +237,9 @@ public class Login extends JPanel implements ActionListener, KeyListener {
         passwordField.setBounds(Main.w - 230, 220, 210, 30);
 
         loginButton.setBounds(Main.w - 230, Main.h - 200, 210, 30);
+
+        forgetPasswordLabel.setBounds(Main.w - 230, Main.h - 70, 210, 20);
+        createAccountLabel.setBounds(Main.w - 230, Main.h - 90, 210, 20);
 
     }
 
