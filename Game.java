@@ -44,6 +44,9 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     private BufferedImage map;
 
+    private boolean ServerConnected = false;
+    private ArrayList<int[]> playerlist = new ArrayList<>();
+
     private class MenuBar {
         public int x, y, w, h;
 
@@ -75,6 +78,15 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                 }
             }
         }*/
+        try {
+            Communicator server = new Communicator(new byte[] {127, 0, 0, 1}, 25565);
+            playerlist = (ArrayList<int[]>) server.read().message;
+
+            this.ServerConnected = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         /*
         try {
