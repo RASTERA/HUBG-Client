@@ -30,7 +30,7 @@ public class Communicator {
             };
 
             writer.write(credentials.toString());*/
-            String credentials = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+            String credentials = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
 
             System.out.println(credentials);
 

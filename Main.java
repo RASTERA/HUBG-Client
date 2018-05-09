@@ -38,8 +38,9 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
     public void startPage(Pages page) {
         this.getContentPane().remove(this.panel);
-        this.panel = null;
         this.page = page;
+        this.panel = null;
+        startGraphics();
     }
 
     public void startGraphics() {
@@ -50,24 +51,22 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
             switch (page) {
                 case LOGIN:
                     panel = new Login(this);
-
                     break;
+
                 case MENU:
                     panel = new Menu(this);
-
                     break;
+
                 case GAME:
                     panel = new Game(this);
-
                     break;
+
             }
 
             add(panel);
             panel.requestFocus();
             setVisible(true);
-            //panel.updateSize();
             panel.repaint();
-
 
         }
     }

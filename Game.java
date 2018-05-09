@@ -31,11 +31,18 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     private double rotation = 0;
     private double rotationVelocity = 0;
 
-    private Tile[][] map = new Tile[500][500];
+    //private Tile[][] map = new Tile[500][500];
     private int mapWidth = 100;
     private int mapHeight = 100;
-    private int tileSize = 50;
+    private int tileSize = 20;
     private boolean paused = false;
+
+    private JButton quitGameButton;
+    private JButton resumeGameButton;
+
+    private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+
+    private BufferedImage map;
 
     private class MenuBar {
         public int x, y, w, h;
@@ -45,6 +52,14 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     public Game(Main parent) {
         this.parent = parent;
+
+        resumeGameButton = new JButton("Resume Game");
+        resumeGameButton.setActionCommand("resume");
+        resumeGameButton.addActionListener(this);
+
+        quitGameButton = new JButton("Quit Game");
+        quitGameButton.setActionCommand("quit");
+        quitGameButton.addActionListener(this);
 
         addKeyListener(this);
         setFocusable(true);
@@ -61,6 +76,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             }
         }*/
 
+        /*
         try {
             Scanner stdin = new Scanner(new File("out.rah"));
             for (int x = 0; x < 500; x++) {
@@ -74,12 +90,33 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             System.out.println("No");
         }
 
-        System.out.println("Ya");
+        System.out.println("Ya");*/
+
+        try {
+            map = ImageIO.read(new File("images/map.png"));
+        }
+        catch (Exception e) {
+            System.out.println("What are you going to do about it?");
+        }
 
     }
 
 
-    public void actionPerformed(ActionEvent evt) {
+    public void actionPerformed(ActionEvent e) {
+
+        switch (e.getActionCommand()) {
+            case "resume":
+                this.paused = !this.paused;
+                break;
+
+            case "quit":
+                System.out.println("SWITCH");
+
+                removeKeyListener(this);
+                this.parent.startPage(Main.Pages.MENU);
+
+                break;
+        }
 
     }
 
@@ -94,6 +131,10 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         }
 
         if (!this.paused) {
+            if (e.getKeyCode() == e.VK_SPACE) {
+                bullets.add(new Bullet((int) (x + Main.w / 2), y + getHeight(), 10, -1 * rotation - 90));
+            }
+
             if (e.getKeyCode() == e.VK_Q) {
                 this.rotationVelocity += (this.rotationVelocity > 2) ? 0 : 0.5;
             }
@@ -168,10 +209,12 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         Graphics2D g = (Graphics2D) graphics;
 
-        //g.setColor(Color.BLUE);
+        g.setColor(Color.WHITE);
         g.fillRect(0, 0, getWidth(), getHeight());
 
         g.rotate(Math.toRadians(rotation), getWidth() / 2, getHeight());
+
+        g.drawImage(map, (int) x, (int) y, 10000, 10000, this);
 
         //g.setColor(Color.GREEN);
         //g.fillRect(getWidth() / 2 - getWidth() / 8, getHeight() / 2 - getHeight() / 8, getWidth() / 4, getHeight() / 4);
@@ -179,19 +222,36 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         // System.out.println(x + " " + y + " " + rotation);
 
+        /*
         for (int v = 0; v < this.mapWidth; v++) {
             for (int c = 0; c < this.mapHeight; c++) {
                 g.setColor(map[v][c].color);
                 g.fillRect((int) x + v * tileSize, (int) y + c * tileSize, tileSize, tileSize);
             }
+        }*/
+
+
+        for (Bullet bullet : bullets) {
+            g.fillRect((int) bullet.x, (int) bullet.y, 5, 5);
+            bullet.update();
         }
 
+
         g.rotate(Math.toRadians(-1 * rotation), getWidth() / 2, getHeight());
+
+
+        g.setColor(Color.WHITE);
+        g.fillRect(getWidth() - 250, 0, 250, 250);
+
+        g.drawImage(map, getWidth() - 250, 0, 250, 250, this);
 
         g.setColor(Color.RED);
         g.fillRect(getWidth() / 2 - 25, getHeight() - 50, 50, 50);
 
         g.drawString(rotation + " X:" + x + " Y:" + y, 10, 10);
+
+        resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
+        quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
 
         if (this.paused) {
             g.setColor(new Color(10, 10, 10, 100));
@@ -199,6 +259,14 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
             g.setColor(new Color(255, 255, 255));
             g.drawString("PAUSED U GEIIIII", 200, 200);
+
+            add(resumeGameButton);
+            add(quitGameButton);
+
+        }
+        else {
+            remove(resumeGameButton);
+            remove(quitGameButton);
         }
 
     }

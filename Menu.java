@@ -23,8 +23,8 @@ public class Menu extends JPanel implements KeyListener, ActionListener {
     private Main parent;
     private JButton startButton;
 
-
     public Menu(Main parent) {
+
         this.parent = parent;
 
         startButton = new JButton("Start");
@@ -62,7 +62,14 @@ public class Menu extends JPanel implements KeyListener, ActionListener {
     }
 
     public void paintComponent(Graphics g) {
-        startButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
+        startButton.setBounds(20, 10, 150, 40);
+
+        g.setColor(new Color(5, 15, 24));
+        g.fillRect(0, 0, Main.w, 60);
+
+        g.setColor(new Color(1, 10, 19));
+        g.fillRect(Main.w - 250, 0, 250, Main.h);
+
         g.drawString("Yoyoyoyo", 0, 100);
     }
 

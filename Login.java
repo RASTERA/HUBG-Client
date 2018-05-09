@@ -191,7 +191,7 @@ public class Login extends JPanel implements ActionListener, KeyListener, MouseL
                 // Separate thread so that UI thread is not blocked
                 Thread authentication = new Thread() {
                     public void run() {
-
+                        //Session session = new Session("Hi", "Hi");
                         Session session = Communicator.login(usernameField.getText(), String.valueOf(passwordField.getPassword()));
 
                         if (session == null){
