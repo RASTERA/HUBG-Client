@@ -59,33 +59,29 @@ public class Communicator {
     private ObjectInputStream in;
     private LinkedBlockingQueue<Message> message;
 
-    public Communicator (byte[] ip, int port) {
-        try {
-            this.serverSock = new Socket(InetAddress.getByAddress(ip), port);
+    public Communicator (byte[] ip, int port) throws Exception{
+        this.serverSock = new Socket(InetAddress.getByAddress(ip), port);
 
-            this.out = new ObjectOutputStream(serverSock.getOutputStream());
-            this.in = new ObjectInputStream(serverSock.getInputStream());
+        this.out = new ObjectOutputStream(serverSock.getOutputStream());
+        this.in = new ObjectInputStream(serverSock.getInputStream());
 
-            System.out.println("Connected to server: " + ip + ":" + port);
+        System.out.println("Connected to server: " + ip + ":" + port);
 
-            Thread receiver = new Thread(() -> {
-                while (true) {
-                    try {
-                        Message msg = (Message) in.readObject();
+        Thread receiver = new Thread(() -> {
+            while (true) {
+                try {
+                    Message msg = (Message) in.readObject();
 
-                        message.put(msg);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    message.put(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            });
+            }
+        });
 
-            receiver.setDaemon(true);
-            receiver.start();
+        receiver.setDaemon(true);
+        receiver.start();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public boolean isEmpty() {
