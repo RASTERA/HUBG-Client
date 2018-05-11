@@ -15,7 +15,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     public static int w = 1280;
     public static int h = 720;
     public static JPanel panel;
-    public static Pages page = Pages.LOGIN;
+    public static Pages page = Pages.GAME;
     public static Session session;
 
     public static long prevFrame = 0;
