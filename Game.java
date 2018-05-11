@@ -176,6 +176,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         this.player.x += this.player.vx / 80;
         this.player.y += this.player.vy / 80;
 
+        this.player.x = Math.max(Math.min(0, this.player.x), -50);
+        this.player.y = Math.max(Math.min(0, this.player.y), -50);
 
         if (Math.abs(this.player.vx) > 0) {
             this.player.vx += (this.player.vx > 0 ? -1 : 1) * 0.01;
@@ -184,6 +186,17 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         if (Math.abs(this.player.vy) > 0) {
             this.player.vy += (this.player.vy > 0 ? -1 : 1) * 0.01;
         }
+
+        /*
+        if (Math.abs(this.player.vx) < 0.000001 || (int) this.player.x == 0 || (int) this.player.x == 50) {
+            this.player.vx = 0;
+
+        }
+
+        if (Math.abs(this.player.vy) < 0.000001 || (int) this.player.y == 0 || (int) this.player.y == 50) {
+            this.player.vy = 0;
+
+        }*/
 
         if (Math.abs(this.player.rotationVelocity) > 0) {
             this.player.rotationVelocity += (this.player.rotationVelocity > 0 ? -1 : 1) * 0.01;
@@ -207,8 +220,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             for (int my = 0;my < 50; my++) {
                 g.setColor(new Color((mx + my) % 2 == 0 ? 255 : 0, 255, 255));
 
-                //g.drawImage(map[mx][my], (int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize, this);
-                g.fillRect((int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize);
+                g.drawImage(map[mx][my], (int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize, this);
+                g.drawRect((int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize);
 
             }
         }
