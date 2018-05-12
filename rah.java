@@ -5,6 +5,15 @@ public class rah {
         nMessage.type = type;
         nMessage.message = message;
 
-        return nMessage;
+public class Rah {
+    public static void webbrowserOpen(String url) {
+        try {
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().browse(new URI(url));
+            }
+        }
+        catch (Exception error) {
+            error.printStackTrace();
+        }
     }
 }
