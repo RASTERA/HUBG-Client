@@ -52,14 +52,19 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     private class MenuBar {
 
-        private int width = 500;
-        private int height = 50;
+        private int width = 350;
+
+        private Item[] items = new Item[2];
 
         // Bottom menu bar
 
         public void update(Graphics2D g, int windowW, int windowH) {
-            g.setColor(new Color(200, 200, 200));
-            g.fillRect(windowW / 2 - this.width / 2, windowH - this.height, this.width, this.height);
+            g.setColor(new Color(20, 20, 20, 200));
+            g.fillRect(windowW / 2 - this.width / 2, windowH - 79, this.width / 2 - 2, 50);
+            g.fillRect(windowW / 2 + 2, windowH - 79, this.width / 2 - 2, 50);
+
+            g.setColor(new Color(200, 200, 200, 200));
+            g.fillRect(windowW / 2 - this.width / 2, windowH - 25, this.width, 15);
         }
     }
 
@@ -78,7 +83,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         addKeyListener(this);
         setFocusable(true);
 
-        player = new Player("Karl", 0, 0);
+        player = new Player("Karl", -25, -25);
 
         try {
             splash = ImageIO.read(new File("images/splash.png"));
@@ -145,11 +150,11 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         if (!this.paused) {
 
             if (e.getKeyCode() == e.VK_Q) {
-                this.player.rotationVelocity += (this.player.rotationVelocity > 2) ? 0 : 0.5;
+                this.player.rotationVelocity -= (this.player.rotationVelocity > 2) ? 0 : 0.5;
             }
 
             if (e.getKeyCode() == e.VK_E) {
-                this.player.rotationVelocity -= (this.player.rotationVelocity < -2) ? 0 : 0.5;
+                this.player.rotationVelocity += (this.player.rotationVelocity < -2) ? 0 : 0.5;
             }
 
             if (e.getKeyCode() == e.VK_W) {
@@ -171,16 +176,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                 this.player.vy -= Math.sin(Math.toRadians(-1 * this.player.rotation));
                 this.player.vx -= Math.cos(Math.toRadians(-1 * this.player.rotation));
             }
-            /*
-            if (e.getKeyCode() == e.VK_W) {
-                this.player.x += Math.cos(Math.toRadians(this.player.rotation)) * 10;
-                this.player.y += Math.sin(Math.toRadians(this.player.rotation)) * 10;
-            }
 
-            if (e.getKeyCode() == e.VK_S) {
-                this.player.x -= Math.cos(Math.toRadians(this.player.rotation)) * 10;
-                this.player.y -= Math.sin(Math.toRadians(this.player.rotation)) * 10;
-            }*/
         }
 
     }
@@ -216,6 +212,12 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.abs(Math.min(1, this.player.vy));
 
         this.player.rotation += this.player.rotationVelocity;
+        this.player.rotation = this.player.rotation % 360;
+
+        if (this.player.rotation < 0) {
+            this.player.rotation = 360 - this.player.rotation;
+        }
+
         this.player.x += this.player.vx / 80;
         this.player.y += this.player.vy / 80;
 
@@ -230,17 +232,6 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             this.player.vy += (this.player.vy > 0 ? -1 : 1) * 0.01;
         }
 
-        /*
-        if (Math.abs(this.player.vx) < 0.000001 || (int) this.player.x == 0 || (int) this.player.x == 50) {
-            this.player.vx = 0;
-
-        }
-
-        if (Math.abs(this.player.vy) < 0.000001 || (int) this.player.y == 0 || (int) this.player.y == 50) {
-            this.player.vy = 0;
-
-        }*/
-
         if (Math.abs(this.player.rotationVelocity) > 0) {
             this.player.rotationVelocity += (this.player.rotationVelocity > 0 ? -1 : 1) * 0.01;
         }
@@ -249,13 +240,10 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             this.player.rotationVelocity = 0;
         }
 
-        //super.paintComponent(graphics);
-
-
         g.setColor(Color.BLUE);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
+        g.rotate(Math.toRadians(-1 * this.player.rotation), getWidth() / 2, getHeight() / 2);
 
 
         for (int mx = 0; mx < 50; mx++) {
@@ -269,20 +257,18 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         }
 
 
-        g.rotate(Math.toRadians(-1 * this.player.rotation), getWidth() / 2, getHeight() / 2);
+        g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
 
 
-        g.setColor(Color.WHITE);
+        // Mini map
+        g.setColor(new Color(255, 255, 255, 200));
         g.fillRect(getWidth() - 250, 0, 250, 250);
-
         g.drawImage(miniMap, getWidth() - 250, 0, 250, 250, this);
 
         g.setColor(Color.RED);
-
         g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 50), (int) (-250 * this.player.y / 50), 2, 2);
 
-
-        g.setColor(Color.RED);
+        // Player
         g.fillRect(getWidth() / 2 - 25, getHeight() / 2 - 25, 50, 50);
 
         g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, 10);
@@ -290,7 +276,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
         quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
 
-        //menuBar.update(g, getWidth(), getHeight());
+        menuBar.update(g, getWidth(), getHeight());
 
         if (this.paused) {
             g.setColor(new Color(10, 10, 10, 100));
