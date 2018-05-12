@@ -43,7 +43,10 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     private MenuBar menuBar;
 
+    private volatile double loadedResources = 0;
     private BufferedImage[][] map = new BufferedImage[50][50];
+    private BufferedImage splash;
+    private BufferedImage miniMap;
 
     private Player player;
 
@@ -78,16 +81,35 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         player = new Player("Karl", 0, 0);
 
         try {
-            for (int x = 0; x < 50; x++) {
-                for (int y = 0; y < 50; y++) {
-                    map[x][y] = ImageIO.read(new File("images/map/" + x + "_" + y + ".png"));
-                }
-            }
-
+            splash = ImageIO.read(new File("images/splash.png"));
+            miniMap = ImageIO.read(new File("images/map/minimap.png"));
         }
         catch (Exception e) {
-            System.out.println("What are you going to do about it?");
+
         }
+
+        Thread loadResources = new Thread() {
+            public void run() {
+                try {
+
+                    double totalResources = 2500;
+                    double loaded = 0;
+
+                    for (int x = 0; x < 50; x++) {
+                        for (int y = 0; y < 50; y++) {
+                            map[x][y] = ImageIO.read(new File("images/map/" + x + "_" + y + ".png"));
+                            loaded++;
+                            loadedResources = loaded / totalResources;
+                        }
+                    }
+
+                } catch (Exception e) {
+                    System.out.println("What are you going to do about it?");
+                }
+            }
+        };
+
+        loadResources.start();
 
     }
 
@@ -169,6 +191,27 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     public void paintComponent(Graphics graphics) {
 
+        Graphics2D g = (Graphics2D) graphics;
+
+
+        if (loadedResources < 1) {
+
+            g.drawImage(splash, 0, 0, getWidth(), getHeight(), this);
+
+            g.setColor(Color.WHITE);
+            g.fillRect(100, 300, getWidth() - 200, 30);
+            g.setColor(Color.RED);
+            g.drawRect(100, 300, getWidth() - 200, 30);
+
+            g.fillRect(100, 300, (int) ((getWidth() - 200) * loadedResources), 30);
+
+
+            g.drawString(loadedResources * 100 + "% loaded", 10, 10);
+
+
+            return;
+        }
+
         this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.abs(Math.min(1, this.player.vx));
         this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.abs(Math.min(1, this.player.vy));
 
@@ -208,7 +251,6 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         //super.paintComponent(graphics);
 
-        Graphics2D g = (Graphics2D) graphics;
 
         g.setColor(Color.BLUE);
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -230,17 +272,14 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         g.rotate(Math.toRadians(-1 * this.player.rotation), getWidth() / 2, getHeight() / 2);
 
 
-        //g.setColor(Color.WHITE);
-        //g.fillRect(getWidth() - 250, 0, 250, 250);
+        g.setColor(Color.WHITE);
+        g.fillRect(getWidth() - 250, 0, 250, 250);
 
-        //g.drawImage(map, getWidth() - 250, 0, 250, 250, this);
+        g.drawImage(miniMap, getWidth() - 250, 0, 250, 250, this);
 
         g.setColor(Color.RED);
-        g.rotate(Math.toRadians(this.player.rotation), getWidth() - 250 + (int) (-250 * this.player.x / 20000), (int) (-250 * this.player.y / 20000));
 
-        //g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 20000), (int) (-250 * this.player.y / 20000), 1, 3);
-
-        g.rotate(Math.toRadians(-1 * this.player.rotation), getWidth() - 250 + (int) (-250 * this.player.x / 20000), (int) (-250 * this.player.y / 20000));
+        g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 50), (int) (-250 * this.player.y / 50), 2, 2);
 
 
         g.setColor(Color.RED);
