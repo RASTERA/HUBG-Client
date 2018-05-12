@@ -158,23 +158,23 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             }
 
             if (e.getKeyCode() == e.VK_W) {
-                this.player.vy += Math.sin(Math.toRadians(90 - this.player.rotation));
-                this.player.vx += Math.cos(Math.toRadians(90 - this.player.rotation));
+                this.player.vy += Math.sin(Math.toRadians(90 + this.player.rotation));
+                this.player.vx += Math.cos(Math.toRadians(90 + this.player.rotation));
             }
 
             if (e.getKeyCode() == e.VK_S) {
-                this.player.vy -= Math.sin(Math.toRadians(90 - this.player.rotation));
-                this.player.vx -= Math.cos(Math.toRadians(90 - this.player.rotation));
+                this.player.vy -= Math.sin(Math.toRadians(90 + this.player.rotation));
+                this.player.vx -= Math.cos(Math.toRadians(90 + this.player.rotation));
             }
 
             if (e.getKeyCode() == e.VK_A) {
-                this.player.vy += Math.sin(Math.toRadians(-1 * this.player.rotation));
-                this.player.vx += Math.cos(Math.toRadians(-1 * this.player.rotation));
+                this.player.vy += Math.sin(Math.toRadians(this.player.rotation));
+                this.player.vx += Math.cos(Math.toRadians(this.player.rotation));
             }
 
             if (e.getKeyCode() == e.VK_D) {
-                this.player.vy -= Math.sin(Math.toRadians(-1 * this.player.rotation));
-                this.player.vx -= Math.cos(Math.toRadians(-1 * this.player.rotation));
+                this.player.vy -= Math.sin(Math.toRadians(this.player.rotation));
+                this.player.vx -= Math.cos(Math.toRadians(this.player.rotation));
             }
 
         }
