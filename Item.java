@@ -19,4 +19,12 @@ public abstract class Item {
 
         this.name = name;
     }
+
+    public BufferedImage getThumbnail() {
+        return thumbnail;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

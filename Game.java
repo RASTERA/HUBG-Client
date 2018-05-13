@@ -6,6 +6,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.FontMetrics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.ActionListener;
@@ -57,14 +58,27 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         private int width = 350;
         private int health = 100;
 
-        private Item[] items = new Item[2];
+        private ArrayList<Item> items;
 
         // Bottom menu bar
 
-        public void update(Graphics2D g, int windowW, int windowH) {
+        public void update(Graphics2D g, int windowW, int windowH, Player player) {
+
+            items = player.getItems();
+
             g.setColor(new Color(20, 20, 20, 200));
             g.fillRect(windowW / 2 - this.width / 2, windowH - 79, this.width / 2 - 2, 50);
             g.fillRect(windowW / 2 + 2, windowH - 79, this.width / 2 - 2, 50);
+
+            /*
+            if (items.get(0) != null) {
+                g.drawImage(items.get(0).getThumbnail(), windowW / 2 - this.width / 2, windowH - 79, this.width / 2 - 2, 50, null);
+            }
+
+            if (items.get(1) != null) {
+                g.drawImage(items.get(1).getThumbnail(), windowW / 2 + 2, windowH - 79, this.width / 2 - 2, 50, null);
+            }*/
+
 
             g.setColor(new Color(200, 200, 200, 200));
             g.drawRect(windowW / 2 - this.width / 2, windowH - 25, this.width, 15);
@@ -98,6 +112,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                 compass += "    " + i + "    ";
             }
         }
+
+        compass += compass + compass;
 
         resumeGameButton = new JButton("Resume Game");
         resumeGameButton.setActionCommand("resume");
@@ -176,6 +192,13 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         if (!this.paused) {
 
+
+            if (e.getKeyCode() == e.VK_SPACE) {
+                tileSize = 500;
+                repaint();
+            }
+
+
             if (e.getKeyCode() == e.VK_Q) {
                 this.player.rotationVelocity -= (this.player.rotationVelocity > 2) ? 0 : 0.5;
             }
@@ -209,7 +232,10 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     }
 
     public void keyReleased(KeyEvent e) {
-
+       if (e.getKeyCode() == e.VK_SPACE)  {
+            tileSize = 1000;
+            repaint();
+        }
     }
 
     public void paintComponent(Graphics graphics) {
@@ -286,8 +312,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
 
-        g.drawString(compass, getWidth() / 2 - (int) this.player.rotation * 10, 10);
-
+        g.drawString(compass, getWidth() / 2 - 3820 - (int) this.player.rotation * 10, 10);
 
         // Mini map
         g.setColor(new Color(255, 255, 255, 200));
@@ -298,7 +323,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 50), (int) (-250 * this.player.y / 50), 2, 2);
 
         // Player
-        g.fillRect(getWidth() / 2 - 25, getHeight() / 2 - 25, 50, 50);
+        g.fillRect(getWidth() / 2 - (int) (tileSize * 0.05) / 2, getHeight() / 2 - (int) (tileSize * 0.05) / 2, (int) (tileSize * 0.05), (int) (tileSize * 0.05));
 
         menuBar.setHealth((int) (this.player.x * -2));
 
@@ -307,7 +332,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
         quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
 
-        menuBar.update(g, getWidth(), getHeight());
+        menuBar.update(g, getWidth(), getHeight(), player);
 
         if (this.paused) {
             g.setColor(new Color(10, 10, 10, 100));
