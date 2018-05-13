@@ -48,6 +48,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     private BufferedImage splash;
     private BufferedImage miniMap;
 
+    private String compass = "";
+
     private Player player;
 
     private class MenuBar {
@@ -87,6 +89,15 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     public Game(Main parent) {
         this.parent = parent;
         this.menuBar = new MenuBar();
+
+        for (int i = 0; i < 360; i += 5) {
+            if (i % 90 == 0) {
+                compass += "    " + "NESW".charAt(i / 90) + "    ";
+            }
+            else {
+                compass += "    " + i + "    ";
+            }
+        }
 
         resumeGameButton = new JButton("Resume Game");
         resumeGameButton.setActionCommand("resume");
@@ -224,8 +235,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             return;
         }
 
-        this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.abs(Math.min(1, this.player.vx));
-        this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.abs(Math.min(1, this.player.vy));
+        this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vx));
+        this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vy));
 
         this.player.rotation += this.player.rotationVelocity;
         this.player.rotation = this.player.rotation % 360;
@@ -275,6 +286,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
 
+        g.drawString(compass, getWidth() / 2 - (int) this.player.rotation * 10, 10);
+
 
         // Mini map
         g.setColor(new Color(255, 255, 255, 200));
@@ -289,7 +302,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         menuBar.setHealth((int) (this.player.x * -2));
 
-        g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, 10);
+        g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, getHeight() - 20);
 
         resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
         quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
