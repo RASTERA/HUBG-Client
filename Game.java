@@ -53,6 +53,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     private class MenuBar {
 
         private int width = 350;
+        private int health = 100;
 
         private Item[] items = new Item[2];
 
@@ -64,8 +65,23 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             g.fillRect(windowW / 2 + 2, windowH - 79, this.width / 2 - 2, 50);
 
             g.setColor(new Color(200, 200, 200, 200));
-            g.fillRect(windowW / 2 - this.width / 2, windowH - 25, this.width, 15);
+            g.drawRect(windowW / 2 - this.width / 2, windowH - 25, this.width, 15);
+
+
+            if (this.health < 50) {
+                g.setColor(new Color(200, 0, 0, 200));
+            }
+            g.fillRect(1 + windowW / 2 - this.width / 2, windowH - 24, (int) ((this.width - 1) * health / 100), 14);
         }
+
+        public void setHealth(int health) {
+            this.health = health;
+        }
+
+        public int getHealth() {
+            return this.health;
+        }
+
     }
 
     public Game(Main parent) {
@@ -270,6 +286,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         // Player
         g.fillRect(getWidth() / 2 - 25, getHeight() / 2 - 25, 50, 50);
+
+        menuBar.setHealth((int) (this.player.x * -2));
 
         g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, 10);
 

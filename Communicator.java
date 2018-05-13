@@ -98,7 +98,7 @@ public class Communicator {
 
     public void write (int type, Object Message) {
         try {
-            this.out.writeObject(rah.messageBuilder(type, Message));
+            this.out.writeObject(Rah.messageBuilder(type, Message));
         } catch (Exception e) {
             e.printStackTrace();
         }
