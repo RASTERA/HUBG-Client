@@ -53,6 +53,14 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     private Player player;
 
+    private boolean serverConnected = false;
+    private Communicator server;
+
+    private int ID;
+
+    private ArrayList<Enemy> EnemyList = new ArrayList<Enemy>();
+    private boolean gameStart = false;
+
     private class MenuBar {
 
         private int width = 350;
@@ -126,14 +134,20 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         addKeyListener(this);
         setFocusable(true);
 
-        player = new Player("Karl", -25, -25);
-
         try {
             splash = ImageIO.read(new File("images/splash.png"));
             miniMap = ImageIO.read(new File("images/map/minimap.png"));
         }
         catch (Exception e) {
 
+        }
+
+        try {
+            this.server = new Communicator(new byte[] {127, 0, 0, 1}, 25565, this);
+
+            this.serverConnected = true;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         Thread loadResources = new Thread() {
@@ -190,7 +204,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             this.paused = !this.paused;
         }
 
-        if (!this.paused) {
+        if (!this.paused && gameStart) {
 
 
             if (e.getKeyCode() == e.VK_SPACE) {
@@ -238,89 +252,119 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    public void paintComponent(Graphics graphics) {
+    public void CommandProcessor(Message ServerMessage) {
+        switch (ServerMessage.type) {
+            case 0:
+                this.ID = (int) ServerMessage.message;
+                System.out.println("Current ID: " + this.ID);
+                break;
+            case 1:
+                for (float[] p : (ArrayList<float[]>) ServerMessage.message) {
+                    if (p[3] == this.ID) {
+                        player = new Player("Karl", p[0], p[1], p[2]);
+                    } else {
+                        EnemyList.add(new Enemy("Karl", p));
+                    }
+                }
 
-        Graphics2D g = (Graphics2D) graphics;
-
-
-        if (loadedResources < 1) {
-
-            g.drawImage(splash, 0, 0, getWidth(), getHeight(), this);
-
-            g.setColor(Color.WHITE);
-            g.fillRect(100, 300, getWidth() - 200, 30);
-            g.setColor(Color.RED);
-            g.drawRect(100, 300, getWidth() - 200, 30);
-
-            g.fillRect(100, 300, (int) ((getWidth() - 200) * loadedResources), 30);
-
-
-            g.drawString(loadedResources * 100 + "% loaded", 10, 10);
-
-
-            return;
+                gameStart = true;
+                break;
+            case 10:
+                for (int i = 0; i < EnemyList.size(); i++) {
+                    if (EnemyList.get(i).getId() == ((float[]) ServerMessage.message)[3]) {
+                        EnemyList.get(i).update((float[]) ServerMessage.message);
+                        break;
+                    }
+                }
+                break;
         }
+    }
+
+    public void paintComponent(Graphics graphics) {
+        if (gameStart) {
+
+            Graphics2D g = (Graphics2D) graphics;
+
+
+            if (loadedResources < 1) {
+
+                g.drawImage(splash, 0, 0, getWidth(), getHeight(), this);
+
+                g.setColor(Color.WHITE);
+                g.fillRect(100, 300, getWidth() - 200, 30);
+                g.setColor(Color.RED);
+                g.drawRect(100, 300, getWidth() - 200, 30);
+
+                g.fillRect(100, 300, (int) ((getWidth() - 200) * loadedResources), 30);
+
+
+                g.drawString(loadedResources * 100 + "% loaded", 10, 10);
+
+
+                return;
+            }
 
         this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vx));
         this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vy));
 
-        this.player.rotation += this.player.rotationVelocity;
-        this.player.rotation = this.player.rotation % 360;
+            this.player.rotation += this.player.rotationVelocity;
+            this.player.rotation = this.player.rotation % 360;
 
-        if (this.player.rotation < 0) {
-            this.player.rotation = 360 - this.player.rotation;
-        }
-
-        this.player.x += this.player.vx / 80;
-        this.player.y += this.player.vy / 80;
-
-        this.player.x = Math.max(Math.min(0, this.player.x), -50);
-        this.player.y = Math.max(Math.min(0, this.player.y), -50);
-
-        if (Math.abs(this.player.vx) > 0) {
-            this.player.vx += (this.player.vx > 0 ? -1 : 1) * 0.01;
-        }
-
-        if (Math.abs(this.player.vy) > 0) {
-            this.player.vy += (this.player.vy > 0 ? -1 : 1) * 0.01;
-        }
-
-        if (Math.abs(this.player.rotationVelocity) > 0) {
-            this.player.rotationVelocity += (this.player.rotationVelocity > 0 ? -1 : 1) * 0.01;
-        }
-
-        if (Math.abs(this.player.rotationVelocity) <= 0.1) {
-            this.player.rotationVelocity = 0;
-        }
-
-        g.setColor(Color.BLUE);
-        g.fillRect(0, 0, getWidth(), getHeight());
-
-        g.rotate(Math.toRadians(-1 * this.player.rotation), getWidth() / 2, getHeight() / 2);
-
-
-        for (int mx = 0; mx < 50; mx++) {
-            for (int my = 0;my < 50; my++) {
-                g.setColor(new Color((mx + my) % 2 == 0 ? 255 : 0, 255, 255));
-
-                g.drawImage(map[mx][my], (int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize, this);
-                g.drawRect((int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize);
-
+            if (this.player.rotation < 0) {
+                this.player.rotation = 360 - this.player.rotation;
             }
-        }
+
+            this.player.x += this.player.vx / 80;
+            this.player.y += this.player.vy / 80;
+
+            this.player.x = Math.max(Math.min(0, this.player.x), -50);
+            this.player.y = Math.max(Math.min(0, this.player.y), -50);
+
+            if (Math.abs(this.player.vx) > 0) {
+                this.player.vx += (this.player.vx > 0 ? -1 : 1) * 0.01;
+            }
+
+            if (Math.abs(this.player.vy) > 0) {
+                this.player.vy += (this.player.vy > 0 ? -1 : 1) * 0.01;
+            }
+
+            if (Math.abs(this.player.rotationVelocity) > 0) {
+                this.player.rotationVelocity += (this.player.rotationVelocity > 0 ? -1 : 1) * 0.01;
+            }
+
+            if (Math.abs(this.player.rotationVelocity) <= 0.1) {
+                this.player.rotationVelocity = 0;
+            }
 
 
-        g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
+            g.setColor(Color.BLUE);
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            g.rotate(Math.toRadians(-1 * this.player.rotation), getWidth() / 2, getHeight() / 2);
+
+
+            for (int mx = 0; mx < 50; mx++) {
+                for (int my = 0; my < 50; my++) {
+                    g.setColor(new Color((mx + my) % 2 == 0 ? 255 : 0, 255, 255));
+
+                    g.drawImage(map[mx][my], (int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize, this);
+                    g.drawRect((int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize);
+
+                }
+            }
+
+
+            g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
 
         g.drawString(compass, getWidth() / 2 - 3820 - (int) this.player.rotation * 10, 10);
 
-        // Mini map
-        g.setColor(new Color(255, 255, 255, 200));
-        g.fillRect(getWidth() - 250, 0, 250, 250);
-        g.drawImage(miniMap, getWidth() - 250, 0, 250, 250, this);
+            // Mini map
+            g.setColor(new Color(255, 255, 255, 200));
+            g.fillRect(getWidth() - 250, 0, 250, 250);
+            g.drawImage(miniMap, getWidth() - 250, 0, 250, 250, this);
 
-        g.setColor(Color.RED);
-        g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 50), (int) (-250 * this.player.y / 50), 2, 2);
+            g.setColor(Color.RED);
+            g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 50), (int) (-250 * this.player.y / 50), 2, 2);
 
         // Player
         g.fillRect(getWidth() / 2 - (int) (tileSize * 0.05) / 2, getHeight() / 2 - (int) (tileSize * 0.05) / 2, (int) (tileSize * 0.05), (int) (tileSize * 0.05));
@@ -329,28 +373,25 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, getHeight() - 20);
 
-        resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
-        quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
+            resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
+            quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
 
         menuBar.update(g, getWidth(), getHeight(), player);
 
-        if (this.paused) {
-            g.setColor(new Color(10, 10, 10, 100));
-            g.fillRect(0, 0, Main.w, Main.h);
+            if (this.paused) {
+                g.setColor(new Color(10, 10, 10, 100));
+                g.fillRect(0, 0, Main.w, Main.h);
 
-            g.setColor(new Color(255, 255, 255));
-            g.drawString("PAUSED U GEIIIII", 200, 200);
+                g.setColor(new Color(255, 255, 255));
+                g.drawString("PAUSED U GEIIIII", 200, 200);
 
-            add(resumeGameButton);
-            add(quitGameButton);
+                add(resumeGameButton);
+                add(quitGameButton);
 
+            } else {
+                remove(resumeGameButton);
+                remove(quitGameButton);
+            }
         }
-        else {
-            remove(resumeGameButton);
-            remove(quitGameButton);
-        }
-
     }
-
-
 }

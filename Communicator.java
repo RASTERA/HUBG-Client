@@ -58,8 +58,10 @@ public class Communicator {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private LinkedBlockingQueue<Message> message;
+    private Game client;
 
-    public Communicator (byte[] ip, int port) throws Exception{
+    public Communicator (byte[] ip, int port, Game client) throws Exception{
+        this.client = client;
         this.serverSock = new Socket(InetAddress.getByAddress(ip), port);
 
         this.out = new ObjectOutputStream(serverSock.getOutputStream());
@@ -72,7 +74,7 @@ public class Communicator {
                 try {
                     Message msg = (Message) in.readObject();
 
-                    message.put(msg);
+                    client.CommandProcessor(msg);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
