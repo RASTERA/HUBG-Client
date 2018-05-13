@@ -61,6 +61,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     private ArrayList<Enemy> EnemyList = new ArrayList<Enemy>();
     private boolean gameStart = false;
 
+    private float ox, oy, or;
+
     private class MenuBar {
 
         private int width = 350;
@@ -115,8 +117,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         for (int i = 0; i < 360; i += 5) {
             if (i % 90 == 0) {
                 compass += "    " + "NESW".charAt(i / 90) + "    ";
-            }
-            else {
+            } else {
                 compass += "    " + i + "    ";
             }
         }
@@ -137,14 +138,12 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         try {
             splash = ImageIO.read(new File("images/splash.png"));
             miniMap = ImageIO.read(new File("images/map/minimap.png"));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
         try {
-            this.server = new Communicator(new byte[] {127, 0, 0, 1}, 25565, this);
-
+            this.server = new Communicator(new byte[]{127, 0, 0, 1}, 25565, this);
             this.serverConnected = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -246,7 +245,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     }
 
     public void keyReleased(KeyEvent e) {
-       if (e.getKeyCode() == e.VK_SPACE)  {
+        if (e.getKeyCode() == e.VK_SPACE) {
             tileSize = 1000;
             repaint();
         }
@@ -259,6 +258,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                 System.out.println("Current ID: " + this.ID);
                 break;
             case 1:
+                System.out.println("Start game:" + ServerMessage.message);
                 for (float[] p : (ArrayList<float[]>) ServerMessage.message) {
                     if (p[3] == this.ID) {
                         player = new Player("Karl", p[0], p[1], p[2]);
@@ -270,6 +270,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                 gameStart = true;
                 break;
             case 10:
+                System.out.println("Update Location: " + Arrays.toString((float[]) ServerMessage.message));
                 for (int i = 0; i < EnemyList.size(); i++) {
                     if (EnemyList.get(i).getId() == ((float[]) ServerMessage.message)[3]) {
                         EnemyList.get(i).update((float[]) ServerMessage.message);
@@ -304,8 +305,12 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                 return;
             }
 
-        this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vx));
-        this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vy));
+            ox = this.player.x;
+            oy = this.player.y;
+            or = this.player.rotation;
+
+            this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vx));
+            this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vy));
 
             this.player.rotation += this.player.rotationVelocity;
             this.player.rotation = this.player.rotation % 360;
@@ -313,12 +318,15 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             if (this.player.rotation < 0) {
                 this.player.rotation = 360 - this.player.rotation;
             }
-
             this.player.x += this.player.vx / 80;
             this.player.y += this.player.vy / 80;
 
             this.player.x = Math.max(Math.min(0, this.player.x), -50);
             this.player.y = Math.max(Math.min(0, this.player.y), -50);
+
+            if (ox != this.player.x || oy != this.player.y || or != this.player.rotation) {
+                server.write(10, new float[] {this.player.x, this.player.y, this.player.rotation, this.ID});
+            }
 
             if (Math.abs(this.player.vx) > 0) {
                 this.player.vx += (this.player.vx > 0 ? -1 : 1) * 0.01;
@@ -356,7 +364,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
             g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
 
-        g.drawString(compass, getWidth() / 2 - 3820 - (int) this.player.rotation * 10, 10);
+            g.drawString(compass, getWidth() / 2 - 3820 - (int) this.player.rotation * 10, 10);
 
             // Mini map
             g.setColor(new Color(255, 255, 255, 200));
@@ -366,17 +374,17 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             g.setColor(Color.RED);
             g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 50), (int) (-250 * this.player.y / 50), 2, 2);
 
-        // Player
-        g.fillRect(getWidth() / 2 - (int) (tileSize * 0.05) / 2, getHeight() / 2 - (int) (tileSize * 0.05) / 2, (int) (tileSize * 0.05), (int) (tileSize * 0.05));
+            // Player
+            g.fillRect(getWidth() / 2 - (int) (tileSize * 0.05) / 2, getHeight() / 2 - (int) (tileSize * 0.05) / 2, (int) (tileSize * 0.05), (int) (tileSize * 0.05));
 
-        menuBar.setHealth((int) (this.player.x * -2));
+            menuBar.setHealth((int) (this.player.x * -2));
 
-        g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, getHeight() - 20);
+            g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, getHeight() - 20);
 
             resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
             quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
 
-        menuBar.update(g, getWidth(), getHeight(), player);
+            menuBar.update(g, getWidth(), getHeight(), player);
 
             if (this.paused) {
                 g.setColor(new Color(10, 10, 10, 100));
