@@ -60,8 +60,9 @@ public class Communicator {
     private LinkedBlockingQueue<Message> message;
     private Game client;
 
-    public Communicator (byte[] ip, int port, Game client) throws Exception{
+    public Communicator (byte[] ip, int port, Game client) throws Exception {
         this.client = client;
+
         this.serverSock = new Socket(InetAddress.getByAddress(ip), port);
 
         this.out = new ObjectOutputStream(serverSock.getOutputStream());

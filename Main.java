@@ -37,7 +37,15 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     }
 
     public void startPage(Pages page) {
-        this.getContentPane().remove(this.panel);
+
+        // Incase panel isn't there for whatever magic
+        try {
+            this.getContentPane().remove(this.panel);
+        }
+        catch (Exception e) {
+
+        }
+
         this.page = page;
         this.panel = null;
         startGraphics();

@@ -145,7 +145,9 @@ public class Game extends JPanel implements KeyListener, ActionListener {
         try {
             this.server = new Communicator(new byte[]{127, 0, 0, 1}, 25565, this);
             this.serverConnected = true;
+
         } catch (Exception e) {
+            this.quitGame("Unable to connect to server");
             e.printStackTrace();
         }
 
@@ -153,19 +155,22 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             public void run() {
                 try {
 
+
                     double totalResources = 2500;
                     double loaded = 0;
 
                     for (int x = 0; x < 50; x++) {
                         for (int y = 0; y < 50; y++) {
-                            map[x][y] = ImageIO.read(new File("images/map/" + x + "_" + y + ".png"));
+                            map[x][y] = ImageIO.read(new File("imageds/map/" + x + "_" + y + ".png"));
                             loaded++;
                             loadedResources = loaded / totalResources;
                         }
                     }
 
+                    System.out.println("Done");
+
                 } catch (Exception e) {
-                    System.out.println("What are you going to do about it?");
+                    quitGame("Unable to load resources");
                 }
             }
         };
@@ -174,6 +179,23 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     }
 
+    public void quitGame() {
+        quitGame("");
+    }
+
+    public void quitGame(String message) {
+
+        if (message.length() > 0) {
+            JOptionPane.showMessageDialog(this.parent, message, "HUBG", JOptionPane.ERROR_MESSAGE);
+        }
+
+        System.out.println("SWITCH");
+
+        removeKeyListener(this);
+
+        this.parent.startPage(Main.Pages.MENU);
+
+    }
 
     public void actionPerformed(ActionEvent e) {
 
@@ -183,10 +205,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                 break;
 
             case "quit":
-                System.out.println("SWITCH");
-
-                removeKeyListener(this);
-                this.parent.startPage(Main.Pages.MENU);
+                this.quitGame();
 
                 break;
         }
