@@ -15,7 +15,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     public static int w = 1260;
     public static int h = 700;
     public static JPanel panel;
-    public static Pages page = Pages.GAME; //Pages.LOGIN;
+    public static Pages page = Pages.LOGIN;
     public static Session session;
 
     public static long prevFrame = 0;
@@ -39,15 +39,10 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     public void startPage(Pages page) {
 
         // Incase panel isn't there for whatever magic
-        try {
-            this.getContentPane().remove(this.panel);
-        }
-        catch (Exception e) {
 
-        }
-
+        this.getContentPane().remove(this.panel);
         this.page = page;
-        this.panel = null;
+        //this.panel = null;
         startGraphics();
     }
 

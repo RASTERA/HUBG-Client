@@ -63,6 +63,8 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     private float ox, oy, or;
 
+    public boolean[] keyArray = new boolean[250];
+
     private class MenuBar {
 
         private int width = 350;
@@ -142,26 +144,32 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         }
 
+        /*
         try {
             this.server = new Communicator(new byte[]{127, 0, 0, 1}, 25565, this);
             this.serverConnected = true;
 
         } catch (Exception e) {
             this.quitGame("Unable to connect to server");
-            e.printStackTrace();
-        }
+            //e.printStackTrace();
+            return;
+        }*/
+
+
+
+        player = new Player("Karl", 0, 0, 0);
+        gameStart = true;
 
         Thread loadResources = new Thread() {
             public void run() {
                 try {
-
 
                     double totalResources = 2500;
                     double loaded = 0;
 
                     for (int x = 0; x < 50; x++) {
                         for (int y = 0; y < 50; y++) {
-                            map[x][y] = ImageIO.read(new File("imageds/map/" + x + "_" + y + ".png"));
+                            map[x][y] = ImageIO.read(new File("images/map/" + x + "_" + y + ".png"));
                             loaded++;
                             loadedResources = loaded / totalResources;
                         }
@@ -218,55 +226,80 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     public void keyPressed(KeyEvent e) {
 
-        if (e.getKeyCode() == e.VK_ESCAPE) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE && this.gameStart) {
             this.paused = !this.paused;
+        }
+
+        if (e.getKeyCode() < 250) {
+            this.keyArray[e.getKeyCode()] = true;
+        }
+        
+    }
+
+    public void keyReleased(KeyEvent e) {
+
+        if (e.getKeyCode() < 250) {
+            this.keyArray[e.getKeyCode()] = false;
+        }
+
+    }
+
+    public void updateKeys() {
+
+        if (!this.keyArray[KeyEvent.VK_SPACE]) {
+            tileSize = 1000;
+            repaint();
         }
 
         if (!this.paused && gameStart) {
 
 
-            if (e.getKeyCode() == e.VK_SPACE) {
+            if (this.keyArray[KeyEvent.VK_H]) {
+                this.player.rotationVelocity = 0;
+                this.player.vx = 0;
+                this.player.vy = 0;
+            }
+
+            if (this.keyArray[KeyEvent.VK_G]) {
+                this.player.rotation = 0;
+
+            }
+
+            if (this.keyArray[KeyEvent.VK_Q]) {
+                this.player.rotationVelocity -= 0.2;
+            }
+
+            if (this.keyArray[KeyEvent.VK_E]) {
+                this.player.rotationVelocity += 0.2;
+            }
+
+            if (this.keyArray[KeyEvent.VK_W]) {
+                this.player.vy += Math.sin(Math.toRadians(90 + this.player.rotation));
+                this.player.vx += Math.cos(Math.toRadians(90 + this.player.rotation));
+            }
+
+            if (this.keyArray[KeyEvent.VK_S]) {
+                this.player.vy -= Math.sin(Math.toRadians(90 + this.player.rotation));
+                this.player.vx -= Math.cos(Math.toRadians(90 + this.player.rotation));
+            }
+
+            if (this.keyArray[KeyEvent.VK_A]) {
+                this.player.vy += Math.sin(Math.toRadians(this.player.rotation));
+                this.player.vx += Math.cos(Math.toRadians(this.player.rotation));
+            }
+
+            if (this.keyArray[KeyEvent.VK_D]) {
+                this.player.vy -= Math.sin(Math.toRadians(this.player.rotation));
+                this.player.vx -= Math.cos(Math.toRadians(this.player.rotation));
+            }
+
+
+            if (this.keyArray[KeyEvent.VK_SPACE]) {
                 tileSize = 500;
                 repaint();
             }
 
 
-            if (e.getKeyCode() == e.VK_Q) {
-                this.player.rotationVelocity -= (this.player.rotationVelocity > 2) ? 0 : 0.5;
-            }
-
-            if (e.getKeyCode() == e.VK_E) {
-                this.player.rotationVelocity += (this.player.rotationVelocity < -2) ? 0 : 0.5;
-            }
-
-            if (e.getKeyCode() == e.VK_W) {
-                this.player.vy += Math.sin(Math.toRadians(90 + this.player.rotation));
-                this.player.vx += Math.cos(Math.toRadians(90 + this.player.rotation));
-            }
-
-            if (e.getKeyCode() == e.VK_S) {
-                this.player.vy -= Math.sin(Math.toRadians(90 + this.player.rotation));
-                this.player.vx -= Math.cos(Math.toRadians(90 + this.player.rotation));
-            }
-
-            if (e.getKeyCode() == e.VK_A) {
-                this.player.vy += Math.sin(Math.toRadians(this.player.rotation));
-                this.player.vx += Math.cos(Math.toRadians(this.player.rotation));
-            }
-
-            if (e.getKeyCode() == e.VK_D) {
-                this.player.vy -= Math.sin(Math.toRadians(this.player.rotation));
-                this.player.vx -= Math.cos(Math.toRadians(this.player.rotation));
-            }
-
-        }
-
-    }
-
-    public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == e.VK_SPACE) {
-            tileSize = 1000;
-            repaint();
         }
     }
 
@@ -301,28 +334,33 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     }
 
     public void paintComponent(Graphics graphics) {
+
+
+
+        Graphics2D g = (Graphics2D) graphics;
+
+
+        if (loadedResources < 1) {
+
+            g.drawImage(splash, 0, 0, getWidth(), getHeight(), this);
+
+            g.setColor(Color.WHITE);
+            g.fillRect(100, 300, getWidth() - 200, 30);
+            g.setColor(Color.RED);
+            g.drawRect(100, 300, getWidth() - 200, 30);
+
+            g.fillRect(100, 300, (int) ((getWidth() - 200) * loadedResources), 30);
+
+
+            g.drawString(loadedResources * 100 + "% loaded", 10, 10);
+
+
+            return;
+        }
+
         if (gameStart) {
 
-            Graphics2D g = (Graphics2D) graphics;
-
-
-            if (loadedResources < 1) {
-
-                g.drawImage(splash, 0, 0, getWidth(), getHeight(), this);
-
-                g.setColor(Color.WHITE);
-                g.fillRect(100, 300, getWidth() - 200, 30);
-                g.setColor(Color.RED);
-                g.drawRect(100, 300, getWidth() - 200, 30);
-
-                g.fillRect(100, 300, (int) ((getWidth() - 200) * loadedResources), 30);
-
-
-                g.drawString(loadedResources * 100 + "% loaded", 10, 10);
-
-
-                return;
-            }
+            updateKeys();
 
             ox = this.player.x;
             oy = this.player.y;
@@ -331,6 +369,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vx));
             this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vy));
 
+            this.player.rotationVelocity = Math.max(Math.min(2, this.player.rotationVelocity), -2);
             this.player.rotation += this.player.rotationVelocity;
             this.player.rotation = this.player.rotation % 360;
 
@@ -343,24 +382,33 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             this.player.x = Math.max(Math.min(0, this.player.x), -50);
             this.player.y = Math.max(Math.min(0, this.player.y), -50);
 
+            /*
             if (ox != this.player.x || oy != this.player.y || or != this.player.rotation) {
                 server.write(10, new float[] {this.player.x, this.player.y, this.player.rotation, this.ID});
-            }
+            }*/
 
             if (Math.abs(this.player.vx) > 0) {
-                this.player.vx += (this.player.vx > 0 ? -1 : 1) * 0.01;
+                this.player.vx += (this.player.vx > 0 ? -1 : 1) * 0.05;
             }
 
             if (Math.abs(this.player.vy) > 0) {
-                this.player.vy += (this.player.vy > 0 ? -1 : 1) * 0.01;
+                this.player.vy += (this.player.vy > 0 ? -1 : 1) * 0.05;
             }
 
             if (Math.abs(this.player.rotationVelocity) > 0) {
-                this.player.rotationVelocity += (this.player.rotationVelocity > 0 ? -1 : 1) * 0.01;
+                this.player.rotationVelocity += (this.player.rotationVelocity > 0 ? -1 : 1) * 0.05;
             }
 
             if (Math.abs(this.player.rotationVelocity) <= 0.1) {
                 this.player.rotationVelocity = 0;
+            }
+
+            if (Math.abs(this.player.vx) <= 0.1) {
+                this.player.vx = 0;
+            }
+
+            if (Math.abs(this.player.vy) <= 0.1) {
+                this.player.vy = 0;
             }
 
 

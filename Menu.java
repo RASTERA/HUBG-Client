@@ -41,6 +41,7 @@ public class Menu extends JPanel implements KeyListener, ActionListener {
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case "start":
+
                 System.out.println("SWITCH");
 
                 removeKeyListener(this);
