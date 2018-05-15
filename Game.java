@@ -144,7 +144,6 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
         }
 
-        /*
         try {
             this.server = new Communicator(new byte[]{127, 0, 0, 1}, 25565, this);
             this.serverConnected = true;
@@ -153,11 +152,11 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             this.quitGame("Unable to connect to server");
             //e.printStackTrace();
             return;
-        }*/
+        }
 
 
 
-        player = new Player("Karl", 0, 0, 0);
+        //player = new Player("Karl", 0, 0, 0);
         gameStart = true;
 
         Thread loadResources = new Thread() {
@@ -246,60 +245,61 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     public void updateKeys() {
 
-        if (!this.keyArray[KeyEvent.VK_SPACE]) {
-            tileSize = 1000;
-            repaint();
-        }
+        if (serverConnected) {
 
-        if (!this.paused && gameStart) {
-
-
-            if (this.keyArray[KeyEvent.VK_H]) {
-                this.player.rotationVelocity = 0;
-                this.player.vx = 0;
-                this.player.vy = 0;
-            }
-
-            if (this.keyArray[KeyEvent.VK_G]) {
-                this.player.rotation = 0;
-
-            }
-
-            if (this.keyArray[KeyEvent.VK_Q]) {
-                this.player.rotationVelocity -= 0.2;
-            }
-
-            if (this.keyArray[KeyEvent.VK_E]) {
-                this.player.rotationVelocity += 0.2;
-            }
-
-            if (this.keyArray[KeyEvent.VK_W]) {
-                this.player.vy += Math.sin(Math.toRadians(90 + this.player.rotation));
-                this.player.vx += Math.cos(Math.toRadians(90 + this.player.rotation));
-            }
-
-            if (this.keyArray[KeyEvent.VK_S]) {
-                this.player.vy -= Math.sin(Math.toRadians(90 + this.player.rotation));
-                this.player.vx -= Math.cos(Math.toRadians(90 + this.player.rotation));
-            }
-
-            if (this.keyArray[KeyEvent.VK_A]) {
-                this.player.vy += Math.sin(Math.toRadians(this.player.rotation));
-                this.player.vx += Math.cos(Math.toRadians(this.player.rotation));
-            }
-
-            if (this.keyArray[KeyEvent.VK_D]) {
-                this.player.vy -= Math.sin(Math.toRadians(this.player.rotation));
-                this.player.vx -= Math.cos(Math.toRadians(this.player.rotation));
-            }
-
-
-            if (this.keyArray[KeyEvent.VK_SPACE]) {
-                tileSize = 500;
+            if (!this.keyArray[KeyEvent.VK_SPACE]) {
+                tileSize = 1000;
                 repaint();
             }
 
+            if (!this.paused && gameStart) {
 
+
+                if (this.keyArray[KeyEvent.VK_H]) {
+                    this.player.rotationVelocity = 0;
+                    this.player.vx = 0;
+                    this.player.vy = 0;
+                }
+
+                if (this.keyArray[KeyEvent.VK_G]) {
+                    this.player.rotation = 0;
+
+                }
+
+                if (this.keyArray[KeyEvent.VK_Q]) {
+                    this.player.rotationVelocity -= 0.2;
+                }
+
+                if (this.keyArray[KeyEvent.VK_E]) {
+                    this.player.rotationVelocity += 0.2;
+                }
+
+                if (this.keyArray[KeyEvent.VK_W]) {
+                    this.player.vy += Math.sin(Math.toRadians(90 + this.player.rotation));
+                    this.player.vx += Math.cos(Math.toRadians(90 + this.player.rotation));
+                }
+
+                if (this.keyArray[KeyEvent.VK_S]) {
+                    this.player.vy -= Math.sin(Math.toRadians(90 + this.player.rotation));
+                    this.player.vx -= Math.cos(Math.toRadians(90 + this.player.rotation));
+                }
+
+                if (this.keyArray[KeyEvent.VK_A]) {
+                    this.player.vy += Math.sin(Math.toRadians(this.player.rotation));
+                    this.player.vx += Math.cos(Math.toRadians(this.player.rotation));
+                }
+
+                if (this.keyArray[KeyEvent.VK_D]) {
+                    this.player.vy -= Math.sin(Math.toRadians(this.player.rotation));
+                    this.player.vx -= Math.cos(Math.toRadians(this.player.rotation));
+                }
+
+
+                if (this.keyArray[KeyEvent.VK_SPACE]) {
+                    tileSize = 500;
+                    repaint();
+                }
+            }
         }
     }
 
@@ -336,136 +336,137 @@ public class Game extends JPanel implements KeyListener, ActionListener {
     public void paintComponent(Graphics graphics) {
 
 
-
-        Graphics2D g = (Graphics2D) graphics;
-
-
-        if (loadedResources < 1) {
-
-            g.drawImage(splash, 0, 0, getWidth(), getHeight(), this);
-
-            g.setColor(Color.WHITE);
-            g.fillRect(100, 300, getWidth() - 200, 30);
-            g.setColor(Color.RED);
-            g.drawRect(100, 300, getWidth() - 200, 30);
-
-            g.fillRect(100, 300, (int) ((getWidth() - 200) * loadedResources), 30);
+        if (serverConnected) {
+            Graphics2D g = (Graphics2D) graphics;
 
 
-            g.drawString(loadedResources * 100 + "% loaded", 10, 10);
+            if (loadedResources < 1) {
+
+                g.drawImage(splash, 0, 0, getWidth(), getHeight(), this);
+
+                g.setColor(Color.WHITE);
+                g.fillRect(100, 300, getWidth() - 200, 30);
+                g.setColor(Color.RED);
+                g.drawRect(100, 300, getWidth() - 200, 30);
+
+                g.fillRect(100, 300, (int) ((getWidth() - 200) * loadedResources), 30);
 
 
-            return;
-        }
+                g.drawString(loadedResources * 100 + "% loaded", 10, 10);
 
-        if (gameStart) {
 
-            updateKeys();
-
-            ox = this.player.x;
-            oy = this.player.y;
-            or = this.player.rotation;
-
-            this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vx));
-            this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vy));
-
-            this.player.rotationVelocity = Math.max(Math.min(2, this.player.rotationVelocity), -2);
-            this.player.rotation += this.player.rotationVelocity;
-            this.player.rotation = this.player.rotation % 360;
-
-            if (this.player.rotation < 0) {
-                this.player.rotation = 360 - this.player.rotation;
-            }
-            this.player.x += this.player.vx / 80;
-            this.player.y += this.player.vy / 80;
-
-            this.player.x = Math.max(Math.min(0, this.player.x), -50);
-            this.player.y = Math.max(Math.min(0, this.player.y), -50);
-
-            /*
-            if (ox != this.player.x || oy != this.player.y || or != this.player.rotation) {
-                server.write(10, new float[] {this.player.x, this.player.y, this.player.rotation, this.ID});
-            }*/
-
-            if (Math.abs(this.player.vx) > 0) {
-                this.player.vx += (this.player.vx > 0 ? -1 : 1) * 0.05;
+                return;
             }
 
-            if (Math.abs(this.player.vy) > 0) {
-                this.player.vy += (this.player.vy > 0 ? -1 : 1) * 0.05;
-            }
+            if (gameStart) {
 
-            if (Math.abs(this.player.rotationVelocity) > 0) {
-                this.player.rotationVelocity += (this.player.rotationVelocity > 0 ? -1 : 1) * 0.05;
-            }
+                updateKeys();
 
-            if (Math.abs(this.player.rotationVelocity) <= 0.1) {
-                this.player.rotationVelocity = 0;
-            }
+                ox = this.player.x;
+                oy = this.player.y;
+                or = this.player.rotation;
 
-            if (Math.abs(this.player.vx) <= 0.1) {
-                this.player.vx = 0;
-            }
+                this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vx));
+                this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vy));
 
-            if (Math.abs(this.player.vy) <= 0.1) {
-                this.player.vy = 0;
-            }
+                this.player.rotationVelocity = Math.max(Math.min(2, this.player.rotationVelocity), -2);
+                this.player.rotation += this.player.rotationVelocity;
+                this.player.rotation = this.player.rotation % 360;
 
-
-            g.setColor(Color.BLUE);
-            g.fillRect(0, 0, getWidth(), getHeight());
-
-            g.rotate(Math.toRadians(-1 * this.player.rotation), getWidth() / 2, getHeight() / 2);
-
-
-            for (int mx = 0; mx < 50; mx++) {
-                for (int my = 0; my < 50; my++) {
-                    g.setColor(new Color((mx + my) % 2 == 0 ? 255 : 0, 255, 255));
-
-                    g.drawImage(map[mx][my], (int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize, this);
-                    g.drawRect((int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize);
-
+                if (this.player.rotation < 0) {
+                    this.player.rotation = 360 - this.player.rotation;
                 }
-            }
+                this.player.x += this.player.vx / 80;
+                this.player.y += this.player.vy / 80;
+
+                this.player.x = Math.max(Math.min(0, this.player.x), -50);
+                this.player.y = Math.max(Math.min(0, this.player.y), -50);
 
 
-            g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
+                if (ox != this.player.x || oy != this.player.y || or != this.player.rotation) {
+                    server.write(10, new float[] {this.player.x, this.player.y, this.player.rotation, this.ID});
+                }
 
-            g.drawString(compass, getWidth() / 2 - 3820 - (int) this.player.rotation * 10, 10);
+                if (Math.abs(this.player.vx) > 0) {
+                    this.player.vx += (this.player.vx > 0 ? -1 : 1) * 0.05;
+                }
 
-            // Mini map
-            g.setColor(new Color(255, 255, 255, 200));
-            g.fillRect(getWidth() - 250, 0, 250, 250);
-            g.drawImage(miniMap, getWidth() - 250, 0, 250, 250, this);
+                if (Math.abs(this.player.vy) > 0) {
+                    this.player.vy += (this.player.vy > 0 ? -1 : 1) * 0.05;
+                }
 
-            g.setColor(Color.RED);
-            g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 50), (int) (-250 * this.player.y / 50), 2, 2);
+                if (Math.abs(this.player.rotationVelocity) > 0) {
+                    this.player.rotationVelocity += (this.player.rotationVelocity > 0 ? -1 : 1) * 0.05;
+                }
 
-            // Player
-            g.fillRect(getWidth() / 2 - (int) (tileSize * 0.05) / 2, getHeight() / 2 - (int) (tileSize * 0.05) / 2, (int) (tileSize * 0.05), (int) (tileSize * 0.05));
+                if (Math.abs(this.player.rotationVelocity) <= 0.1) {
+                    this.player.rotationVelocity = 0;
+                }
 
-            menuBar.setHealth((int) (this.player.x * -2));
+                if (Math.abs(this.player.vx) <= 0.1) {
+                    this.player.vx = 0;
+                }
 
-            g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, getHeight() - 20);
+                if (Math.abs(this.player.vy) <= 0.1) {
+                    this.player.vy = 0;
+                }
 
-            resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
-            quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
 
-            menuBar.update(g, getWidth(), getHeight(), player);
+                g.setColor(Color.BLUE);
+                g.fillRect(0, 0, getWidth(), getHeight());
 
-            if (this.paused) {
-                g.setColor(new Color(10, 10, 10, 100));
-                g.fillRect(0, 0, Main.w, Main.h);
+                g.rotate(Math.toRadians(-1 * this.player.rotation), getWidth() / 2, getHeight() / 2);
 
-                g.setColor(new Color(255, 255, 255));
-                g.drawString("PAUSED U GEIIIII", 200, 200);
 
-                add(resumeGameButton);
-                add(quitGameButton);
+                for (int mx = 0; mx < 50; mx++) {
+                    for (int my = 0; my < 50; my++) {
+                        g.setColor(new Color((mx + my) % 2 == 0 ? 255 : 0, 255, 255));
 
-            } else {
-                remove(resumeGameButton);
-                remove(quitGameButton);
+                        g.drawImage(map[mx][my], (int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize, this);
+                        g.drawRect((int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize);
+
+                    }
+                }
+
+
+                g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
+
+                g.drawString(compass, getWidth() / 2 - 3820 - (int) this.player.rotation * 10, 10);
+
+                // Mini map
+                g.setColor(new Color(255, 255, 255, 200));
+                g.fillRect(getWidth() - 250, 0, 250, 250);
+                g.drawImage(miniMap, getWidth() - 250, 0, 250, 250, this);
+
+                g.setColor(Color.RED);
+                g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 50), (int) (-250 * this.player.y / 50), 2, 2);
+
+                // Player
+                g.fillRect(getWidth() / 2 - (int) (tileSize * 0.05) / 2, getHeight() / 2 - (int) (tileSize * 0.05) / 2, (int) (tileSize * 0.05), (int) (tileSize * 0.05));
+
+                menuBar.setHealth((int) (this.player.x * -2));
+
+                g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, getHeight() - 20);
+
+                resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
+                quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
+
+                menuBar.update(g, getWidth(), getHeight(), player);
+
+                if (this.paused) {
+                    g.setColor(new Color(10, 10, 10, 100));
+                    g.fillRect(0, 0, Main.w, Main.h);
+
+                    g.setColor(new Color(255, 255, 255));
+                    g.drawString("PAUSED U GEIIIII", 200, 200);
+
+                    add(resumeGameButton);
+                    add(quitGameButton);
+
+                } else {
+                    remove(resumeGameButton);
+                    remove(quitGameButton);
+                }
             }
         }
     }
