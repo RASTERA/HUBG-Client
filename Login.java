@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 
-public class Login extends JPanel implements ActionListener, KeyListener, MouseListener {
+public class Login extends GeiPanel implements ActionListener, KeyListener, MouseListener {
 
     private Main parent;
     private JTextField usernameField;
@@ -33,7 +33,7 @@ public class Login extends JPanel implements ActionListener, KeyListener, MouseL
     private JLabel passwordLabel;
     private JLabel forgetPasswordLabel;
     private JLabel createAccountLabel;
-    private JButton loginButton;
+    private GeiButton loginButton;
 
     private BufferedImage background;
     private BufferedImage rasteraLogo;
@@ -64,10 +64,8 @@ public class Login extends JPanel implements ActionListener, KeyListener, MouseL
         usernameLabel.setForeground(Color.WHITE);
         passwordLabel.setForeground(Color.WHITE);
 
-        loginButton = new JButton("SIGN IN");
+        loginButton = new GeiButton("SIGN IN");
         loginButton.setActionCommand("login");
-        loginButton.setEnabled(false);
-        loginButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         loginButton.addActionListener(this);
 
         // Submit on enter

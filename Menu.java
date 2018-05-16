@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class Menu extends JPanel implements KeyListener, ActionListener {
+public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
     private Main parent;
     private JButton startButton;

@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class Game extends JPanel implements KeyListener, ActionListener {
+public class Game extends GeiPanel implements KeyListener, ActionListener {
 
     private Main parent;
 
@@ -63,7 +63,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     private float ox, oy, or;
 
-    public boolean[] keyArray = new boolean[250];
+    public boolean[] keyArray = new boolean[256];
 
     private class MenuBar {
 
@@ -229,7 +229,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
             this.paused = !this.paused;
         }
 
-        if (e.getKeyCode() < 250) {
+        if (e.getKeyCode() < 256) {
             this.keyArray[e.getKeyCode()] = true;
         }
         
@@ -237,7 +237,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 
     public void keyReleased(KeyEvent e) {
 
-        if (e.getKeyCode() < 250) {
+        if (e.getKeyCode() < 256) {
             this.keyArray[e.getKeyCode()] = false;
         }
 
@@ -358,7 +358,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
                 return;
             }
 
-            if (gameStart) {
+            if (gameStart && this.player != null) {
 
                 updateKeys();
 

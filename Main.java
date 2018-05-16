@@ -14,7 +14,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     public static Timer masterTimer;
     public static int w = 1260;
     public static int h = 700;
-    public static JPanel panel;
+    public static GeiPanel panel;
     public static Pages page = Pages.LOGIN;
     public static Session session;
 
