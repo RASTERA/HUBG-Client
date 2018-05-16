@@ -428,6 +428,10 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
                     }
                 }
 
+                for (Enemy e : EnemyList) {
+                    g.fillRect((int) (this.player.x * tileSize - e.x * tileSize + getWidth() / 2), (int) (this.player.y * tileSize - e.y * tileSize + getHeight() / 2), 30, 30);
+                }
+
 
                 g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
 
