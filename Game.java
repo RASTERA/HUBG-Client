@@ -21,8 +21,6 @@ import java.util.Scanner;
 
 public class Game extends GeiPanel implements KeyListener, ActionListener {
 
-    private Main parent;
-
     /*
     private float x = 0;
     private float y = 0;
