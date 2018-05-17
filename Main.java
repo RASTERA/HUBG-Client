@@ -45,10 +45,11 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         Main.page = page;
         //this.panel = null;
         startGraphics();
+        this.repaint();
     }
 
     public void startGraphics() {
-        if (panel == null || !panel.getClass().getName().toUpperCase().equals(page.toString())) {
+        if (this.panel == null || !this.panel.getClass().getName().toUpperCase().equals(page.toString())) {
 
             System.out.println("Switch Pages " + page.toString());
 
@@ -70,7 +71,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
             add(panel);
             panel.requestFocus();
             setVisible(true);
-            panel.repaint();
+            this.panel.repaint();
 
         }
     }
@@ -91,13 +92,18 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         w = getWidth();
         h = getHeight();
 
+        if (this.panel != null) {
+            this.panel.repaint();
+        }
+
     }
 
     public void actionPerformed(ActionEvent evt) {
         startGraphics();
 
-
-        this.repaint();
+        if (this.panel.constantUpdate) {
+            this.repaint();
+        }
 
 
         //long currentTime = System.currentTimeMillis();

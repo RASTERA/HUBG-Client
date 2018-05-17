@@ -20,12 +20,12 @@ import java.util.Scanner;
 
 public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
-    private Main parent;
     private JButton startButton;
 
     public Menu(Main parent) {
 
         this.parent = parent;
+        this.constantUpdate = false;
 
         startButton = new JButton("Start");
         startButton.setActionCommand("start");
@@ -61,6 +61,7 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
     public void keyReleased(KeyEvent e) {
 
     }
+
 
     public void paintComponent(Graphics g) {
         startButton.setBounds(20, 10, 150, 40);

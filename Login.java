@@ -26,7 +26,6 @@ import java.util.Scanner;
 
 public class Login extends GeiPanel implements ActionListener, KeyListener, MouseListener {
 
-    private Main parent;
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JLabel usernameLabel;
@@ -40,6 +39,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
 
     public Login(Main parent) {
         this.parent = parent;
+        this.constantUpdate = false;
 
         addKeyListener(this);
         setFocusable(true);
@@ -214,12 +214,6 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
 
     public void paintComponent(Graphics g) {
 
-        g.drawImage(background, 0, 0, Math.max(Main.w - 250, Main.h), Math.max(Main.w - 250, Main.h), this);
-        g.drawImage(rasteraLogo, 30, getHeight() - 55, 150, 25, this);
-
-        g.setColor(new Color(1, 10, 19));
-        g.fillRect(Main.w - 250, 0, 250, Main.h);
-
         usernameLabel.setBounds(Main.w - 230, 140, 210, 20);
         usernameField.setBounds(Main.w - 230, 160, 210, 30);
 
@@ -230,6 +224,12 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
 
         forgetPasswordLabel.setBounds(Main.w - 230, Main.h - 70, 210, 20);
         createAccountLabel.setBounds(Main.w - 230, Main.h - 90, 210, 20);
+
+        g.drawImage(background, 0, 0, Math.max(Main.w - 250, Main.h), Math.max(Main.w - 250, Main.h), this);
+        g.drawImage(rasteraLogo, 30, getHeight() - 55, 150, 25, this);
+
+        g.setColor(new Color(1, 10, 19));
+        g.fillRect(Main.w - 250, 0, 250, Main.h);
 
     }
 
