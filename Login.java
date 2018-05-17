@@ -48,8 +48,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
         try {
             background = ImageIO.read(new File("images/background.png"));
             rasteraLogo = ImageIO.read(new File("images/rastera.png"));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("ur bad");
         }
 
@@ -69,17 +68,9 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
         loginButton.addActionListener(this);
 
         // Submit on enter
-        usernameField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                loginButton.doClick();
-            }
-        });
+        usernameField.addActionListener(e -> loginButton.doClick());
 
-        passwordField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                loginButton.doClick();
-            }
-        });
+        passwordField.addActionListener(e -> loginButton.doClick());
 
         // Validate text
         usernameField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -87,7 +78,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
 
-                if (e.getKeyCode() != e.VK_ENTER) {
+                if (e.getKeyCode() != KeyEvent.VK_ENTER) {
                     validateText();
                 }
             }
@@ -98,7 +89,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
 
-                if (e.getKeyCode() != e.VK_ENTER) {
+                if (e.getKeyCode() != KeyEvent.VK_ENTER) {
                     validateText();
                 }
             }
@@ -192,15 +183,13 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
                         //Session session = new Session("Hi", "Hi");
                         Session session = Communicator.login(usernameField.getText(), String.valueOf(passwordField.getPassword()));
 
-                        if (session == null){
+                        if (session == null) {
                             JOptionPane.showMessageDialog(parent, "An error occured while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                             enableLogin();
-                        }
-                        else if (session.getUsername().equals("")) {
+                        } else if (session.getUsername().equals("")) {
                             JOptionPane.showMessageDialog(parent, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                             enableLogin();
-                        }
-                        else {
+                        } else {
                             startMenu(session);
                         }
 

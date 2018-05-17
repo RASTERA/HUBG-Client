@@ -11,6 +11,7 @@ import java.util.HashMap;
 public class Main extends JFrame implements ActionListener, ComponentListener {
 
     public enum Pages {MENU, GAME, LOGIN}
+
     public static Timer masterTimer;
     public static int w = 1260;
     public static int h = 700;
@@ -40,8 +41,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
         // Incase panel isn't there for whatever magic
 
-        this.getContentPane().remove(this.panel);
-        this.page = page;
+        this.getContentPane().remove(panel);
+        Main.page = page;
         //this.panel = null;
         startGraphics();
     }

@@ -49,7 +49,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
     private BufferedImage splash;
     private BufferedImage miniMap;
 
-    private String compass = "";
+    private String compass;
 
     private Player player;
 
@@ -58,7 +58,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
 
     private int ID;
 
-    private ArrayList<Enemy> EnemyList = new ArrayList<Enemy>();
+    private ArrayList<Enemy> EnemyList = new ArrayList<>();
     private boolean gameStart = false;
 
     private float ox, oy, or;
@@ -99,7 +99,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
             if (this.health < 50) {
                 g.setColor(new Color(200, 0, 0, 200));
             }
-            g.fillRect(1 + windowW / 2 - this.width / 2, windowH - 24, (int) ((this.width - 1) * health / 100), 14);
+            g.fillRect(1 + windowW / 2 - this.width / 2, windowH - 24, ((this.width - 1) * health / 100), 14);
         }
 
         public void setHealth(int health) {
@@ -153,7 +153,6 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
             //e.printStackTrace();
             return;
         }
-
 
 
         //player = new Player("Karl", 0, 0, 0);
@@ -232,7 +231,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
         if (e.getKeyCode() < 256) {
             this.keyArray[e.getKeyCode()] = true;
         }
-        
+
     }
 
     public void keyReleased(KeyEvent e) {
@@ -311,6 +310,8 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
                 break;
             case 1:
                 System.out.println("Start game:" + ServerMessage.message);
+
+                // WTF
                 for (float[] p : (ArrayList<float[]>) ServerMessage.message) {
                     if (p[3] == this.ID) {
                         player = new Player("Karl", p[0], p[1], p[2]);
@@ -323,9 +324,9 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
                 break;
             case 10:
                 System.out.println("Update Location: " + Arrays.toString((float[]) ServerMessage.message));
-                for (int i = 0; i < EnemyList.size(); i++) {
-                    if (EnemyList.get(i).getId() == ((float[]) ServerMessage.message)[3]) {
-                        EnemyList.get(i).update((float[]) ServerMessage.message);
+                for (Enemy aEnemyList : EnemyList) {
+                    if (aEnemyList.getId() == ((float[]) ServerMessage.message)[3]) {
+                        aEnemyList.update((float[]) ServerMessage.message);
                         break;
                     }
                 }
@@ -384,7 +385,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
 
 
                 if (ox != this.player.x || oy != this.player.y || or != this.player.rotation) {
-                    server.write(10, new float[] {this.player.x, this.player.y, this.player.rotation, this.ID});
+                    server.write(10, new float[]{this.player.x, this.player.y, this.player.rotation, this.ID});
                 }
 
                 if (Math.abs(this.player.vx) > 0) {

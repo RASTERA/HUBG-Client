@@ -18,8 +18,7 @@ public class Rah {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().browse(new URI(url));
             }
-        }
-        catch (Exception error) {
+        } catch (Exception error) {
             error.printStackTrace();
         }
     }

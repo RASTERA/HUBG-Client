@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 import javax.net.ssl.HttpsURLConnection;
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Communicator {
@@ -60,7 +61,7 @@ public class Communicator {
     private LinkedBlockingQueue<Message> message;
     private Game client;
 
-    public Communicator (byte[] ip, int port, Game client) throws Exception {
+    public Communicator(byte[] ip, int port, Game client) throws Exception {
         this.client = client;
 
         this.serverSock = new Socket(InetAddress.getByAddress(ip), port);
@@ -68,7 +69,7 @@ public class Communicator {
         this.out = new ObjectOutputStream(serverSock.getOutputStream());
         this.in = new ObjectInputStream(serverSock.getInputStream());
 
-        System.out.println("Connected to server: " + ip + ":" + port);
+        System.out.println("Connected to server: " + Arrays.toString(ip) + ":" + port);
 
         Thread receiver = new Thread(() -> {
             while (true) {
@@ -99,7 +100,7 @@ public class Communicator {
         }
     }
 
-    public void write (int type, Object Message) {
+    public void write(int type, Object Message) {
         try {
             this.out.writeObject(Rah.messageBuilder(type, Message));
         } catch (Exception e) {

@@ -12,9 +12,8 @@ public abstract class Item {
     public Item(String name, String thumbnail) {
         try {
             this.thumbnail = ImageIO.read(new File(thumbnail));
-        }
-        catch (Exception e) {
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         this.name = name;

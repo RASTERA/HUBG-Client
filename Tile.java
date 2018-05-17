@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class Tile {
 
-    public static enum Types {GRASS, WALL, WATER, TOWN};
+    public enum Types {GRASS, WALL, WATER, TOWN}
 
     public HashMap<String, Types> tiles = new HashMap<String, Types>() {
         {
