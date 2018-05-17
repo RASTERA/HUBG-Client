@@ -11,6 +11,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
@@ -60,6 +62,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
     private boolean gameStart = false;
 
     private float ox, oy, or;
+    private BufferedImage penguinEnemy;
 
     public boolean[] keyArray = new boolean[256];
 
@@ -136,6 +139,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
         setFocusable(true);
 
         try {
+            penguinEnemy = ImageIO.read(new File("images/penguinV1.png"));
             splash = ImageIO.read(new File("images/splash.png"));
             miniMap = ImageIO.read(new File("images/map/minimap.png"));
         } catch (Exception e) {
@@ -427,7 +431,15 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
                 }
 
                 for (Enemy e : EnemyList) {
-                    g.fillRect((int) (this.player.x * tileSize - e.x * tileSize + getWidth() / 2), (int) (this.player.y * tileSize - e.y * tileSize + getHeight() / 2), 30, 30);
+                    double locationX = penguinEnemy.getWidth() / 2;
+                    double locationY = penguinEnemy.getHeight() / 2;
+                    AffineTransform tx = AffineTransform.getRotateInstance(Math.toRadians(e.rotation), locationX, locationY);
+                    AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+                    BufferedImage rotatedEnemy = new BufferedImage((int) Math.hypot(locationX * 2, locationY * 2), (int) Math.hypot(locationX * 2, locationY *2), penguinEnemy.getType());
+
+                    op.filter(penguinEnemy, rotatedEnemy);
+
+                    g.drawImage(op.filter(penguinEnemy, rotatedEnemy), (int) (this.player.x * tileSize - e.x * tileSize + getWidth() / 2 - penguinEnemy.getWidth() / 2), (int) (this.player.y * tileSize - e.y * tileSize + getHeight() / 2 - penguinEnemy.getHeight() / 2), this);
                 }
 
 
