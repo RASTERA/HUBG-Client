@@ -44,7 +44,8 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
 
     private MenuBar menuBar;
 
-    private volatile double loadedResources = 0;
+    private volatile String loadingStatus = "Holdup...";
+    private volatile double loadingPercent = 0;
     private BufferedImage[][] map = new BufferedImage[50][50];
     private BufferedImage splash;
     private BufferedImage miniMap;
@@ -65,6 +66,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
     private BufferedImage penguinEnemy;
 
     public boolean[] keyArray = new boolean[256];
+    private volatile Game game;
 
     private class MenuBar {
 
@@ -116,6 +118,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
     public Game(Main parent) {
         this.parent = parent;
         this.menuBar = new MenuBar();
+        this.game = this;
 
         for (int i = 0; i < 360; i += 5) {
             if (i % 90 == 0) {
@@ -139,29 +142,19 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
         setFocusable(true);
 
         try {
-            penguinEnemy = ImageIO.read(new File("images/penguinV1.png"));
+            penguinEnemy = ImageIO.read(new File("images/penguin.png"));
             splash = ImageIO.read(new File("images/splash.png"));
             miniMap = ImageIO.read(new File("images/map/minimap.png"));
         } catch (Exception e) {
 
         }
 
-        try {
-            this.server = new Communicator(new byte[]{127, 0, 0, 1}, 25565, this);
-            this.serverConnected = true;
-
-        } catch (Exception e) {
-            this.quitGame("Unable to connect to server");
-            //e.printStackTrace();
-            return;
-        }
-
-
         //player = new Player("Karl", 0, 0, 0);
-        gameStart = true;
+        //gameStart = true;
 
         Thread loadResources = new Thread() {
             public void run() {
+
                 try {
 
                     double totalResources = 2500;
@@ -171,7 +164,8 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
                         for (int y = 0; y < 50; y++) {
                             map[x][y] = ImageIO.read(new File("images/map/" + x + "_" + y + ".png"));
                             loaded++;
-                            loadedResources = loaded / totalResources;
+                            loadingStatus = String.format("Loading Resources (%f%%)", 100 * loaded / totalResources);
+                            loadingPercent = loaded / totalResources;
                         }
                     }
 
@@ -180,6 +174,17 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
                 } catch (Exception e) {
                     quitGame("Unable to load resources");
                 }
+
+                try {
+                    loadingStatus = "Connecting to server";
+                    server = new Communicator(new byte[]{127, 0, 0, 1}, 25565, game);
+                    serverConnected = true;
+
+                } catch (Exception e) {
+                    quitGame("Unable to connect to server");
+                    return;
+                }
+
             }
         };
 
@@ -339,97 +344,94 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
     public void paintComponent(Graphics graphics) {
 
 
-        if (serverConnected) {
-            Graphics2D g = (Graphics2D) graphics;
+        Graphics2D g = (Graphics2D) graphics;
 
 
-            if (loadedResources < 1) {
+        if (!gameStart) {
 
-                g.drawImage(splash, 0, 0, getWidth(), getHeight(), this);
+            g.drawImage(splash, 0, 0, getWidth(), getHeight(), this);
 
-                g.setColor(Color.WHITE);
-                g.fillRect(100, 300, getWidth() - 200, 30);
-                g.setColor(Color.RED);
-                g.drawRect(100, 300, getWidth() - 200, 30);
+            g.setColor(Color.WHITE);
+            g.fillRect(100, 300, getWidth() - 200, 30);
+            g.setColor(Color.RED);
+            g.drawRect(100, 300, getWidth() - 200, 30);
 
-                g.fillRect(100, 300, (int) ((getWidth() - 200) * loadedResources), 30);
+            g.fillRect(100, 300, (int) ((getWidth() - 200) * loadingPercent), 30);
+
+            g.drawString(loadingStatus, 10, 10);
+
+            return;
+        }
+
+        if (gameStart && this.player != null) {
+
+            updateKeys();
+
+            ox = this.player.x;
+            oy = this.player.y;
+            or = this.player.rotation;
+
+            this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vx));
+            this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vy));
+
+            this.player.rotationVelocity = Math.max(Math.min(2, this.player.rotationVelocity), -2);
+            this.player.rotation += this.player.rotationVelocity;
+            this.player.rotation = this.player.rotation % 360;
+
+            if (this.player.rotation < 0) {
+                this.player.rotation = 360 - this.player.rotation;
+            }
+            this.player.x += this.player.vx / 80;
+            this.player.y += this.player.vy / 80;
+
+            this.player.x = Math.max(Math.min(0, this.player.x), -50);
+            this.player.y = Math.max(Math.min(0, this.player.y), -50);
 
 
-                g.drawString(loadedResources * 100 + "% loaded", 10, 10);
-
-
-                return;
+            if (ox != this.player.x || oy != this.player.y || or != this.player.rotation) {
+                server.write(10, new float[]{this.player.x, this.player.y, this.player.rotation, this.ID});
             }
 
-            if (gameStart && this.player != null) {
+            if (Math.abs(this.player.vx) > 0) {
+                this.player.vx += (this.player.vx > 0 ? -1 : 1) * 0.05;
+            }
 
-                updateKeys();
+            if (Math.abs(this.player.vy) > 0) {
+                this.player.vy += (this.player.vy > 0 ? -1 : 1) * 0.05;
+            }
 
-                ox = this.player.x;
-                oy = this.player.y;
-                or = this.player.rotation;
+            if (Math.abs(this.player.rotationVelocity) > 0) {
+                this.player.rotationVelocity += (this.player.rotationVelocity > 0 ? -1 : 1) * 0.05;
+            }
 
-                this.player.vx = ((this.player.vx < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vx));
-                this.player.vy = ((this.player.vy < 0) ? -1 : 1) * Math.min(1, Math.abs(this.player.vy));
+            if (Math.abs(this.player.rotationVelocity) <= 0.1) {
+                this.player.rotationVelocity = 0;
+            }
 
-                this.player.rotationVelocity = Math.max(Math.min(2, this.player.rotationVelocity), -2);
-                this.player.rotation += this.player.rotationVelocity;
-                this.player.rotation = this.player.rotation % 360;
+            if (Math.abs(this.player.vx) <= 0.1) {
+                this.player.vx = 0;
+            }
 
-                if (this.player.rotation < 0) {
-                    this.player.rotation = 360 - this.player.rotation;
+            if (Math.abs(this.player.vy) <= 0.1) {
+                this.player.vy = 0;
+            }
+
+
+            g.setColor(Color.BLUE);
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            g.rotate(Math.toRadians(-1 * this.player.rotation), getWidth() / 2, getHeight() / 2);
+
+
+            for (int mx = 0; mx < 50; mx++) {
+                for (int my = 0; my < 50; my++) {
+                    g.setColor(new Color((mx + my) % 2 == 0 ? 255 : 0, 255, 255));
+
+                    g.drawImage(map[mx][my], (int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize, this);
+                    g.drawRect((int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize);
+
                 }
-                this.player.x += this.player.vx / 80;
-                this.player.y += this.player.vy / 80;
-
-                this.player.x = Math.max(Math.min(0, this.player.x), -50);
-                this.player.y = Math.max(Math.min(0, this.player.y), -50);
-
-
-                if (ox != this.player.x || oy != this.player.y || or != this.player.rotation) {
-                    server.write(10, new float[]{this.player.x, this.player.y, this.player.rotation, this.ID});
-                }
-
-                if (Math.abs(this.player.vx) > 0) {
-                    this.player.vx += (this.player.vx > 0 ? -1 : 1) * 0.05;
-                }
-
-                if (Math.abs(this.player.vy) > 0) {
-                    this.player.vy += (this.player.vy > 0 ? -1 : 1) * 0.05;
-                }
-
-                if (Math.abs(this.player.rotationVelocity) > 0) {
-                    this.player.rotationVelocity += (this.player.rotationVelocity > 0 ? -1 : 1) * 0.05;
-                }
-
-                if (Math.abs(this.player.rotationVelocity) <= 0.1) {
-                    this.player.rotationVelocity = 0;
-                }
-
-                if (Math.abs(this.player.vx) <= 0.1) {
-                    this.player.vx = 0;
-                }
-
-                if (Math.abs(this.player.vy) <= 0.1) {
-                    this.player.vy = 0;
-                }
-
-
-                g.setColor(Color.BLUE);
-                g.fillRect(0, 0, getWidth(), getHeight());
-
-                g.rotate(Math.toRadians(-1 * this.player.rotation), getWidth() / 2, getHeight() / 2);
-
-
-                for (int mx = 0; mx < 50; mx++) {
-                    for (int my = 0; my < 50; my++) {
-                        g.setColor(new Color((mx + my) % 2 == 0 ? 255 : 0, 255, 255));
-
-                        g.drawImage(map[mx][my], (int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize, this);
-                        g.drawRect((int) ((this.player.x * tileSize + tileSize * mx) + (getWidth() / 2)), (int) ((this.player.y * tileSize + tileSize * my) + (getHeight() / 2)), tileSize, tileSize);
-
-                    }
-                }
+            }
 
                 for (Enemy e : EnemyList) {
                     double locationX = penguinEnemy.getWidth() / 2;
@@ -444,45 +446,45 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
                 }
 
 
-                g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
+            g.rotate(Math.toRadians(this.player.rotation), getWidth() / 2, getHeight() / 2);
 
-                g.drawString(compass, getWidth() / 2 - 3820 - (int) this.player.rotation * 10, 10);
+            g.drawString(compass, getWidth() / 2 - 3820 - (int) this.player.rotation * 10, 10);
 
-                // Mini map
-                g.setColor(new Color(255, 255, 255, 200));
-                g.fillRect(getWidth() - 250, 0, 250, 250);
-                g.drawImage(miniMap, getWidth() - 250, 0, 250, 250, this);
+            // Mini map
+            g.setColor(new Color(255, 255, 255, 200));
+            g.fillRect(getWidth() - 250, 0, 250, 250);
+            g.drawImage(miniMap, getWidth() - 250, 0, 250, 250, this);
 
-                g.setColor(Color.RED);
-                g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 50), (int) (-250 * this.player.y / 50), 2, 2);
+            g.setColor(Color.RED);
+            g.fillRect(getWidth() - 250 + (int) (-250 * this.player.x / 50), (int) (-250 * this.player.y / 50), 2, 2);
 
-                // Player
-                g.fillRect(getWidth() / 2 - (int) (tileSize * 0.05) / 2, getHeight() / 2 - (int) (tileSize * 0.05) / 2, (int) (tileSize * 0.05), (int) (tileSize * 0.05));
+            // Player
+            g.fillRect(getWidth() / 2 - (int) (tileSize * 0.05) / 2, getHeight() / 2 - (int) (tileSize * 0.05) / 2, (int) (tileSize * 0.05), (int) (tileSize * 0.05));
 
-                menuBar.setHealth((int) (this.player.x * -2));
+            menuBar.setHealth((int) (this.player.x * -2));
 
-                g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, getHeight() - 20);
+            g.drawString(this.player.rotation + " X:" + this.player.x + " Y:" + this.player.y + " VX:" + this.player.vx + " VY" + this.player.vy, 10, getHeight() - 20);
 
-                resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
-                quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
+            resumeGameButton.setBounds(Main.w / 2 - 150, 120, 300, 30);
+            quitGameButton.setBounds(Main.w / 2 - 150, 160, 300, 30);
 
-                menuBar.update(g, getWidth(), getHeight(), player);
+            menuBar.update(g, getWidth(), getHeight(), player);
 
-                if (this.paused) {
-                    g.setColor(new Color(10, 10, 10, 100));
-                    g.fillRect(0, 0, Main.w, Main.h);
+            if (this.paused) {
+                g.setColor(new Color(10, 10, 10, 100));
+                g.fillRect(0, 0, Main.w, Main.h);
 
-                    g.setColor(new Color(255, 255, 255));
-                    g.drawString("PAUSED U GEIIIII", 200, 200);
+                g.setColor(new Color(255, 255, 255));
+                g.drawString("PAUSED U GEIIIII", 200, 200);
 
-                    add(resumeGameButton);
-                    add(quitGameButton);
+                add(resumeGameButton);
+                add(quitGameButton);
 
-                } else {
-                    remove(resumeGameButton);
-                    remove(quitGameButton);
-                }
+            } else {
+                remove(resumeGameButton);
+                remove(quitGameButton);
             }
         }
     }
+
 }

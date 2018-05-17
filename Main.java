@@ -13,8 +13,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     public enum Pages {MENU, GAME, LOGIN}
 
     public static Timer masterTimer;
-    public static int w = 1260;
-    public static int h = 700;
+    public static int w = 1160;
+    public static int h = 600;
     public static GeiPanel panel;
     public static Pages page = Pages.LOGIN;
     public static Session session;
@@ -26,10 +26,10 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setSize(w, h);
-        setMinimumSize(new Dimension(1260, 700));
+        setMinimumSize(new Dimension(1160, 600));
         setLayout(new BorderLayout());
 
-        masterTimer = new Timer(5, this);
+        masterTimer = new Timer(10, this);
         masterTimer.start();
 
         getContentPane().addComponentListener(this);
@@ -41,9 +41,9 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
         // Incase panel isn't there for whatever magic
 
-        this.getContentPane().remove(panel);
-        Main.page = page;
-        //this.panel = null;
+        this.getContentPane().remove(this.panel);
+        this.page = page;
+        this.panel = null;
         startGraphics();
         this.repaint();
     }

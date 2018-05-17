@@ -55,16 +55,17 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
     public void keyPressed(KeyEvent e) {
 
-
     }
 
     public void keyReleased(KeyEvent e) {
 
     }
 
-
     public void paintComponent(Graphics g) {
         startButton.setBounds(20, 10, 150, 40);
+
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, Main.w, Main.h);
 
         g.setColor(new Color(5, 15, 24));
         g.fillRect(0, 0, Main.w, 60);
