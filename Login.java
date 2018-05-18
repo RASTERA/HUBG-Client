@@ -42,7 +42,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
     private BufferedImage hubgLogo;
 
     private int frame = 0;
-    private int frameCap = 16;
+    private int frameCap = 30;
 
     public Login(Main parent) {
         this.parent = parent;
