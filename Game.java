@@ -50,7 +50,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
     private BufferedImage splash;
     private BufferedImage miniMap;
 
-    private String compass;
+    private String compass = ""; // If you remove this, you're bad
 
     private Player player;
 
@@ -67,6 +67,8 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
 
     public boolean[] keyArray = new boolean[256];
     private volatile Game game;
+
+    public static long prevFrame = 0;
 
     private class MenuBar {
 
@@ -117,6 +119,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
 
     public Game(Main parent) {
         this.parent = parent;
+        this.parent.setMasterTimer(10);
         this.menuBar = new MenuBar();
         this.game = this;
 
@@ -178,6 +181,8 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
                 try {
                     loadingStatus = "Connecting to server";
                     server = new Communicator(new byte[]{127, 0, 0, 1}, 25565, game);
+
+                    server.write(1, new String[]{Main.session.getUsername()});
                     serverConnected = true;
 
                 } catch (Exception e) {
@@ -343,6 +348,13 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
 
     public void paintComponent(Graphics graphics) {
 
+
+
+        long currentTime = System.currentTimeMillis();
+
+        System.out.println(currentTime - prevFrame);
+
+        prevFrame = currentTime;
 
         Graphics2D g = (Graphics2D) graphics;
 

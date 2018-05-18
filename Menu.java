@@ -20,14 +20,15 @@ import java.util.Scanner;
 
 public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
-    private JButton startButton;
+    private GeiButton startButton;
 
     public Menu(Main parent) {
 
         this.parent = parent;
+        this.parent.setMasterTimer(50);
         this.constantUpdate = false;
 
-        startButton = new JButton("Start");
+        startButton = new GeiButton("Start");
         startButton.setActionCommand("start");
         startButton.addActionListener(this);
 

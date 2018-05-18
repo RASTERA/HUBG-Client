@@ -29,12 +29,22 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         setMinimumSize(new Dimension(1160, 600));
         setLayout(new BorderLayout());
 
-        masterTimer = new Timer(10, this);
-        masterTimer.start();
+        startGraphics();
 
         getContentPane().addComponentListener(this);
         setVisible(true);
 
+    }
+
+    public void setMasterTimer(int interval) {
+
+        if (masterTimer != null) {
+            masterTimer.stop();
+            masterTimer = null;
+        }
+
+        masterTimer = new Timer(interval, this);
+        masterTimer.start();
     }
 
     public void startPage(Pages page) {
@@ -45,11 +55,15 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         this.page = page;
         this.panel = null;
         startGraphics();
-        this.repaint();
     }
 
     public void startGraphics() {
         if (this.panel == null || !this.panel.getClass().getName().toUpperCase().equals(page.toString())) {
+
+            if (masterTimer != null) {
+                masterTimer.stop();
+                masterTimer = null;
+            }
 
             System.out.println("Switch Pages " + page.toString());
 
@@ -106,11 +120,11 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         }
 
 
-        //long currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
 
-        //System.out.println(currentTime - prevFrame);
+        System.out.println(currentTime - prevFrame);
 
-        //prevFrame = currentTime;
+        prevFrame = currentTime;
 
     }
 

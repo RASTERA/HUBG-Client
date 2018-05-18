@@ -22,11 +22,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 
 public class Login extends GeiPanel implements ActionListener, KeyListener, MouseListener {
 
-    private JTextField usernameField;
+    private GeiTextField usernameField;
     private JPasswordField passwordField;
     private JLabel usernameLabel;
     private JLabel passwordLabel;
@@ -34,25 +37,45 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
     private JLabel createAccountLabel;
     private GeiButton loginButton;
 
-    private BufferedImage background;
+    private ArrayList<BufferedImage> backgroundFrames = new ArrayList<>();
     private BufferedImage rasteraLogo;
+    private BufferedImage hubgLogo;
+
+    private int frame = 0;
+    private int frameCap = 16;
 
     public Login(Main parent) {
         this.parent = parent;
-        this.constantUpdate = false;
+        this.parent.setMasterTimer(45);
+
+        //this.constantUpdate = false;
 
         addKeyListener(this);
         setFocusable(true);
         setLayout(null);
 
         try {
-            background = ImageIO.read(new File("images/background.png"));
+            String fileName;
+
+            for (int i = 0; i <= frameCap; i++) {
+                fileName = String.format("images/menu_animation/%d.png", i);
+                backgroundFrames.add(ImageIO.read(new File(fileName)));
+            }
+
             rasteraLogo = ImageIO.read(new File("images/rastera.png"));
+            hubgLogo = ImageIO.read(new File("images/hubg-logo.png"));
+
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource("music/menu.wav"));
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+            clip.start();
+            clip.loop(clip.LOOP_CONTINUOUSLY);
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("ur bad");
         }
 
-        usernameField = new JTextField();
+        usernameField = new GeiTextField();
         passwordField = new JPasswordField();
 
         usernameLabel = new JLabel("Username");
@@ -66,6 +89,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
         loginButton = new GeiButton("SIGN IN");
         loginButton.setActionCommand("login");
         loginButton.addActionListener(this);
+        loginButton.setEnabled(false);
 
         // Submit on enter
         usernameField.addActionListener(e -> loginButton.doClick());
@@ -225,11 +249,23 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
         forgetPasswordLabel.setBounds(Main.w - 230, Main.h - 70, 210, 20);
         createAccountLabel.setBounds(Main.w - 230, Main.h - 90, 210, 20);
 
-        g.drawImage(background, 0, 0, Math.max(Main.w - 250, Main.h), Math.max(Main.w - 250, Main.h), this);
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, Main.w, Main.h);
+
+        g.drawImage(backgroundFrames.get(frame), 0, 0, Math.max(Main.w - 250, Main.h), Math.max(Main.w - 250, Main.h), this);
         g.drawImage(rasteraLogo, 30, getHeight() - 55, 150, 25, this);
+
 
         g.setColor(new Color(1, 10, 19));
         g.fillRect(Main.w - 250, 0, 250, Main.h);
+
+        g.drawImage(hubgLogo, Main.w - 230, 40, 210, 66, this);
+
+        if (frame == frameCap) {
+            frame = 0;
+        } else {
+            frame++;
+        }
 
     }
 
