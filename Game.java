@@ -39,8 +39,8 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
     private int tileSize = 1000;
     private boolean paused = false;
 
-    private JButton quitGameButton;
-    private JButton resumeGameButton;
+    private GeiButton quitGameButton;
+    private GeiButton resumeGameButton;
 
     private MenuBar menuBar;
 
@@ -133,11 +133,11 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
 
         compass += compass + compass;
 
-        resumeGameButton = new JButton("Resume Game");
+        resumeGameButton = new GeiButton("Resume Game");
         resumeGameButton.setActionCommand("resume");
         resumeGameButton.addActionListener(this);
 
-        quitGameButton = new JButton("Quit Game");
+        quitGameButton = new GeiButton("Quit Game");
         quitGameButton.setActionCommand("quit");
         quitGameButton.addActionListener(this);
 

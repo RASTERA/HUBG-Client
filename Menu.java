@@ -21,6 +21,8 @@ import java.util.Scanner;
 public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
     private GeiButton startButton;
+    private JScrollPane recentActions;
+    private GeiStatsPanel recentActionsPanel;
 
     public Menu(Main parent) {
 
@@ -32,6 +34,11 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
         startButton.setActionCommand("start");
         startButton.addActionListener(this);
 
+        recentActionsPanel = new GeiStatsPanel(250);
+        recentActions = new JScrollPane(recentActionsPanel);
+        recentActions.setBorder(null);
+
+        add(recentActions);
         add(startButton);
 
         addKeyListener(this);
@@ -63,6 +70,7 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
     }
 
     public void paintComponent(Graphics g) {
+
         startButton.setBounds(20, 10, 150, 40);
 
         g.setColor(Color.WHITE);
@@ -71,10 +79,15 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
         g.setColor(new Color(5, 15, 24));
         g.fillRect(0, 0, Main.w, 60);
 
-        g.setColor(new Color(1, 10, 19));
-        g.fillRect(Main.w - 250, 0, 250, Main.h);
+        //g.setColor(new Color(1, 10, 19));
+        //g.fillRect(Main.w - 250, 0, 250, Main.h);
 
-        g.drawString("Yoyoyoyo", 0, 100);
+        recentActions.setBounds(Main.w - 250, 60, 250, Main.h - 60);
+        recentActions.revalidate();
+        recentActions.repaint();
+
+        g.setColor(Color.WHITE);
+        g.drawString(Main.session.getUsername(), Main.w - 230, 20);
     }
 
 

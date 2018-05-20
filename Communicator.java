@@ -10,7 +10,7 @@ public class Communicator {
         try {
 
             // Init connection
-            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://authentication.rastera.xyz").openConnection();
+            HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3000/auth/login").openConnection();
 
             // Header stuff
             socket.setRequestMethod("POST");
@@ -22,15 +22,6 @@ public class Communicator {
             socket.setDoOutput(true);
             OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream());
 
-            /*
-            JSONObject credentials = new JSONObject() {
-                {
-                    put("username", username);
-                    put("password", password);
-                }
-            };
-
-            writer.write(credentials.toString());*/
             String credentials = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
 
             System.out.println(credentials);

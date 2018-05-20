@@ -20,6 +20,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     public static Session session;
 
     public static long prevFrame = 0;
+    private static boolean graphicsStarted = false;
 
     public Main() {
         super("HUBG - Henning's Unknown Battle Ground");
@@ -82,6 +83,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
             }
 
+            graphicsStarted = true;
+
             add(panel);
             panel.requestFocus();
             setVisible(true);
@@ -107,24 +110,31 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         h = getHeight();
 
         if (this.panel != null) {
+            this.repaint();
             this.panel.repaint();
         }
 
     }
 
     public void actionPerformed(ActionEvent evt) {
-        startGraphics();
 
-        if (this.panel.constantUpdate) {
-            this.repaint();
+        if (graphicsStarted) {
+
+            startGraphics();
+
+            if (this.panel.constantUpdate) {
+                this.repaint();
+            }
+
         }
 
 
+        /*
         long currentTime = System.currentTimeMillis();
 
         System.out.println(currentTime - prevFrame);
 
-        prevFrame = currentTime;
+        prevFrame = currentTime;*/
 
     }
 
