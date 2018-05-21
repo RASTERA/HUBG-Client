@@ -129,12 +129,11 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         }
 
 
-        /*
         long currentTime = System.currentTimeMillis();
 
-        System.out.println(currentTime - prevFrame);
+        System.out.println(1000/(currentTime - prevFrame));
 
-        prevFrame = currentTime;*/
+        prevFrame = currentTime;
 
     }
 

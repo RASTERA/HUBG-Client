@@ -23,6 +23,7 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
     private GeiButton startButton;
     private JScrollPane recentActions;
     private GeiStatsPanel recentActionsPanel;
+    private int statsPanelWidth = 250;
 
     public Menu(Main parent) {
 
@@ -34,9 +35,11 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
         startButton.setActionCommand("start");
         startButton.addActionListener(this);
 
-        recentActionsPanel = new GeiStatsPanel(250);
+        recentActionsPanel = new GeiStatsPanel(statsPanelWidth);
         recentActions = new JScrollPane(recentActionsPanel);
         recentActions.setBorder(null);
+
+        recentActionsPanel.setParent(recentActions);
 
         add(recentActions);
         add(startButton);
@@ -82,12 +85,12 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
         //g.setColor(new Color(1, 10, 19));
         //g.fillRect(Main.w - 250, 0, 250, Main.h);
 
-        recentActions.setBounds(Main.w - 250, 60, 250, Main.h - 60);
+        recentActions.setBounds(Main.w - statsPanelWidth, 60, statsPanelWidth, Main.h - 60);
         recentActions.revalidate();
         recentActions.repaint();
 
         g.setColor(Color.WHITE);
-        g.drawString(Main.session.getUsername(), Main.w - 230, 20);
+        g.drawString(Main.session.getUsername(), Main.w - statsPanelWidth - 20, 20);
     }
 
 
