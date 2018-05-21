@@ -38,7 +38,6 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     }
 
     public void setMasterTimer(int interval) {
-
         if (masterTimer != null) {
             masterTimer.stop();
             masterTimer = null;
@@ -49,14 +48,19 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     }
 
     public void startPage(Pages page) {
-
-        // Incase panel isn't there for whatever magic
-
+        System.out.println("Starting page " + page.toString());
         this.getContentPane().remove(this.panel);
         this.page = page;
         this.panel = null;
-        startGraphics();
+        //startGraphics();
     }
+
+    public void updateFrameRate() {
+        long currentTime = System.currentTimeMillis();
+        this.setTitle(String.format("HUBG - Henning's Unknown Battle Ground - [%d FPS]", (currentTime - prevFrame) > 0 ? 1000 / (currentTime - prevFrame) : 0));
+        prevFrame = currentTime;
+    }
+
 
     public void startGraphics() {
         if (this.panel == null || !this.panel.getClass().getName().toUpperCase().equals(page.toString())) {
@@ -106,8 +110,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     }
 
     public void componentResized(ComponentEvent ce) {
-        w = getWidth();
-        h = getHeight();
+        this.w = getWidth();
+        this.h = getHeight();
 
         if (this.panel != null) {
             this.repaint();
@@ -119,7 +123,6 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     public void actionPerformed(ActionEvent evt) {
 
         if (graphicsStarted) {
-
             startGraphics();
 
             if (this.panel.constantUpdate) {
@@ -128,12 +131,12 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
         }
 
-
+        /*
         long currentTime = System.currentTimeMillis();
 
         System.out.println(1000/(currentTime - prevFrame));
 
-        prevFrame = currentTime;
+        prevFrame = currentTime;*/
 
     }
 

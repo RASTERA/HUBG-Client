@@ -68,8 +68,6 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
     public boolean[] keyArray = new boolean[256];
     private volatile Game game;
 
-    public static long prevFrame = 0;
-
     private class MenuBar {
 
         private int width = 350;
@@ -204,7 +202,11 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
     public void quitGame(String message) {
 
         if (message.length() > 0) {
-            JOptionPane.showMessageDialog(this.parent, message, "HUBG", JOptionPane.ERROR_MESSAGE);
+            try {
+                JOptionPane.showMessageDialog(this.parent, message, "HUBG", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                System.out.println("Ok so there's supposed to be an error here, but o well...");
+            }
         }
 
         System.out.println("SWITCH");
@@ -348,13 +350,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
 
     public void paintComponent(Graphics graphics) {
 
-
-
-        long currentTime = System.currentTimeMillis();
-
-        System.out.println(currentTime - prevFrame);
-
-        prevFrame = currentTime;
+        this.parent.updateFrameRate();
 
         Graphics2D g = (Graphics2D) graphics;
 

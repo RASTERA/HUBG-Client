@@ -44,7 +44,7 @@ public class GeiStatsPanel extends JPanel {
         boolean scrollEnabled = 60 + eventArrayList.size() * (GeiActionEvent.height + 20) > this.parent.getHeight();
 
         for (int y = 0; y < eventArrayList.size(); y ++) {
-            eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 20), scrollEnabled ? 190 : 210);
+            eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 20), scrollEnabled ? 205 : 210);
         }
     }
 

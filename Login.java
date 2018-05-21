@@ -201,6 +201,8 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
 
                 disableLogin();
 
+                System.out.println("Trying to login...");
+
                 // Separate thread so that UI thread is not blocked
                 Thread authentication = new Thread() {
                     public void run() {
@@ -238,6 +240,8 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
 
     public void paintComponent(Graphics g) {
 
+        this.parent.updateFrameRate();
+
         usernameLabel.setBounds(Main.w - 230, 140, 210, 20);
         usernameField.setBounds(Main.w - 230, 160, 210, 30);
 
@@ -252,7 +256,9 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, Main.w, Main.h);
 
-        g.drawImage(backgroundFrames.get(frame), 0, 0, Math.max(Main.w - 250, Main.h), Math.max(Main.w - 250, Main.h), this);
+        int size = Math.max(Main.w - 250, Main.h);
+
+        g.drawImage(backgroundFrames.get(frame), 0, 0, size, size, this);
         g.drawImage(rasteraLogo, 30, getHeight() - 55, 150, 25, this);
 
 
