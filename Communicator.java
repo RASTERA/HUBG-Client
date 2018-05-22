@@ -4,13 +4,15 @@ import javax.net.ssl.HttpsURLConnection;
 import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.json.JSONObject;
+
 public class Communicator {
 
     public static Session login(String username, String password) {
         try {
 
             // Init connection
-            HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3000/auth/login").openConnection();
+            HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/auth/login").openConnection();
 
             // Header stuff
             socket.setRequestMethod("POST");
@@ -22,11 +24,21 @@ public class Communicator {
             socket.setDoOutput(true);
             OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream());
 
+            /*
             String credentials = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
 
             System.out.println(credentials);
 
-            writer.write(credentials);
+            writer.write(credentials);*/
+
+            JSONObject credentials = new JSONObject() {
+                {
+                    put("username", username);
+                    put("password", password);
+                }
+            };
+            writer.write(credentials.toString());
+
             writer.flush();
             writer.close();
 
