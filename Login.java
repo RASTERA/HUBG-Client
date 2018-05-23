@@ -29,9 +29,9 @@ import javax.sound.sampled.Clip;
 
 public class Login extends GeiPanel implements ActionListener, KeyListener, MouseListener {
 
-    private GeiTextField usernameField;
+    private GeiTextField emailField;
     private JPasswordField passwordField;
-    private JLabel usernameLabel;
+    private JLabel emailLabel;
     private JLabel passwordLabel;
     private JLabel forgetPasswordLabel;
     private JLabel createAccountLabel;
@@ -75,15 +75,15 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
             System.out.println("ur bad");
         }
 
-        usernameField = new GeiTextField();
+        emailField = new GeiTextField();
         passwordField = new JPasswordField();
 
-        usernameLabel = new JLabel("Username");
+        emailLabel = new JLabel("Email");
         passwordLabel = new JLabel("Password");
         forgetPasswordLabel = new JLabel("Forgot your password?");
         createAccountLabel = new JLabel("Create an account");
 
-        usernameLabel.setForeground(Color.WHITE);
+        emailLabel.setForeground(Color.WHITE);
         passwordLabel.setForeground(Color.WHITE);
 
         loginButton = new GeiButton("SIGN IN");
@@ -92,13 +92,13 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
         loginButton.setEnabled(false);
 
         // Submit on enter
-        usernameField.addActionListener(e -> loginButton.doClick());
+        emailField.addActionListener(e -> loginButton.doClick());
 
         passwordField.addActionListener(e -> loginButton.doClick());
 
         // Validate text
-        usernameField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        usernameField.addKeyListener(new KeyAdapter() {
+        emailField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        emailField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
 
@@ -134,12 +134,12 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
             }
         });
 
-        add(usernameLabel);
+        add(emailLabel);
         add(passwordLabel);
         add(forgetPasswordLabel);
         add(createAccountLabel);
 
-        add(usernameField);
+        add(emailField);
         add(passwordField);
 
         add(loginButton);
@@ -147,7 +147,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
     }
 
     public void validateText() {
-        if (usernameField.getText().length() > 0 && String.valueOf(passwordField.getPassword()).length() > 0) {
+        if (emailField.getText().length() > 0 && String.valueOf(passwordField.getPassword()).length() > 0) {
             loginButton.setEnabled(true);
         } else {
             loginButton.setEnabled(false);
@@ -157,13 +157,13 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
     public void disableLogin() {
         loginButton.setEnabled(false);
         passwordField.setEditable(false);
-        usernameField.setEditable(false);
+        emailField.setEditable(false);
         loginButton.setText("Authenticating...");
     }
 
     public void enableLogin() {
         passwordField.setEditable(true);
-        usernameField.setEditable(true);
+        emailField.setEditable(true);
         passwordField.setText("");
         loginButton.setText("SIGN IN");
     }
@@ -207,12 +207,12 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
                 Thread authentication = new Thread() {
                     public void run() {
                         //Session session = new Session("Hi", "Hi");
-                        Session session = Communicator.login(usernameField.getText(), String.valueOf(passwordField.getPassword()));
+                        Session session = Communicator.login(emailField.getText(), String.valueOf(passwordField.getPassword()));
 
                         if (session == null) {
                             JOptionPane.showMessageDialog(parent, "An error occured while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                             enableLogin();
-                        } else if (session.getUsername().equals("")) {
+                        } else if (session.getEmail().equals("")) {
                             JOptionPane.showMessageDialog(parent, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                             enableLogin();
                         } else {
@@ -242,8 +242,8 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
 
         this.parent.updateFrameRate();
 
-        usernameLabel.setBounds(Main.w - 230, 140, 210, 20);
-        usernameField.setBounds(Main.w - 230, 160, 210, 30);
+        emailLabel.setBounds(Main.w - 230, 140, 210, 20);
+        emailField.setBounds(Main.w - 230, 160, 210, 30);
 
         passwordLabel.setBounds(Main.w - 230, 200, 210, 20);
         passwordField.setBounds(Main.w - 230, 220, 210, 30);

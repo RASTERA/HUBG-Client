@@ -180,7 +180,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
                     loadingStatus = "Connecting to server";
                     server = new Communicator(new byte[]{127, 0, 0, 1}, 25565, game);
 
-                    server.write(1, new String[]{Main.session.getUsername()});
+                    server.write(1, new String[]{Main.session.getEmail()});
                     serverConnected = true;
 
                 } catch (Exception e) {

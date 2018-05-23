@@ -105,7 +105,7 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
         recentActions.repaint();
 
         g.setColor(Color.WHITE);
-        g.drawString(Main.session.getUsername(), Main.w - this.statsPanelWidth + 20, 20);
+        g.drawString(Main.session.getEmail(), Main.w - this.statsPanelWidth + 20, 20);
         g.drawString("69 Kills | 12 Deaths | 23 Matches", Main.w - this.statsPanelWidth + 20, 50);
     }
 

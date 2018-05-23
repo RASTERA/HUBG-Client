@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 public class Communicator {
 
-    public static Session login(String username, String password) {
+    public static Session login(String email, String password) {
         try {
 
             // Init connection
@@ -31,14 +31,15 @@ public class Communicator {
 
             writer.write(credentials);*/
 
+            // Some Json magic stuff
             JSONObject credentials = new JSONObject() {
                 {
-                    put("username", username);
+                    put("email", email);
                     put("password", password);
                 }
             };
-            writer.write(credentials.toString());
 
+            writer.write(credentials.toString());
             writer.flush();
             writer.close();
 
@@ -48,11 +49,16 @@ public class Communicator {
 
             String data = reader.readLine().trim();
 
-            System.out.println(data);
+            JSONObject dataJSON = new JSONObject(data);
 
-            return new Session(data.contains("Error") ? "" : username, data);
+            if (dataJSON.has("error")) {
+                return new Session("", dataJSON.getString("error"));
+            }
+
+            return new Session(email, dataJSON.getString("token"));
 
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("lol something went wrong");
             return null;
         }

@@ -1,17 +1,17 @@
 public class Session {
 
-    private String token, username;
+    private String token, email;
 
-    public Session(String username, String token) {
+    public Session(String email, String token) {
         this.token = token;
-        this.username = username;
+        this.email = email;
     }
 
     public String getToken() {
         return this.token;
     }
 
-    public String getUsername() {
-        return this.username;
+    public String getEmail() {
+        return this.email;
     }
 }
