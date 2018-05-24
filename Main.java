@@ -7,6 +7,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.io.InputStream;
 
 public class Main extends JFrame implements ActionListener, ComponentListener {
 
@@ -18,6 +20,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     public static GeiPanel panel;
     public static Pages page = Pages.LOGIN;
     public static Session session;
+    public static HashMap<String, Font> fontHashMap = new HashMap<>();
 
     public static long prevFrame = 0;
     private static boolean graphicsStarted = false;
@@ -35,6 +38,21 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         getContentPane().addComponentListener(this);
         setVisible(true);
 
+        String[] fonts = new String[] {"Lato-Light", "Lato-Normal", "Lato-Thin", "Lato-Bold", "Lato-Black"};
+
+        try {
+            InputStream is;
+            for (String font : fonts) {
+                is = Main.class.getResourceAsStream(String.format("fonts/%s.ttf", font));
+                fontHashMap.put(font, Font.createFont(Font.TRUETYPE_FONT, is));
+            }
+        } catch (Exception e) {
+            errorQuit(e);
+        }
+    }
+
+    public static Font getFont(String name, float size) {
+        return fontHashMap.get(name).deriveFont(size);
     }
 
     public void setMasterTimer(int interval) {
@@ -129,6 +147,10 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
                 this.repaint();
             }
 
+            if (this.panel instanceof Menu) {
+                ((Menu) this.panel).updateStats();
+            }
+
         }
 
         /*
@@ -140,6 +162,11 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
     }
 
+    public static void errorQuit(Exception e) {
+        e.printStackTrace();
+        System.out.println("Something went wrong");
+        System.exit(0);
+    }
 
     public static void main(String[] args) {
         Main frame = new Main();

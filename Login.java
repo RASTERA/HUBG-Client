@@ -16,15 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.InputStream;
-import javax.imageio.ImageIO;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Scanner;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 
 
 public class Login extends GeiPanel implements ActionListener, KeyListener, MouseListener {
@@ -71,8 +63,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
             clip.start();
             clip.loop(clip.LOOP_CONTINUOUSLY);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("ur bad");
+            Main.errorQuit(e);
         }
 
         emailField = new GeiTextField();
@@ -212,7 +203,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
                         if (session == null) {
                             JOptionPane.showMessageDialog(parent, "An error occured while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                             enableLogin();
-                        } else if (session.getEmail().equals("")) {
+                        } else if (session.getUsername().equals("")) {
                             JOptionPane.showMessageDialog(parent, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                             enableLogin();
                         } else {

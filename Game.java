@@ -1,12 +1,8 @@
 // Some game magic bs
 
 import javax.imageio.ImageIO;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.FontMetrics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.ActionListener;
@@ -15,11 +11,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Scanner;
 
 public class Game extends GeiPanel implements KeyListener, ActionListener {
 
@@ -147,7 +140,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
             splash = ImageIO.read(new File("images/splash.png"));
             miniMap = ImageIO.read(new File("images/map/minimap.png"));
         } catch (Exception e) {
-
+            Main.errorQuit(e);
         }
 
         //player = new Player("Karl", 0, 0, 0);
@@ -180,7 +173,7 @@ public class Game extends GeiPanel implements KeyListener, ActionListener {
                     loadingStatus = "Connecting to server";
                     server = new Communicator(new byte[]{127, 0, 0, 1}, 25565, game);
 
-                    server.write(1, new String[]{Main.session.getEmail()});
+                    server.write(1, new String[]{Main.session.getUsername()});
                     serverConnected = true;
 
                 } catch (Exception e) {

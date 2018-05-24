@@ -15,6 +15,7 @@ public class GeiActionEvent {
 
     public GeiActionEvent(Type type, String enemyName, String time) {
         this.caption = enemyName;
+        this.time = time;
     }
 
     public void update(Graphics g, int x, int y, int width) {
@@ -25,7 +26,8 @@ public class GeiActionEvent {
         g.fillRect(x, y, this.width, this.height);
 
         g.setColor(Color.WHITE);
-        g.drawString(this.caption + " is super gei", x + 5, y + 20);
+        g.drawString(this.caption, x + 5, y + 20);
+        g.drawString(this.time, x + 5, y + 50);
 
     }
 }

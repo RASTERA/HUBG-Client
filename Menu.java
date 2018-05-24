@@ -1,9 +1,9 @@
 // Some game magic bs
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.imageio.ImageIO;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,12 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.awt.FontMetrics;
 import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Scanner;
 
 public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
@@ -25,37 +21,58 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
     private GeiStatsPanel recentActionsPanel;
     private int statsPanelWidth = 250;
     private BufferedImage background;
+    private String statsText = "";
 
     public Menu(Main parent) {
 
         this.parent = parent;
-        this.parent.setMasterTimer(50);
-        this.constantUpdate = false;
+        this.parent.setMasterTimer(5000);
+        this.constantUpdate = true;
 
         try {
             this.background = ImageIO.read(new File("images/menu-background.png"));
         } catch (Exception e) {
-            e.printStackTrace();
+            Main.errorQuit(e);
         }
 
-        startButton = new GeiButton("Start");
-        startButton.setActionCommand("start");
-        startButton.addActionListener(this);
+        this.startButton = new GeiButton("Start");
+        this.startButton.setActionCommand("start");
+        this.startButton.addActionListener(this);
 
-        recentActionsPanel = new GeiStatsPanel(statsPanelWidth);
-        recentActions = new JScrollPane(recentActionsPanel);
-        recentActions.setBorder(null);
-        recentActions.getVerticalScrollBar().setUnitIncrement(16);
-        recentActions.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
+        try {
+            this.recentActionsPanel = new GeiStatsPanel(statsPanelWidth, Main.session.user.getJSONArray("actions"));
+        } catch (Exception e) {
+            Main.errorQuit(e);
+        }
 
-        recentActionsPanel.setParent(recentActions);
+        this.recentActions = new JScrollPane(this.recentActionsPanel);
+        this.recentActions.setBorder(null);
+        this.recentActions.getVerticalScrollBar().setUnitIncrement(16);
+        this.recentActions.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
 
-        add(recentActions);
-        add(startButton);
+        this.recentActionsPanel.setParent(recentActions);
+
+        add(this.recentActions);
+        add(this.startButton);
 
         addKeyListener(this);
         setFocusable(true);
 
+        updateStats();
+
+    }
+
+    public void updateStats() {
+        try {
+            Main.session.user = Communicator.refresh(Main.session.getToken());
+            Main.session.updateJSON();
+
+            this.statsText = String.format("%d Kills      |      %d Deaths      |      %d Matches      |      %d Zhekko", Main.session.user.getInt("kills"), Main.session.user.getInt("deaths"), Main.session.user.getInt("matches"), Main.session.user.getInt("money"));
+            this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
+
+        } catch (Exception e) {
+            Main.errorQuit(e);
+        }
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -81,7 +98,13 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
     }
 
-    public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics graphics) {
+
+        Graphics2D g = (Graphics2D) graphics;
+
+        g.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 
         this.parent.updateFrameRate();
 
@@ -105,8 +128,15 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
         recentActions.repaint();
 
         g.setColor(Color.WHITE);
-        g.drawString(Main.session.getEmail(), Main.w - this.statsPanelWidth + 20, 20);
-        g.drawString("69 Kills | 12 Deaths | 23 Matches", Main.w - this.statsPanelWidth + 20, 50);
+        g.setFont(Main.getFont("Lato-Light", 30));
+        g.drawString("" + Main.session.getRank(), Main.w - this.statsPanelWidth + 20, 40);
+        g.drawString(Main.session.getUsername(), Main.w - this.statsPanelWidth + 60, 40);
+
+        g.setFont(Main.getFont("Lato-Light", 20));
+
+        FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 20));
+
+        g.drawString(statsText, getWidth() / 2 - metrics.stringWidth(statsText) / 2, 35);
     }
 
 
