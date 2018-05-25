@@ -5,7 +5,7 @@ import java.util.*;
 
 public class GeiActionEvent {
 
-    public static enum Type {KILL, KILLED, WIN};
+    public static enum Type {KILL, KILLED, WIN, INFO};
 
     public static int height = 80;
     public static int width = 210;
@@ -27,7 +27,9 @@ public class GeiActionEvent {
 
         g.setColor(Color.WHITE);
         g.drawString(this.caption, x + 5, y + 20);
-        g.drawString(this.time, x + 5, y + 50);
+
+        g.setColor(new Color(100, 100, 100));
+        g.drawString(this.time, x + 5, y + height - 8);
 
     }
 }

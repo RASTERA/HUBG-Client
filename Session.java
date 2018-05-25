@@ -2,7 +2,7 @@ import org.json.JSONObject;
 
 public class Session {
 
-    private String token, email, username;
+    private String token, email, username, skin;
     private int rank;
     public JSONObject user;
 
@@ -24,6 +24,7 @@ public class Session {
         try {
             this.rank = this.user.getInt("rank");
             this.username = this.user.getString("username");
+            this.skin = this.user.getString("skin");
         } catch (Exception e) {
             Main.errorQuit(e);
         }
@@ -31,6 +32,10 @@ public class Session {
 
     public int getRank() {
         return this.rank;
+    }
+
+    public String getSkin() {
+        return this.skin;
     }
 
     public String getToken() {

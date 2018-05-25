@@ -132,6 +132,7 @@ public class Communicator {
 
         System.out.println("Connected to server: " + Arrays.toString(ip) + ":" + port);
 
+        /*
         Thread receiver = new Thread(() -> {
             while (true) {
                 try {
@@ -145,7 +146,7 @@ public class Communicator {
         });
 
         receiver.setDaemon(true);
-        receiver.start();
+        receiver.start(); */
 
     }
 

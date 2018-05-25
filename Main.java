@@ -6,6 +6,8 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.io.InputStream;
@@ -70,7 +72,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         this.getContentPane().remove(this.panel);
         this.page = page;
         this.panel = null;
-        //startGraphics();
+        startGraphics();
     }
 
     public void updateFrameRate() {
@@ -164,7 +166,14 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
     public static void errorQuit(Exception e) {
         e.printStackTrace();
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+
         System.out.println("Something went wrong");
+        JOptionPane.showMessageDialog(null, "HUBG has crashed :(\n\nTo make it up, here's some useful information:\n\n" + sw.toString(), "HUBG Error", JOptionPane.ERROR_MESSAGE);
+
         System.exit(0);
     }
 

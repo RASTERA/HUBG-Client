@@ -13,6 +13,8 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.awt.FontMetrics;
 import java.io.File;
+import java.util.Date;
+import java.util.HashMap;
 
 public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
@@ -22,15 +24,19 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
     private int statsPanelWidth = 250;
     private BufferedImage background;
     private String statsText = "";
+    private long lastUpdated = System.currentTimeMillis();
+    private HashMap<String, BufferedImage> skinHashMap = new HashMap<>();
 
     public Menu(Main parent) {
 
         this.parent = parent;
-        this.parent.setMasterTimer(5000);
+        this.parent.setMasterTimer(10000);
         this.constantUpdate = true;
 
         try {
-            this.background = ImageIO.read(new File("images/menu-background.png"));
+            this.background = ImageIO.read(new File("images/menu-background-2.png"));
+
+            this.skinHashMap.put("PENGUIN", ImageIO.read(new File("images/skins/penguin.png")));
         } catch (Exception e) {
             Main.errorQuit(e);
         }
@@ -64,11 +70,21 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
     public void updateStats() {
         try {
-            Main.session.user = Communicator.refresh(Main.session.getToken());
-            Main.session.updateJSON();
+            JSONObject tempUser = Communicator.refresh(Main.session.getToken());
 
-            this.statsText = String.format("%d Kills      |      %d Deaths      |      %d Matches      |      %d Zhekko", Main.session.user.getInt("kills"), Main.session.user.getInt("deaths"), Main.session.user.getInt("matches"), Main.session.user.getInt("money"));
-            this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
+            if (tempUser != null) {
+                Main.session.user = tempUser;
+                Main.session.updateJSON();
+
+                System.out.println(tempUser);
+
+                this.statsText = String.format("%d Kills      |      %d Deaths      |      %d Matches      |      %d Zhekko", Main.session.user.getInt("kills"), Main.session.user.getInt("deaths"), Main.session.user.getInt("matches"), Main.session.user.getInt("money"));
+                this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
+                this.lastUpdated = System.currentTimeMillis();
+
+            } else {
+                System.out.println("Unable to connect to server");
+            }
 
         } catch (Exception e) {
             Main.errorQuit(e);
@@ -123,20 +139,35 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
         //g.setColor(new Color(1, 10, 19));
         //g.fillRect(Main.w - 250, 0, 250, Main.h);
 
+        // Recent Actions panel
         recentActions.setBounds(Main.w - this.statsPanelWidth, 60, this.statsPanelWidth, Main.h - 60);
         recentActions.revalidate();
         recentActions.repaint();
 
         g.setColor(Color.WHITE);
-        g.setFont(Main.getFont("Lato-Light", 30));
+
+        // Rank badge
+        g.setFont(Main.getFont("Lato-Normal", 30));
         g.drawString("" + Main.session.getRank(), Main.w - this.statsPanelWidth + 20, 40);
+
+        // Username
+        g.setFont(Main.getFont("Lato-Light", 30));
         g.drawString(Main.session.getUsername(), Main.w - this.statsPanelWidth + 60, 40);
 
+        // Top Bar stats
         g.setFont(Main.getFont("Lato-Light", 20));
-
         FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 20));
-
         g.drawString(statsText, getWidth() / 2 - metrics.stringWidth(statsText) / 2, 35);
+
+        // Last updated
+        String updateText = "Last sync: " + new Date(lastUpdated * 1000).toString();
+        g.setFont(Main.getFont("Lato-Light", 12));
+        metrics = g.getFontMetrics(Main.getFont("Lato-Light", 12));
+        g.drawString(updateText, 10, getHeight() - 15);
+
+        // Penguin preview
+        int dimension = (int) (Math.min(getHeight(), getWidth()) * 0.6);
+        g.drawImage(skinHashMap.get(Main.session.getSkin()), (getWidth() - this.statsPanelWidth) / 2 - dimension / 2, (getHeight() + 60) / 2 - dimension / 2, dimension, dimension, this);
     }
 
 

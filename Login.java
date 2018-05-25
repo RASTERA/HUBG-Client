@@ -201,7 +201,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
                         Session session = Communicator.login(emailField.getText(), String.valueOf(passwordField.getPassword()));
 
                         if (session == null) {
-                            JOptionPane.showMessageDialog(parent, "An error occured while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(parent, "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                             enableLogin();
                         } else if (session.getUsername().equals("")) {
                             JOptionPane.showMessageDialog(parent, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
