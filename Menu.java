@@ -64,7 +64,13 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
         addKeyListener(this);
         setFocusable(true);
 
-        updateStats();
+        Thread loadResources = new Thread() {
+            public void run() {
+                updateStats();
+            }
+        };
+
+        loadResources.start();
 
     }
 

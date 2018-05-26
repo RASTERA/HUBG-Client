@@ -12,8 +12,8 @@ public class Communicator {
         try {
 
             // Init connection
-            //HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/refresh/" + token).openConnection();
-            HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/refresh/" + token).openConnection();
+            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/refresh/" + token).openConnection();
+            //HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/refresh/" + token).openConnection();
 
             // Header stuff
             socket.setRequestMethod("GET");
@@ -67,8 +67,8 @@ public class Communicator {
         try {
 
             // Init connection
-            //HttpsURLConnection socket = (HttpsURLConnection) new URL("https://authentication.rastera.xyz/login").openConnection();
-            HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/auth/login").openConnection();
+            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://authentication.rastera.xyz/login").openConnection();
+            //HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/auth/login").openConnection();
 
             // Header stuff
             socket.setRequestMethod("POST");
