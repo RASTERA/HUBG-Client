@@ -80,6 +80,7 @@ public class GeiStatsPanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
 
         g.setColor(Color.WHITE);
+        g.setFont(Main.getFont("Lato-Light", 15));
         g.drawString("Recent Activity", 20, 20);
 
         boolean scrollEnabled = 60 + eventArrayList.size() * (GeiActionEvent.height + 20) > this.parent.getHeight();

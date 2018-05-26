@@ -164,6 +164,14 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
     }
 
+    public static void errorQuit(String e) {
+
+        System.out.println("Something went wrong");
+        JOptionPane.showMessageDialog(null, "HUBG experienced an unexpected error:\n\n" + e, "HUBG Error", JOptionPane.ERROR_MESSAGE);
+
+        System.exit(0);
+    }
+
     public static void errorQuit(Exception e) {
         e.printStackTrace();
 
@@ -171,10 +179,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
 
-        System.out.println("Something went wrong");
-        JOptionPane.showMessageDialog(null, "HUBG has crashed :(\n\nTo make it up, here's some useful information:\n\n" + sw.toString(), "HUBG Error", JOptionPane.ERROR_MESSAGE);
-
-        System.exit(0);
+        errorQuit(sw.toString());
     }
 
     public static void main(String[] args) {

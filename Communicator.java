@@ -12,6 +12,7 @@ public class Communicator {
         try {
 
             // Init connection
+            //HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/refresh/" + token).openConnection();
             HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/refresh/" + token).openConnection();
 
             // Header stuff
@@ -53,6 +54,8 @@ public class Communicator {
             return dataJSON.getJSONObject("user");
 
         } catch (Exception e) {
+            // Main.errorQuit("Unable to synchronize with server. Please try again later.");
+
             e.printStackTrace();
             System.out.println("lol something went wrong");
             return null;
@@ -64,6 +67,7 @@ public class Communicator {
         try {
 
             // Init connection
+            //HttpsURLConnection socket = (HttpsURLConnection) new URL("https://authentication.rastera.xyz/login").openConnection();
             HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/auth/login").openConnection();
 
             // Header stuff

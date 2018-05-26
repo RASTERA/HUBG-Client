@@ -160,7 +160,7 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
         g.drawString(statsText, getWidth() / 2 - metrics.stringWidth(statsText) / 2, 35);
 
         // Last updated
-        String updateText = "Last sync: " + new Date(lastUpdated * 1000).toString();
+        String updateText = "Last sync: " + new Date(lastUpdated / 1000).toString();
         g.setFont(Main.getFont("Lato-Light", 12));
         metrics = g.getFontMetrics(Main.getFont("Lato-Light", 12));
         g.drawString(updateText, 10, getHeight() - 15);
