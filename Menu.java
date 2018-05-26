@@ -84,7 +84,7 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 System.out.println(tempUser);
 
-                this.statsText = String.format("%s Kills      |      %s Deaths      |      %s Matches      |      %s Zhekko", Main.session.user.getString("kills"), Main.session.user.getString("deaths"), Main.session.user.getString("matches"), Main.session.user.getString("money"));
+                this.statsText = String.format("%d Kills      |      %s Deaths      |      %s Matches      |      %s Zhekko", Main.session.user.getLong("kills"), Main.session.user.getString("deaths"), Main.session.user.getString("matches"), Main.session.user.getString("money"));
                 this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
                 this.lastUpdated = System.currentTimeMillis();
 
