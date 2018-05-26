@@ -22,21 +22,6 @@ public class Communicator {
             socket.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
             socket.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 
-            /*
-            socket.setDoOutput(true);
-            OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream());
-
-            // Some Json magic stuff
-            JSONObject credentials = new JSONObject() {
-                {
-                    put("token", token);
-                }
-            };
-
-            writer.write(credentials.toString());
-            writer.flush();
-            writer.close(); */
-
             System.out.println("Getting Response of " + socket.getResponseCode());
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -54,7 +39,7 @@ public class Communicator {
             return dataJSON.getJSONObject("user");
 
         } catch (Exception e) {
-            // Main.errorQuit("Unable to synchronize with server. Please try again later.");
+            Main.errorQuit("Unable to synchronize with server. Please try again later.");
 
             e.printStackTrace();
             System.out.println("lol something went wrong");
@@ -80,18 +65,11 @@ public class Communicator {
             socket.setDoOutput(true);
             OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream());
 
-            /*
-            String credentials = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
-
-            System.out.println(credentials);
-
-            writer.write(credentials);*/
-
             // Some Json magic stuff
             JSONObject credentials = new JSONObject() {
                 {
-                    put("email", email);
-                    put("password", password);
+                    this.put("email", email);
+                    this.put("password", password);
                 }
             };
 
@@ -120,57 +98,4 @@ public class Communicator {
         }
     }
 
-    private Socket serverSock;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
-    private LinkedBlockingQueue<Message> message;
-    private Game client;
-
-    public Communicator(byte[] ip, int port, Game client) throws Exception {
-        this.client = client;
-
-        this.serverSock = new Socket(InetAddress.getByAddress(ip), port);
-
-        this.out = new ObjectOutputStream(serverSock.getOutputStream());
-        this.in = new ObjectInputStream(serverSock.getInputStream());
-
-        System.out.println("Connected to server: " + Arrays.toString(ip) + ":" + port);
-
-        /*
-        Thread receiver = new Thread(() -> {
-            while (true) {
-                try {
-                    Message msg = (Message) in.readObject();
-
-                    client.CommandProcessor(msg);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        receiver.setDaemon(true);
-        receiver.start(); */
-
-    }
-
-    public boolean isEmpty() {
-        return message.isEmpty();
-    }
-
-    public Message read() {
-        try {
-            return message.take();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public void write(int type, Object Message) {
-        try {
-            this.out.writeObject(Rah.messageBuilder(type, Message));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

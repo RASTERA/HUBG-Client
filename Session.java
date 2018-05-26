@@ -2,7 +2,10 @@ import org.json.JSONObject;
 
 public class Session {
 
-    private String token, email, username, skin;
+    private final String token;
+    private final String email;
+    private String username;
+    private String skin;
     private int rank;
     public JSONObject user;
 
@@ -17,7 +20,7 @@ public class Session {
         this.email = email;
         this.user = user;
 
-        updateJSON();
+        this.updateJSON();
     }
 
     public void updateJSON() {

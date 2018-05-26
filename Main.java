@@ -2,43 +2,39 @@
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.io.InputStream;
 
 public class Main extends JFrame implements ActionListener, ComponentListener {
 
     public enum Pages {MENU, GAME, LOGIN}
 
-    public static Timer masterTimer;
+    private static Timer masterTimer;
     public static int w = 1160;
     public static int h = 600;
-    public static GeiPanel panel;
-    public static Pages page = Pages.LOGIN;
+    private static GeiPanel panel;
+    private static Pages page = Pages.LOGIN;
     public static Session session;
-    public static HashMap<String, Font> fontHashMap = new HashMap<>();
+    private static final HashMap<String, Font> fontHashMap = new HashMap<>();
 
-    public static long prevFrame = 0;
+    private static long prevFrame = 0;
     private static boolean graphicsStarted = false;
 
-    public Main() {
+    private Main() {
         super("HUBG - Henning's Unknown Battle Ground");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setSize(w, h);
-        setMinimumSize(new Dimension(1160, 600));
-        setLayout(new BorderLayout());
+        this.setSize(w, h);
+        this.setMinimumSize(new Dimension(1160, 600));
+        this.setLayout(new BorderLayout());
 
-        startGraphics();
+        this.startGraphics();
 
-        getContentPane().addComponentListener(this);
-        setVisible(true);
+        this.getContentPane().addComponentListener(this);
+        this.setVisible(true);
 
         String[] fonts = new String[] {"Lato-Light", "Lato-Normal", "Lato-Thin", "Lato-Bold", "Lato-Black"};
 
@@ -69,10 +65,10 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
     public void startPage(Pages page) {
         System.out.println("Starting page " + page.toString());
-        this.getContentPane().remove(this.panel);
-        this.page = page;
-        this.panel = null;
-        startGraphics();
+        this.getContentPane().remove(panel);
+        Main.page = page;
+        panel = null;
+        this.startGraphics();
     }
 
     public void updateFrameRate() {
@@ -82,8 +78,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     }
 
 
-    public void startGraphics() {
-        if (this.panel == null || !this.panel.getClass().getName().toUpperCase().equals(page.toString())) {
+    private void startGraphics() {
+        if (panel == null || !panel.getClass().getName().toUpperCase().equals(page.toString())) {
 
             if (masterTimer != null) {
                 masterTimer.stop();
@@ -109,10 +105,10 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
             graphicsStarted = true;
 
-            add(panel);
+            this.add(panel);
             panel.requestFocus();
-            setVisible(true);
-            this.panel.repaint();
+            this.setVisible(true);
+            panel.repaint();
 
         }
     }
@@ -130,12 +126,12 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     }
 
     public void componentResized(ComponentEvent ce) {
-        this.w = getWidth();
-        this.h = getHeight();
+        w = this.getWidth();
+        h = this.getHeight();
 
-        if (this.panel != null) {
+        if (panel != null) {
             this.repaint();
-            this.panel.repaint();
+            panel.repaint();
         }
 
     }
@@ -143,14 +139,14 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     public void actionPerformed(ActionEvent evt) {
 
         if (graphicsStarted) {
-            startGraphics();
+            this.startGraphics();
 
-            if (this.panel.constantUpdate) {
+            if (panel.constantUpdate) {
                 this.repaint();
             }
 
-            if (this.panel instanceof Menu) {
-                ((Menu) this.panel).updateStats();
+            if (panel instanceof Menu) {
+                ((Menu) panel).updateStats();
             }
 
         }

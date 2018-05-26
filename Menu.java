@@ -1,6 +1,5 @@
 // Some game magic bs
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
@@ -11,21 +10,22 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.awt.FontMetrics;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 
-public class Menu extends GeiPanel implements KeyListener, ActionListener {
+class Menu extends GeiPanel implements KeyListener, ActionListener {
 
-    private GeiButton startButton;
-    private JScrollPane recentActions;
+    private final GeiButton startButton;
+    private final JScrollPane recentActions;
+    private final JProgressBar loadingBar;
     private GeiStatsPanel recentActionsPanel;
-    private int statsPanelWidth = 250;
+    private final int statsPanelWidth = 250;
     private BufferedImage background;
     private String statsText = "";
     private long lastUpdated = System.currentTimeMillis();
-    private HashMap<String, BufferedImage> skinHashMap = new HashMap<>();
+    private final HashMap<String, BufferedImage> skinHashMap = new HashMap<>();
+    private volatile boolean statsLoaded = false;
 
     public Menu(Main parent) {
 
@@ -46,27 +46,36 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.startButton.addActionListener(this);
 
         try {
-            this.recentActionsPanel = new GeiStatsPanel(statsPanelWidth, Main.session.user.getJSONArray("actions"));
+            this.recentActionsPanel = new GeiStatsPanel(this.statsPanelWidth, Main.session.user.getJSONArray("actions"));
         } catch (Exception e) {
             Main.errorQuit(e);
         }
+
+        this.loadingBar = new JProgressBar();
+        this.loadingBar.setIndeterminate(true);
 
         this.recentActions = new JScrollPane(this.recentActionsPanel);
         this.recentActions.setBorder(null);
         this.recentActions.getVerticalScrollBar().setUnitIncrement(16);
         this.recentActions.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
 
-        this.recentActionsPanel.setParent(recentActions);
+        this.recentActionsPanel.setParent(this.recentActions);
 
-        add(this.recentActions);
-        add(this.startButton);
-
-        addKeyListener(this);
-        setFocusable(true);
+        this.add(this.loadingBar);
+        this.addKeyListener(this);
+        this.setFocusable(true);
 
         Thread loadResources = new Thread() {
             public void run() {
-                updateStats();
+                System.out.println("Loading stats...");
+                Menu.this.updateStats();
+                Menu.this.statsLoaded = true;
+
+                // Waits for stats stuff to load
+                Menu.this.repaint();
+                Menu.this.remove(Menu.this.loadingBar);
+                Menu.this.add(Menu.this.recentActions);
+                Menu.this.add(Menu.this.startButton);
             }
         };
 
@@ -84,7 +93,7 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 System.out.println(tempUser);
 
-                this.statsText = String.format("%d Kills      |      %s Deaths      |      %s Matches      |      %s Zhekko", Main.session.user.getLong("kills"), Main.session.user.getString("deaths"), Main.session.user.getString("matches"), Main.session.user.getString("money"));
+                this.statsText = String.format("%s Kills      |      %s Deaths      |      %s Matches      |      %s Zhekko", Main.session.user.getString("kills"), Main.session.user.getString("deaths"), Main.session.user.getString("matches"), Main.session.user.getString("money"));
                 this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
                 this.lastUpdated = System.currentTimeMillis();
 
@@ -103,7 +112,7 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 System.out.println("SWITCH");
 
-                removeKeyListener(this);
+                this.removeKeyListener(this);
                 this.parent.startPage(Main.Pages.GAME);
         }
     }
@@ -124,57 +133,72 @@ public class Menu extends GeiPanel implements KeyListener, ActionListener {
 
         Graphics2D g = (Graphics2D) graphics;
 
-        g.setRenderingHint(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+        if (!this.statsLoaded) {
+            this.loadingBar.setBounds(50, this.getHeight() / 2 + 40, this.getWidth() - 100, 20);
 
-        this.parent.updateFrameRate();
+            String loadingMessage = "Waiting for server";
 
-        startButton.setBounds(20, 10, 150, 40);
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, Main.w, Main.h);
+            g.setColor(Color.BLACK);
+            g.setFont(Main.getFont("Lato-Light", 30));
 
-        int size = Math.max(getWidth() - statsPanelWidth, getHeight() - 60);
+            FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 30));
+            g.drawString(loadingMessage, this.getWidth() / 2 - metrics.stringWidth(loadingMessage) / 2, this.getHeight() / 2 - metrics.getHeight() / 2);
 
-        g.drawImage(this.background, 0, 60, size, size, this);
+        } else {
 
-        g.setColor(new Color(5, 15, 24));
-        g.fillRect(0, 0, Main.w, 60);
+            g.setRenderingHint(
+                    RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 
-        //g.setColor(new Color(1, 10, 19));
-        //g.fillRect(Main.w - 250, 0, 250, Main.h);
+            this.parent.updateFrameRate();
 
-        // Recent Actions panel
-        recentActions.setBounds(Main.w - this.statsPanelWidth, 60, this.statsPanelWidth, Main.h - 60);
-        recentActions.revalidate();
-        recentActions.repaint();
+            this.startButton.setBounds(20, 10, 150, 40);
 
-        g.setColor(Color.WHITE);
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, Main.w, Main.h);
 
-        // Rank badge
-        g.setFont(Main.getFont("Lato-Normal", 30));
-        g.drawString("" + Main.session.getRank(), Main.w - this.statsPanelWidth + 20, 40);
+            int size = Math.max(this.getWidth() - this.statsPanelWidth, this.getHeight() - 60);
 
-        // Username
-        g.setFont(Main.getFont("Lato-Light", 30));
-        g.drawString(Main.session.getUsername(), Main.w - this.statsPanelWidth + 60, 40);
+            g.drawImage(this.background, 0, 60, size, size, this);
 
-        // Top Bar stats
-        g.setFont(Main.getFont("Lato-Light", 20));
-        FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 20));
-        g.drawString(statsText, getWidth() / 2 - metrics.stringWidth(statsText) / 2, 35);
+            g.setColor(new Color(5, 15, 24));
+            g.fillRect(0, 0, Main.w, 60);
 
-        // Last updated
-        String updateText = "Last sync: " + new Date(lastUpdated / 1000).toString();
-        g.setFont(Main.getFont("Lato-Light", 12));
-        metrics = g.getFontMetrics(Main.getFont("Lato-Light", 12));
-        g.drawString(updateText, 10, getHeight() - 15);
+            //g.setColor(new Color(1, 10, 19));
+            //g.fillRect(Main.w - 250, 0, 250, Main.h);
 
-        // Penguin preview
-        int dimension = (int) (Math.min(getHeight(), getWidth()) * 0.6);
-        g.drawImage(skinHashMap.get(Main.session.getSkin()), (getWidth() - this.statsPanelWidth) / 2 - dimension / 2, (getHeight() + 60) / 2 - dimension / 2, dimension, dimension, this);
+            // Recent Actions panel
+            this.recentActions.setBounds(Main.w - this.statsPanelWidth, 60, this.statsPanelWidth, Main.h - 60);
+            this.recentActions.revalidate();
+            this.recentActions.repaint();
+
+            g.setColor(Color.WHITE);
+
+            // Rank badge
+            g.setFont(Main.getFont("Lato-Normal", 30));
+            g.drawString("" + Main.session.getRank(), Main.w - this.statsPanelWidth + 20, 40);
+
+            // Username
+            g.setFont(Main.getFont("Lato-Light", 30));
+            g.drawString(Main.session.getUsername(), Main.w - this.statsPanelWidth + 60, 40);
+
+            // Top Bar stats
+            g.setFont(Main.getFont("Lato-Light", 20));
+            FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 20));
+            g.drawString(this.statsText, this.getWidth() / 2 - metrics.stringWidth(this.statsText) / 2, 35);
+
+            // Last updated
+            String updateText = "Last sync: " + new Date(this.lastUpdated / 1000).toString();
+            g.setFont(Main.getFont("Lato-Light", 12));
+            metrics = g.getFontMetrics(Main.getFont("Lato-Light", 12));
+            g.drawString(updateText, 10, this.getHeight() - 15);
+
+            // Penguin preview
+            int dimension = (int) (Math.min(this.getHeight(), this.getWidth()) * 0.6);
+            g.drawImage(this.skinHashMap.get(Main.session.getSkin()), (this.getWidth() - this.statsPanelWidth) / 2 - dimension / 2, (this.getHeight() + 60) / 2 - dimension / 2, dimension, dimension, this);
+        }
     }
-
-
 }

@@ -3,13 +3,12 @@ import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Dimension;
 import java.util.*;
 
-public class GeiStatsPanel extends JPanel {
+class GeiStatsPanel extends JPanel {
 
     private ArrayList<GeiActionEvent> eventArrayList = new ArrayList<>();
-    private int width;
+    private final int width;
     private JScrollPane parent;
     private long currentTime;
 
@@ -29,23 +28,23 @@ public class GeiStatsPanel extends JPanel {
             for (int i = actionArray.length() - 1; i > -1; i--) {
                 actionObject = actionArray.getJSONObject(i);
 
-                eventArrayList.add(new GeiActionEvent(GeiActionEvent.Type.valueOf(actionObject.getString("type")), actionObject.getString("caption"), getTimestamp(actionObject.getLong("date"))));
+                this.eventArrayList.add(new GeiActionEvent(GeiActionEvent.Type.valueOf(actionObject.getString("type")), actionObject.getString("caption"), this.getTimestamp(actionObject.getLong("date"))));
             }
 
             if (actionArray.length() == 0) {
-                eventArrayList.add(new GeiActionEvent(GeiActionEvent.Type.INFO, "Nothing to see here :)", getTimestamp(this.currentTime)));
+                this.eventArrayList.add(new GeiActionEvent(GeiActionEvent.Type.INFO, "Nothing to see here :)", this.getTimestamp(this.currentTime)));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            eventArrayList.add(new GeiActionEvent(GeiActionEvent.Type.INFO, "Uh Oh... Something went wrong", getTimestamp(this.currentTime)));
+            this.eventArrayList.add(new GeiActionEvent(GeiActionEvent.Type.INFO, "Uh Oh... Something went wrong", this.getTimestamp(this.currentTime)));
         }
 
-        this.setPreferredSize(new Dimension(width, 60 + eventArrayList.size() * (GeiActionEvent.height + 20)));
+        this.setPreferredSize(new Dimension(this.width, 60 + this.eventArrayList.size() * (GeiActionEvent.height + 20)));
 
 
     }
 
-    public String getTimestamp(long time) {
+    private String getTimestamp(long time) {
         long difference = (this.currentTime - time) / 1000L;
 
         if (difference < 0) {
@@ -77,16 +76,16 @@ public class GeiStatsPanel extends JPanel {
 
     public void paintComponent(Graphics g) {
         g.setColor(new Color(1, 10, 19));
-        g.fillRect(0, 0, getWidth(), getHeight());
+        g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         g.setColor(Color.WHITE);
         g.setFont(Main.getFont("Lato-Light", 15));
         g.drawString("Recent Activity", 20, 20);
 
-        boolean scrollEnabled = 60 + eventArrayList.size() * (GeiActionEvent.height + 20) > this.parent.getHeight();
+        boolean scrollEnabled = 60 + this.eventArrayList.size() * (GeiActionEvent.height + 20) > this.parent.getHeight();
 
-        for (int y = 0; y < eventArrayList.size(); y ++) {
-            eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 20), scrollEnabled ? 205 : 210);
+        for (int y = 0; y < this.eventArrayList.size(); y ++) {
+            this.eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 20), scrollEnabled ? 205 : 210);
         }
     }
 

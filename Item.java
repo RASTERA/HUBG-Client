@@ -1,12 +1,11 @@
 import java.io.File;
-import java.io.InputStream;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
 public abstract class Item {
 
     private BufferedImage thumbnail;
-    private String name;
+    private final String name;
 
 
     public Item(String name, String thumbnail) {
@@ -20,10 +19,10 @@ public abstract class Item {
     }
 
     public BufferedImage getThumbnail() {
-        return thumbnail;
+        return this.thumbnail;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 }

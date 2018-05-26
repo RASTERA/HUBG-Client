@@ -1,18 +1,7 @@
 import java.net.URI;
 import java.awt.*;
-import java.awt.FontMetrics;
-import javax.swing.*;
 
-public class Rah {
-    public static Message messageBuilder(int type, Object message) {
-        Message nMessage = new Message();
-
-        nMessage.type = type;
-        nMessage.message = message;
-
-        return nMessage;
-    }
-
+class Rah {
     public static void webbrowserOpen(String url) {
         try {
             if (Desktop.isDesktopSupported()) {

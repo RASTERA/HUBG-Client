@@ -19,22 +19,22 @@ import java.io.File;
 import java.util.ArrayList;
 
 
-public class Login extends GeiPanel implements ActionListener, KeyListener, MouseListener {
+class Login extends GeiPanel implements ActionListener, KeyListener, MouseListener {
 
-    private GeiTextField emailField;
-    private JPasswordField passwordField;
-    private JLabel emailLabel;
-    private JLabel passwordLabel;
-    private JLabel forgetPasswordLabel;
-    private JLabel createAccountLabel;
-    private GeiButton loginButton;
+    private final GeiTextField emailField;
+    private final JPasswordField passwordField;
+    private final JLabel emailLabel;
+    private final JLabel passwordLabel;
+    private final JLabel forgetPasswordLabel;
+    private final JLabel createAccountLabel;
+    private final GeiButton loginButton;
 
-    private ArrayList<BufferedImage> backgroundFrames = new ArrayList<>();
+    private final ArrayList<BufferedImage> backgroundFrames = new ArrayList<>();
     private BufferedImage rasteraLogo;
     private BufferedImage hubgLogo;
 
     private int frame = 0;
-    private int frameCap = 30;
+    private final int frameCap = 30;
 
     public Login(Main parent) {
         this.parent = parent;
@@ -42,22 +42,22 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
 
         //this.constantUpdate = false;
 
-        addKeyListener(this);
-        setFocusable(true);
-        setLayout(null);
+        this.addKeyListener(this);
+        this.setFocusable(true);
+        this.setLayout(null);
 
         try {
             String fileName;
 
-            for (int i = 0; i <= frameCap; i++) {
+            for (int i = 0; i <= this.frameCap; i++) {
                 fileName = String.format("images/menu_animation/%d.png", i);
-                backgroundFrames.add(ImageIO.read(new File(fileName)));
+                this.backgroundFrames.add(ImageIO.read(new File(fileName)));
             }
 
-            rasteraLogo = ImageIO.read(new File("images/rastera.png"));
-            hubgLogo = ImageIO.read(new File("images/hubg-logo.png"));
+            this.rasteraLogo = ImageIO.read(new File("images/rastera.png"));
+            this.hubgLogo = ImageIO.read(new File("images/hubg-logo.png"));
 
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource("music/menu.wav"));
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(this.getClass().getResource("music/menu.wav"));
             Clip clip = AudioSystem.getClip();
             clip.open(audioIn);
             clip.start();
@@ -66,103 +66,104 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
             Main.errorQuit(e);
         }
 
-        emailField = new GeiTextField();
-        passwordField = new JPasswordField();
+        this.emailField = new GeiTextField();
+        this.passwordField = new JPasswordField();
 
-        emailLabel = new JLabel("Email");
-        passwordLabel = new JLabel("Password");
-        forgetPasswordLabel = new JLabel("Forgot your password?");
-        createAccountLabel = new JLabel("Create an account");
+        this.emailLabel = new JLabel("Email");
+        this.passwordLabel = new JLabel("Password");
+        this.forgetPasswordLabel = new JLabel("Forgot your password?");
+        this.createAccountLabel = new JLabel("Create an account");
 
-        emailLabel.setForeground(Color.WHITE);
-        passwordLabel.setForeground(Color.WHITE);
+        this.emailLabel.setForeground(Color.WHITE);
+        this.passwordLabel.setForeground(Color.WHITE);
 
-        loginButton = new GeiButton("SIGN IN");
-        loginButton.setActionCommand("login");
-        loginButton.addActionListener(this);
-        loginButton.setEnabled(false);
+        this.loginButton = new GeiButton("SIGN IN");
+        this.loginButton.setActionCommand("login");
+        this.loginButton.addActionListener(this);
+        this.loginButton.setEnabled(false);
 
         // Submit on enter
-        emailField.addActionListener(e -> loginButton.doClick());
+        this.emailField.addActionListener(e -> this.loginButton.doClick());
 
-        passwordField.addActionListener(e -> loginButton.doClick());
+        this.passwordField.addActionListener(e -> this.loginButton.doClick());
 
         // Validate text
-        emailField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        emailField.addKeyListener(new KeyAdapter() {
+        this.emailField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        this.emailField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
 
                 if (e.getKeyCode() != KeyEvent.VK_ENTER) {
-                    validateText();
+                    Login.this.validateText();
                 }
             }
         });
 
-        passwordField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        passwordField.addKeyListener(new KeyAdapter() {
+        this.passwordField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        this.passwordField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
 
                 if (e.getKeyCode() != KeyEvent.VK_ENTER) {
-                    validateText();
+                    Login.this.validateText();
                 }
             }
         });
 
 
-        forgetPasswordLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        forgetPasswordLabel.addMouseListener(new MouseAdapter() {
+        this.forgetPasswordLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        this.forgetPasswordLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 Rah.webbrowserOpen("https://rastera.xyz");
             }
         });
 
-        createAccountLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        createAccountLabel.addMouseListener(new MouseAdapter() {
+        this.createAccountLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        this.createAccountLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 Rah.webbrowserOpen("https://rastera.xyz");
             }
         });
 
-        add(emailLabel);
-        add(passwordLabel);
-        add(forgetPasswordLabel);
-        add(createAccountLabel);
+        this.add(this.emailLabel);
+        this.add(this.passwordLabel);
+        this.add(this.forgetPasswordLabel);
+        this.add(this.createAccountLabel);
 
-        add(emailField);
-        add(passwordField);
+        this.add(this.emailField);
+        this.add(this.passwordField);
 
-        add(loginButton);
+        this.add(this.loginButton);
 
     }
 
-    public void validateText() {
-        if (emailField.getText().length() > 0 && String.valueOf(passwordField.getPassword()).length() > 0) {
-            loginButton.setEnabled(true);
+    private void validateText() {
+        if (this.emailField.getText().length() > 0 && String.valueOf(this.passwordField.getPassword()).length() > 0) {
+            this.loginButton.setEnabled(true);
         } else {
-            loginButton.setEnabled(false);
+            this.loginButton.setEnabled(false);
         }
     }
 
-    public void disableLogin() {
-        loginButton.setEnabled(false);
-        passwordField.setEditable(false);
-        emailField.setEditable(false);
-        loginButton.setText("Authenticating...");
+    private void disableLogin() {
+        this.loginButton.setEnabled(false);
+        this.passwordField.setEditable(false);
+        this.emailField.setEditable(false);
+        this.loginButton.setText("Authenticating...");
     }
 
-    public void enableLogin() {
-        passwordField.setEditable(true);
-        emailField.setEditable(true);
-        passwordField.setText("");
-        loginButton.setText("SIGN IN");
+    private void enableLogin() {
+
+        this.passwordField.setEditable(true);
+        this.emailField.setEditable(true);
+        this.passwordField.setText("");
+        this.loginButton.setText("SIGN IN");
     }
 
-    public void startMenu(Session session) {
+    private void startMenu(Session session) {
         System.out.println("Login Successful");
         Main.session = session;
-        removeKeyListener(this);
+        this.removeKeyListener(this);
         this.parent.startPage(Main.Pages.MENU);
     }
 
@@ -190,7 +191,7 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
         switch (e.getActionCommand()) {
             case "login":
 
-                disableLogin();
+                this.disableLogin();
 
                 System.out.println("Trying to login...");
 
@@ -198,16 +199,16 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
                 Thread authentication = new Thread() {
                     public void run() {
                         //Session session = new Session("Hi", "Hi");
-                        Session session = Communicator.login(emailField.getText(), String.valueOf(passwordField.getPassword()));
+                        Session session = Communicator.login(Login.this.emailField.getText(), String.valueOf(Login.this.passwordField.getPassword()));
 
                         if (session == null) {
-                            JOptionPane.showMessageDialog(parent, "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
-                            enableLogin();
+                            JOptionPane.showMessageDialog(Login.this.parent, "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
+                            Login.this.enableLogin();
                         } else if (session.getUsername().equals("")) {
-                            JOptionPane.showMessageDialog(parent, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
-                            enableLogin();
+                            JOptionPane.showMessageDialog(Login.this.parent, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
+                            Login.this.enableLogin();
                         } else {
-                            startMenu(session);
+                            Login.this.startMenu(session);
                         }
 
                     }
@@ -233,35 +234,35 @@ public class Login extends GeiPanel implements ActionListener, KeyListener, Mous
 
         this.parent.updateFrameRate();
 
-        emailLabel.setBounds(Main.w - 230, 140, 210, 20);
-        emailField.setBounds(Main.w - 230, 160, 210, 30);
+        this.emailLabel.setBounds(Main.w - 230, 140, 210, 20);
+        this.emailField.setBounds(Main.w - 230, 160, 210, 30);
 
-        passwordLabel.setBounds(Main.w - 230, 200, 210, 20);
-        passwordField.setBounds(Main.w - 230, 220, 210, 30);
+        this.passwordLabel.setBounds(Main.w - 230, 200, 210, 20);
+        this.passwordField.setBounds(Main.w - 230, 220, 210, 30);
 
-        loginButton.setBounds(Main.w - 230, Main.h - 200, 210, 30);
+        this.loginButton.setBounds(Main.w - 230, Main.h - 200, 210, 30);
 
-        forgetPasswordLabel.setBounds(Main.w - 230, Main.h - 70, 210, 20);
-        createAccountLabel.setBounds(Main.w - 230, Main.h - 90, 210, 20);
+        this.forgetPasswordLabel.setBounds(Main.w - 230, Main.h - 70, 210, 20);
+        this.createAccountLabel.setBounds(Main.w - 230, Main.h - 90, 210, 20);
 
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, Main.w, Main.h);
 
         int size = Math.max(Main.w - 250, Main.h);
 
-        g.drawImage(backgroundFrames.get(frame), 0, 0, size, size, this);
-        g.drawImage(rasteraLogo, 30, getHeight() - 55, 150, 25, this);
+        g.drawImage(this.backgroundFrames.get(this.frame), 0, 0, size, size, this);
+        g.drawImage(this.rasteraLogo, 30, this.getHeight() - 55, 150, 25, this);
 
 
         g.setColor(new Color(1, 10, 19));
         g.fillRect(Main.w - 250, 0, 250, Main.h);
 
-        g.drawImage(hubgLogo, Main.w - 230, 40, 210, 66, this);
+        g.drawImage(this.hubgLogo, Main.w - 230, 40, 210, 66, this);
 
-        if (frame == frameCap) {
-            frame = 0;
+        if (this.frame == this.frameCap) {
+            this.frame = 0;
         } else {
-            frame++;
+            this.frame++;
         }
 
     }

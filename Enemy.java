@@ -1,7 +1,12 @@
 public class Enemy {
-    public String name;
-    public float x, y, vx, vy, rotation, rotationVelocity;
-    private int id;
+    private final String name;
+    private float x;
+    private float y;
+    public float vx;
+    public float vy;
+    private float rotation;
+    public float rotationVelocity;
+    private final int id;
 
     public Enemy(String name, float[] info) {
         this.name = name;
@@ -18,6 +23,6 @@ public class Enemy {
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 }

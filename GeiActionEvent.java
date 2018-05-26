@@ -1,14 +1,11 @@
-import javax.swing.*;
 import java.awt.*;
-import java.awt.Dimension;
 import java.util.*;
 
 public class GeiActionEvent {
 
-	public static enum Type {KILL, KILLED, WIN, INFO}
+	public enum Type {KILL, KILLED, WIN, INFO}
 
-	;
-	public static HashMap<Type, Color> typeColorHashMap = new HashMap<>();
+	private static final HashMap<Type, Color> typeColorHashMap = new HashMap<>();
 
 	static {
 		typeColorHashMap.put(Type.KILL, new Color(0, 63, 255));
@@ -17,8 +14,8 @@ public class GeiActionEvent {
 		typeColorHashMap.put(Type.INFO, new Color(200, 200, 0));
 	}
 
-	public static int height = 80;
-	public static int width = 210;
+	public static final int height = 80;
+	private static int width = 210;
 
 	private String caption;
 	private String time;
@@ -32,10 +29,10 @@ public class GeiActionEvent {
 
 	public void update(Graphics g, int x, int y, int width) {
 
-		this.width = width; // Dynamically changes width based on presence of nasty scrollbar
+		GeiActionEvent.width = width; // Dynamically changes width based on presence of nasty scrollbar
 
 		g.setColor(new Color(5, 15, 24));
-		g.fillRect(x, y, this.width, this.height);
+		g.fillRect(x, y, GeiActionEvent.width, height);
 
 		g.setFont(Main.getFont("Lato-Light", 15));
 
@@ -46,7 +43,7 @@ public class GeiActionEvent {
 		g.drawString(this.time, x + 10, y + height - 8);
 
 		g.setColor(typeColorHashMap.get(this.type));
-		g.fillRect(this.width - 3 + x, y, 3, this.height);
+		g.fillRect(GeiActionEvent.width - 3 + x, y, 3, height);
 
 	}
 }

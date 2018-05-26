@@ -1,8 +1,5 @@
 import javax.swing.JTextField;
 import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
 
 class GeiTextField extends JTextField {
     public GeiTextField() {
