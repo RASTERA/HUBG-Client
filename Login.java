@@ -196,23 +196,23 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
                 System.out.println("Trying to login...");
 
                 // Separate thread so that UI thread is not blocked
-                Thread authentication = new Thread() {
-                    public void run() {
-                        //Session session = new Session("Hi", "Hi");
-                        Session session = Communicator.login(Login.this.emailField.getText(), String.valueOf(Login.this.passwordField.getPassword()));
+                Thread authentication = new Thread(() -> {
 
-                        if (session == null) {
-                            JOptionPane.showMessageDialog(Login.this.parent, "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
-                            Login.this.enableLogin();
-                        } else if (session.getUsername().equals("")) {
-                            JOptionPane.showMessageDialog(Login.this.parent, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
-                            Login.this.enableLogin();
-                        } else {
-                            Login.this.startMenu(session);
-                        }
+                    //Session session = new Session("Hi", "Hi");
+                    Session session = Communicator.login(Login.this.emailField.getText(), String.valueOf(Login.this.passwordField.getPassword()));
 
+                    if (session == null) {
+                        JOptionPane.showMessageDialog(Login.this.parent, "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
+                        Login.this.enableLogin();
+                    } else if (session.getUsername().equals("")) {
+                        JOptionPane.showMessageDialog(Login.this.parent, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
+                        Login.this.enableLogin();
+                    } else {
+                        Login.this.startMenu(session);
                     }
-                };
+
+
+                });
 
                 authentication.start();
                 break;

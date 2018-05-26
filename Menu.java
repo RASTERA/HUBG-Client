@@ -65,19 +65,19 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.addKeyListener(this);
         this.setFocusable(true);
 
-        Thread loadResources = new Thread() {
-            public void run() {
-                System.out.println("Loading stats...");
-                Menu.this.updateStats();
-                Menu.this.statsLoaded = true;
+        Thread loadResources = new Thread(() -> {
 
-                // Waits for stats stuff to load
-                Menu.this.repaint();
-                Menu.this.remove(Menu.this.loadingBar);
-                Menu.this.add(Menu.this.recentActions);
-                Menu.this.add(Menu.this.startButton);
-            }
-        };
+            System.out.println("Loading stats...");
+            Menu.this.updateStats();
+            Menu.this.statsLoaded = true;
+
+            // Waits for stats stuff to load
+            Menu.this.repaint();
+            Menu.this.remove(Menu.this.loadingBar);
+            Menu.this.add(Menu.this.recentActions);
+            Menu.this.add(Menu.this.startButton);
+
+        });
 
         loadResources.start();
 
