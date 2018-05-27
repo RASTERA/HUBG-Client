@@ -17,7 +17,7 @@ class Game extends GeiPanel {
 
 		try {
 			this.background = ImageIO.read(new File("images/menu-background.png"));
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Main.errorQuit(e);
 		}
 
@@ -25,6 +25,7 @@ class Game extends GeiPanel {
 		System.out.println("IM ALIVE!!!!");
 	}
 
+	@Override
 	public void paintComponent(Graphics graphics) {
 
 		this.parent.updateFrameRate();
