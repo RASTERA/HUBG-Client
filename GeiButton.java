@@ -14,18 +14,13 @@ class GeiButton extends JButton {
         this.setFocusPainted(false);
 
         this.addChangeListener(evt -> {
-            if (GeiButton.this.getModel().isPressed()) {
-                GeiButton.this.setBackground(new Color(30, 35, 40));
+            if (this.getModel().isPressed()) {
+                this.setBackground(new Color(30, 35, 40));
             } else if (GeiButton.this.getModel().isRollover()) {
-                GeiButton.this.setBackground(new Color(30, 35, 40));
+                this.setBackground(new Color(30, 35, 40));
             } else {
-                GeiButton.this.setBackground(new Color(30, 35, 40));
+                this.setBackground(new Color(30, 35, 40));
             }
         });
-
-
-
-
-
     }
 }
