@@ -69,7 +69,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.emailField = new GeiTextField();
         this.passwordField = new JPasswordField();
 
-        this.emailLabel = new JLabel("Email");
+        this.emailLabel = new JLabel("Email/Username");
         this.passwordLabel = new JLabel("Password");
         this.forgetPasswordLabel = new JLabel("Forgot your password?");
         this.createAccountLabel = new JLabel("Create an account");
@@ -202,10 +202,10 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
                     Session session = Communicator.login(Login.this.emailField.getText(), String.valueOf(Login.this.passwordField.getPassword()));
 
                     if (session == null) {
-                        JOptionPane.showMessageDialog(Login.this.parent, "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                         Login.this.enableLogin();
                     } else if (session.getUsername().equals("")) {
-                        JOptionPane.showMessageDialog(Login.this.parent, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                         Login.this.enableLogin();
                     } else {
                         Login.this.startMenu(session);

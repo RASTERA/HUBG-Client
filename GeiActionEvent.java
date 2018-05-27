@@ -21,8 +21,8 @@ public class GeiActionEvent {
 	private String time;
 	private Type type;
 
-	public GeiActionEvent(Type type, String enemyName, String time) {
-		this.caption = enemyName;
+	public GeiActionEvent(Type type, String caption, String time) {
+		this.caption = caption;
 		this.time = time;
 		this.type = type;
 	}
@@ -36,8 +36,36 @@ public class GeiActionEvent {
 
 		g.setFont(Main.getFont("Lato-Light", 15));
 
+		FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 15));
+		ArrayList<String> lines = new ArrayList<>();
+		ArrayList<String> words = new ArrayList<>(Arrays.asList(this.caption.split(" ")));
+		String currentLine = "";
+		int lineWidth = (int) (width * 0.9);
+
+		while (true) {
+
+			if (words.size() > 0 && metrics.stringWidth(words.get(0)) > lineWidth) {
+				words.set(0, words.get(0).substring(0, 6) + "...");
+			}
+
+			if (words.size() > 0 && metrics.stringWidth(currentLine + " " + words.get(0)) <= lineWidth) {
+				currentLine += " " + words.get(0);
+				words.remove(0);
+			} else {
+				lines.add(currentLine.trim());
+				currentLine = "";
+
+				if (words.size() == 0) {
+					break;
+				}
+			}
+		}
+
 		g.setColor(Color.WHITE);
-		g.drawString(this.caption, x + 10, y + 20);
+
+		for (int i = 0; i < lines.size(); i++) {
+			g.drawString(lines.get(i), x + 10, y + 20 + (metrics.getHeight() + 2) * i);
+		}
 
 		g.setColor(new Color(100, 100, 100));
 		g.drawString(this.time, x + 10, y + height - 8);

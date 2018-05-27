@@ -161,6 +161,10 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
     }
 
     public static void errorQuit(String e) {
+        if (masterTimer != null) {
+            masterTimer.stop();
+            masterTimer = null;
+        }
 
         System.out.println("Something went wrong");
         JOptionPane.showMessageDialog(null, "HUBG experienced an unexpected error:\n\n" + e, "HUBG Error", JOptionPane.ERROR_MESSAGE);
