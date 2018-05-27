@@ -252,16 +252,16 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 
 		this.parent.updateFrameRate();
 
-		this.emailOrUserLabel.setBounds(Main.w - 238, 140, 210, 20);
-		this.emailField.setBounds(Main.w - 238, 160, 210, 30);
+		this.emailOrUserLabel.setBounds(Main.w - 230, 140, 210, 20);
+		this.emailField.setBounds(Main.w - 230, 160, 210, 30);
 
-		this.passwordLabel.setBounds(Main.w - 238, 200, 210, 20);
-		this.passwordField.setBounds(Main.w - 238, 220, 210, 30);
+		this.passwordLabel.setBounds(Main.w - 230, 200, 210, 20);
+		this.passwordField.setBounds(Main.w - 230, 220, 210, 30);
 
-		this.loginButton.setBounds(Main.w - 238, Main.h - 200, 210, 30);
+		this.loginButton.setBounds(Main.w - 230, Main.h - 200, 210, 30);
 
-		this.forgetPasswordLabel.setBounds(Main.w - 238, Main.h - 70, 210, 20);
-		this.createAccountLabel.setBounds(Main.w - 238, Main.h - 90, 210, 20);
+		this.forgetPasswordLabel.setBounds(Main.w - 230, Main.h - 70, 210, 20);
+		this.createAccountLabel.setBounds(Main.w - 230, Main.h - 90, 210, 20);
 
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, Main.w, Main.h);
@@ -275,7 +275,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 		g.setColor(new Color(1, 10, 19));
 		g.fillRect(Main.w - 250, 0, 250, Main.h);
 
-		g.drawImage(this.hubgLogo, Main.w - 238, 40, 210, 66, this);
+		g.drawImage(this.hubgLogo, Main.w - 230, 40, 210, 66, this);
 
 		if (this.frame == this.frameCap) {
 			this.frame = 0;
