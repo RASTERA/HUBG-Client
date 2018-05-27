@@ -23,6 +23,8 @@ class Game extends GeiPanel {
 
 		this.repaint();
 		System.out.println("IM ALIVE!!!!");
+
+		Rah.webbrowserOpen("https://agar.io");
 	}
 
 	@Override

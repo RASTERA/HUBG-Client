@@ -268,8 +268,8 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 
 		int size = Math.max(Main.w - 250, Main.h);
 
-		g.drawImage(this.backgroundFrames.get(this.frame), 0, 0, size, size, this);
-		g.drawImage(this.rasteraLogo, 30, this.getHeight() - 55, 150, 25, this);
+        g.drawImage(this.backgroundFrames.get(this.frame), 0, Main.h - size, size, size, this);
+        g.drawImage(this.rasteraLogo, 30, this.getHeight() - 55, 150, 25, this);
 
 
 		g.setColor(new Color(1, 10, 19));

@@ -16,11 +16,19 @@ import java.util.HashMap;
 
 class Menu extends GeiPanel implements KeyListener, ActionListener {
 
+    private enum SUBPANEL { ACTIVITY, SHOP }
+    private SUBPANEL currentPanel = SUBPANEL.ACTIVITY;
     private final GeiButton startButton;
-    private final JScrollPane recentActions;
+    private final GeiButton activityButton;
+    private final GeiButton shopButton;
+    private final GeiButton logoutButton;
+    private final JScrollPane activityScrollPane;
+    private final JScrollPane shopScrollPane;
     private final JProgressBar loadingBar;
     private GeiStatsPanel recentActionsPanel;
-    private final int statsPanelWidth = 250;
+    private final int activityPanelWidth = 250;
+    private final int shopPanelWidth = 500;
+    private int currentPanelWidth = activityPanelWidth;
     private BufferedImage background;
     private String statsText = "";
     private long lastUpdated = System.currentTimeMillis();
@@ -45,8 +53,20 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.startButton.setActionCommand("start");
         this.startButton.addActionListener(this);
 
+        this.activityButton = new GeiButton("Activity");
+        this.activityButton.setActionCommand("activity");
+        this.activityButton.addActionListener(this);
+
+        this.shopButton = new GeiButton("Shop");
+        this.shopButton.setActionCommand("shop");
+        this.shopButton.addActionListener(this);
+
+        this.logoutButton = new GeiButton("Logout");
+        this.logoutButton.setActionCommand("logout");
+        this.logoutButton.addActionListener(this);
+
         try {
-            this.recentActionsPanel = new GeiStatsPanel(this.statsPanelWidth, Main.session.user.getJSONArray("actions"));
+            this.recentActionsPanel = new GeiStatsPanel(this.activityPanelWidth, Main.session.user.getJSONArray("actions"));
         } catch (Exception e) {
             Main.errorQuit(e);
         }
@@ -54,12 +74,19 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.loadingBar = new JProgressBar();
         this.loadingBar.setIndeterminate(true);
 
-        this.recentActions = new JScrollPane(this.recentActionsPanel);
-        this.recentActions.setBorder(null);
-        this.recentActions.getVerticalScrollBar().setUnitIncrement(16);
-        this.recentActions.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
+        this.shopScrollPane = new JScrollPane(this.recentActionsPanel);
+        this.shopScrollPane.setBorder(null);
+        this.shopScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        this.shopScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
+        this.shopScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        this.recentActionsPanel.setParent(this.recentActions);
+        this.activityScrollPane = new JScrollPane(this.recentActionsPanel);
+        this.activityScrollPane.setBorder(null);
+        this.activityScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        this.activityScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
+        this.activityScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        this.recentActionsPanel.setParent(this.activityScrollPane);
 
         this.add(this.loadingBar);
         this.addKeyListener(this);
@@ -74,8 +101,12 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             // Waits for stats stuff to load
             Menu.this.repaint();
             Menu.this.remove(Menu.this.loadingBar);
-            Menu.this.add(Menu.this.recentActions);
+            Menu.this.add(Menu.this.activityScrollPane);
+
             Menu.this.add(Menu.this.startButton);
+            Menu.this.add(Menu.this.activityButton);
+            Menu.this.add(Menu.this.shopButton);
+            Menu.this.add(Menu.this.logoutButton);
 
         });
 
@@ -114,6 +145,49 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 this.removeKeyListener(this);
                 this.parent.startPage(Main.Pages.GAME);
+                break;
+
+            case "shop":
+
+                System.out.println("SWITCHED TO SHOP");
+
+                this.currentPanel = SUBPANEL.SHOP;
+                this.currentPanelWidth = this.shopPanelWidth;
+
+                remove(activityScrollPane);
+                add(shopScrollPane);
+
+                repaint();
+
+                break;
+
+            case "activity":
+
+                System.out.println("SWITCHED TO ACTIVITY");
+
+                this.currentPanel = SUBPANEL.ACTIVITY;
+                this.currentPanelWidth = this.activityPanelWidth;
+
+                remove(shopScrollPane);
+                add(activityScrollPane);
+
+                repaint();
+
+                break;
+
+            case "logout":
+
+                if(JOptionPane.showConfirmDialog (null, "Are you sure you want to logout?","RASTERA Authentication Service", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+                    System.out.println("SWITCH");
+
+                    Main.session = null;
+                    this.removeKeyListener(this);
+                    this.parent.startPage(Main.Pages.LOGIN);
+
+                }
+
+
+                break;
         }
     }
 
@@ -157,33 +231,44 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             this.startButton.setBounds(20, 10, 150, 40);
 
+            this.activityButton.setBounds(getWidth() - this.currentPanelWidth, getHeight() - 40, this.currentPanelWidth / 3, 40);
+            this.shopButton.setBounds(getWidth() - this.currentPanelWidth * 2 / 3, getHeight() - 40, this.currentPanelWidth / 3, 40);
+            this.logoutButton.setBounds(getWidth() - this.currentPanelWidth * 1 / 3, getHeight() - 40, this.currentPanelWidth / 3, 40);
+
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, Main.w, Main.h);
 
-            int size = Math.max(this.getWidth() - this.statsPanelWidth, this.getHeight() - 60);
+            int size = Math.max(this.getWidth() - this.currentPanelWidth, this.getHeight() - 60);
 
             g.drawImage(this.background, 0, 60, size, size, this);
 
             g.setColor(new Color(5, 15, 24));
             g.fillRect(0, 0, Main.w, 60);
 
-            //g.setColor(new Color(1, 10, 19));
-            //g.fillRect(Main.w - 250, 0, 250, Main.h);
-
             // Recent Actions panel
-            this.recentActions.setBounds(Main.w - this.statsPanelWidth, 60, this.statsPanelWidth, Main.h - 60);
-            this.recentActions.revalidate();
-            this.recentActions.repaint();
+            if (this.currentPanel == SUBPANEL.ACTIVITY) {
+
+                this.activityScrollPane.setBounds(getWidth() - this.activityPanelWidth, 60, this.activityPanelWidth, getHeight() - 100);
+                this.activityScrollPane.revalidate();
+                this.activityScrollPane.repaint();
+
+            } else if (this.currentPanel == SUBPANEL.SHOP) {
+
+                this.shopScrollPane.setBounds(getWidth() - this.shopPanelWidth, 60, this.shopPanelWidth, getHeight() - 100);
+                this.shopScrollPane.revalidate();
+                this.shopScrollPane.repaint();
+                
+            }
 
             g.setColor(Color.WHITE);
 
             // Rank badge
             g.setFont(Main.getFont("Lato-Normal", 30));
-            g.drawString("" + Main.session.getRank(), Main.w - this.statsPanelWidth + 20, 40);
+            g.drawString("" + Main.session.getRank(), Main.w - this.activityPanelWidth + 20, 40);
 
             // Username
             g.setFont(Main.getFont("Lato-Light", 30));
-            g.drawString(Main.session.getUsername(), Main.w - this.statsPanelWidth + 60, 40);
+            g.drawString(Main.session.getUsername(), Main.w - this.activityPanelWidth + 60, 40);
 
             // Top Bar stats
             g.setFont(Main.getFont("Lato-Light", 20));
@@ -192,13 +277,13 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             // Last updated
             String updateText = "Last sync: " + new Date(this.lastUpdated / 1000).toString();
+            g.setColor(new Color(50, 50, 50));
             g.setFont(Main.getFont("Lato-Light", 12));
-            metrics = g.getFontMetrics(Main.getFont("Lato-Light", 12));
             g.drawString(updateText, 10, this.getHeight() - 15);
 
             // Penguin preview
             int dimension = (int) (Math.min(this.getHeight(), this.getWidth()) * 0.6);
-            g.drawImage(this.skinHashMap.get(Main.session.getSkin()), (this.getWidth() - this.statsPanelWidth) / 2 - dimension / 2, (this.getHeight() + 60) / 2 - dimension / 2, dimension, dimension, this);
+            g.drawImage(this.skinHashMap.get(Main.session.getSkin()), (this.getWidth() - this.currentPanelWidth) / 2 - dimension / 2, (this.getHeight() + 60) / 2 - dimension / 2, dimension, dimension, this);
         }
     }
 }
