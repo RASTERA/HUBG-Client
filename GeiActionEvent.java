@@ -3,16 +3,31 @@ import java.util.*;
 
 public class GeiActionEvent {
 
-	public enum Type {KILL, KILLED, WIN, INFO}
+	public enum Type {
+		KILL(new Color(0, 63, 255)),
+		KILLED(new Color(135, 6, 0)),
+		WIN(new Color(30, 165, 0)),
+		INFO(new Color(200, 200, 0));
 
-	private static final HashMap<Type, Color> typeColorHashMap = new HashMap<>();
+		private Color color;
 
-	static {
-		typeColorHashMap.put(Type.KILL, new Color(0, 63, 255));
-		typeColorHashMap.put(Type.KILLED, new Color(135, 6, 0));
-		typeColorHashMap.put(Type.WIN, new Color(30, 165, 0));
-		typeColorHashMap.put(Type.INFO, new Color(200, 200, 0));
+		Type(Color color) {
+			this.color = color;
+		}
+
+		public Color getColor() {
+			return color;
+		}
 	}
+
+//	private static final HashMap<Type, Color> typeColorHashMap = new HashMap<>();
+//
+//	static {
+//		typeColorHashMap.put(Type.KILL, new Color(0, 63, 255));
+//		typeColorHashMap.put(Type.KILLED, new Color(135, 6, 0));
+//		typeColorHashMap.put(Type.WIN, new Color(30, 165, 0));
+//		typeColorHashMap.put(Type.INFO, new Color(200, 200, 0));
+//	}
 
 	public static final int height = 80;
 	private static int width = 210;
@@ -70,7 +85,7 @@ public class GeiActionEvent {
 		g.setColor(new Color(100, 100, 100));
 		g.drawString(this.time, x + 10, y + height - 8);
 
-		g.setColor(typeColorHashMap.get(this.type));
+		g.setColor(this.type.getColor());
 		g.fillRect(GeiActionEvent.width - 3 + x, y, 3, height);
 
 	}
