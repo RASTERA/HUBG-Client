@@ -4,42 +4,44 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 class Game extends GeiPanel {
 
-    private BufferedImage background;
-    private String loadingMessage = "Game is in progress...";
+	private BufferedImage background;
 
-    public Game(Main parent) {
-        this.parent = parent;
-        this.parent.setMasterTimer(50);
-        this.constantUpdate = false;
+	public Game(Main parent) {
+		this.parent = parent;
+		this.parent.setMasterTimer(50);
+		this.constantUpdate = false;
 
-        try {
-            this.background = ImageIO.read(new File("images/menu-background.png"));
-        } catch (Exception e) {
-            Main.errorQuit(e);
-        }
+		try {
+			this.background = ImageIO.read(new File("images/menu-background.png"));
+		} catch (IOException e) {
+			Main.errorQuit(e);
+		}
 
-        this.repaint();
-        System.out.println("IM ALIVE!!!!");
-    }
+		this.repaint();
+		System.out.println("IM ALIVE!!!!");
+	}
 
-    public void paintComponent(Graphics graphics) {
+	public void paintComponent(Graphics graphics) {
 
-        this.parent.updateFrameRate();
+		this.parent.updateFrameRate();
 
-        Graphics2D g = (Graphics2D) graphics;
+		Graphics2D g = (Graphics2D) graphics;
 
-        int dimension = Math.max(this.getHeight(), this.getWidth());
-        g.drawImage(this.background, 0, 0, dimension, dimension, this);
+		int dimension = Math.max(this.getHeight(), this.getWidth());
+		g.drawImage(this.background, 0, 0, dimension, dimension, this);
 
-        g.setColor(Color.WHITE);
-        g.setFont(Main.getFont("Lato-Light", 30));
-        FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 30));
-        g.drawString(this.loadingMessage, this.getWidth() / 2 - metrics.stringWidth(this.loadingMessage) / 2, this.getHeight() / 2 - metrics.getHeight() / 2);
+		String loadingMessage = "Game is in progress...";
+
+		g.setColor(Color.WHITE);
+		g.setFont(Main.getFont("Lato-Light", 30));
+		FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 30));
+		g.drawString(loadingMessage, this.getWidth() / 2 - metrics.stringWidth(loadingMessage) / 2, this.getHeight() / 2 - metrics.getHeight() / 2);
 
 
-    }
+	}
 
 }
