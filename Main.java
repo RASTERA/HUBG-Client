@@ -151,7 +151,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 				this.repaint();
 			}
 
-			if (panel instanceof Menu && ((Menu) panel).currentPanelVelocity == 0) {
+			if (panel instanceof Menu) {
 				((Menu) panel).updateStats();
 			}
 

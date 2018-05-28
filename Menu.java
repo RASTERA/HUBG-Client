@@ -29,9 +29,9 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     private final int activityPanelWidth = 250;
     private final int shopPanelWidth = 500;
     private int currentPanelWidth = activityPanelWidth;
-    private double currentPanelWidthPrecise = (float) currentPanelWidth;
-    public int currentPanelVelocity = 0;
-    private int currentPanelTarget = activityPanelWidth;
+    //private double currentPanelWidthPrecise = (float) currentPanelWidth;
+    //public int currentPanelVelocity = 0;
+    //private int currentPanelTarget = activityPanelWidth;
     private BufferedImage background;
     private String statsText = "";
     private long lastUpdated = System.currentTimeMillis();
@@ -152,41 +152,43 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             case "shop":
 
-                if (this.currentPanelVelocity == 0) {
+                //if (this.currentPanelVelocity == 0) {
 
-                    System.out.println("SWITCHED TO SHOP");
+                System.out.println("SWITCHED TO SHOP");
 
-                    this.currentPanel = SUBPANEL.SHOP;
-                    this.currentPanelTarget = this.shopPanelWidth;
-                    this.currentPanelVelocity = this.currentPanelTarget > this.currentPanelWidth ? 1 : -1;
-                    this.parent.setMasterTimer(500);
+                this.currentPanel = SUBPANEL.SHOP;
+                this.currentPanelWidth = this.shopPanelWidth;
+                //this.currentPanelTarget = this.shopPanelWidth;
+                //this.currentPanelVelocity = this.currentPanelTarget > this.currentPanelWidth ? 1 : -1;
+                //this.parent.setMasterTimer(500);
 
-                    remove(activityScrollPane);
-                    add(shopScrollPane);
+                remove(activityScrollPane);
+                add(shopScrollPane);
 
-                    repaint();
+                repaint();
 
-                }
+                //}
 
                 break;
 
             case "activity":
 
-                if (this.currentPanelVelocity == 0) {
+                //if (this.currentPanelVelocity == 0) {
 
-                    System.out.println("SWITCHED TO ACTIVITY");
+                System.out.println("SWITCHED TO ACTIVITY");
 
-                    this.currentPanel = SUBPANEL.ACTIVITY;
-                    this.currentPanelTarget = this.activityPanelWidth;
-                    this.currentPanelVelocity = this.currentPanelTarget > this.currentPanelWidth ? 1 : -1;
-                    this.parent.setMasterTimer(500);
+                this.currentPanel = SUBPANEL.ACTIVITY;
+                this.currentPanelWidth = this.activityPanelWidth;
+                //this.currentPanelTarget = this.activityPanelWidth;
+                //this.currentPanelVelocity = this.currentPanelTarget > this.currentPanelWidth ? 1 : -1;
+                //this.parent.setMasterTimer(500);
 
-                    remove(shopScrollPane);
-                    add(activityScrollPane);
+                remove(shopScrollPane);
+                add(activityScrollPane);
 
-                    repaint();
+                repaint();
 
-                }
+                //}
 
                 break;
 
@@ -238,6 +240,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
         } else {
 
+            /*
             if (this.currentPanelVelocity != 0) {
 
                 this.shopButton.setEnabled(false);
@@ -262,8 +265,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                     System.out.println("reset");
                     repaint();
                 }
-
-            }
+            } */
 
             g.setRenderingHint(
                     RenderingHints.KEY_TEXT_ANTIALIASING,
