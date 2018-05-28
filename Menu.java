@@ -16,18 +16,23 @@ import java.util.HashMap;
 
 class Menu extends GeiPanel implements KeyListener, ActionListener {
 
-    private enum SUBPANEL { ACTIVITY, SHOP }
+    private enum SUBPANEL { ACTIVITY, SHOP, CHAT }
     private SUBPANEL currentPanel = SUBPANEL.ACTIVITY;
     private final GeiButton startButton;
     private final GeiButton activityButton;
     private final GeiButton shopButton;
+    private final GeiButton chatButton;
     private final GeiButton logoutButton;
     private final JScrollPane activityScrollPane;
+    private final JScrollPane chatScrollPane;
     private final JScrollPane shopScrollPane;
     private final JProgressBar loadingBar;
     private GeiStatsPanel recentActionsPanel;
+    private GeiShopPanel shopPanel;
+    private GeiChatPanel chatPanel;
     private final int activityPanelWidth = 250;
     private final int shopPanelWidth = 500;
+    private final int chatPanelWidth = 500;
     private int currentPanelWidth = activityPanelWidth;
     //private double currentPanelWidthPrecise = (float) currentPanelWidth;
     //public int currentPanelVelocity = 0;
@@ -64,20 +69,32 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.shopButton.setActionCommand("shop");
         this.shopButton.addActionListener(this);
 
+        this.chatButton = new GeiButton("Chat");
+        this.chatButton.setActionCommand("chat");
+        this.chatButton.addActionListener(this);
+
         this.logoutButton = new GeiButton("Logout");
         this.logoutButton.setActionCommand("logout");
         this.logoutButton.addActionListener(this);
 
         try {
             this.recentActionsPanel = new GeiStatsPanel(this.activityPanelWidth, Main.session.user.getJSONArray("actions"));
+            this.shopPanel = new GeiShopPanel(this.shopPanelWidth, Main.session.user.getJSONArray("actions"));
+            this.chatPanel = new GeiChatPanel(this.chatPanelWidth, Main.session.user.getJSONArray("actions"));
         } catch (Exception e) {
             Main.errorQuit(e);
         }
 
         this.loadingBar = new JProgressBar();
         this.loadingBar.setIndeterminate(true);
+        
+        this.chatScrollPane = new JScrollPane(this.chatPanel);
+        this.chatScrollPane.setBorder(null);
+        this.chatScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        this.chatScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
+        this.chatScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        this.shopScrollPane = new JScrollPane(this.recentActionsPanel);
+        this.shopScrollPane = new JScrollPane(this.shopPanel);
         this.shopScrollPane.setBorder(null);
         this.shopScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         this.shopScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
@@ -90,6 +107,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.activityScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         this.recentActionsPanel.setParent(this.activityScrollPane);
+        this.shopPanel.setParent(this.shopScrollPane);
 
         this.add(this.loadingBar);
         this.addKeyListener(this);
@@ -109,6 +127,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             Menu.this.add(Menu.this.startButton);
             Menu.this.add(Menu.this.activityButton);
             Menu.this.add(Menu.this.shopButton);
+            Menu.this.add(Menu.this.chatButton);
             Menu.this.add(Menu.this.logoutButton);
 
         });
@@ -140,6 +159,12 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         }
     }
 
+    public void clearPanels() {
+        remove(shopScrollPane);
+        remove(chatScrollPane);
+        remove(activityScrollPane);
+    }
+
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case "start":
@@ -149,6 +174,28 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 this.removeKeyListener(this);
                 this.parent.startPage(Main.Pages.GAME);
                 break;
+
+            case "chat":
+
+                //if (this.currentPanelVelocity == 0) {
+
+                System.out.println("SWITCHED TO CHAT");
+
+                this.currentPanel = SUBPANEL.CHAT;
+                this.currentPanelWidth = this.chatPanelWidth;
+                //this.currentPanelTarget = this.shopPanelWidth;
+                //this.currentPanelVelocity = this.currentPanelTarget > this.currentPanelWidth ? 1 : -1;
+                //this.parent.setMasterTimer(500);
+
+                clearPanels();
+                add(chatScrollPane);
+
+                repaint();
+
+                //}
+
+                break;
+
 
             case "shop":
 
@@ -162,7 +209,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 //this.currentPanelVelocity = this.currentPanelTarget > this.currentPanelWidth ? 1 : -1;
                 //this.parent.setMasterTimer(500);
 
-                remove(activityScrollPane);
+                clearPanels();
                 add(shopScrollPane);
 
                 repaint();
@@ -183,7 +230,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 //this.currentPanelVelocity = this.currentPanelTarget > this.currentPanelWidth ? 1 : -1;
                 //this.parent.setMasterTimer(500);
 
-                remove(shopScrollPane);
+                clearPanels();
                 add(activityScrollPane);
 
                 repaint();
@@ -275,9 +322,10 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             this.startButton.setBounds(20, 10, 150, 40);
 
-            this.activityButton.setBounds(getWidth() - this.currentPanelWidth, getHeight() - 40, this.currentPanelWidth / 3, 40);
-            this.shopButton.setBounds(getWidth() - this.currentPanelWidth * 2 / 3, getHeight() - 40, this.currentPanelWidth / 3, 40);
-            this.logoutButton.setBounds(getWidth() - this.currentPanelWidth * 1 / 3, getHeight() - 40, this.currentPanelWidth / 3, 40);
+            this.activityButton.setBounds(getWidth() - this.currentPanelWidth, getHeight() - 40, this.currentPanelWidth / 4, 40);
+            this.shopButton.setBounds(getWidth() - this.currentPanelWidth * 3 / 4, getHeight() - 40, this.currentPanelWidth / 4, 40);
+            this.chatButton.setBounds(getWidth() - this.currentPanelWidth * 1 / 2, getHeight() - 40, this.currentPanelWidth / 4, 40);
+            this.logoutButton.setBounds(getWidth() - this.currentPanelWidth * 1 / 4, getHeight() - 40, this.currentPanelWidth / 4, 40);
 
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, Main.w, Main.h);
@@ -302,6 +350,12 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                     this.activityScrollPane.revalidate();
                     this.activityScrollPane.repaint();
                     break;
+
+                case CHAT:
+                    this.chatScrollPane.setBounds(getWidth() - this.chatPanelWidth, 60, this.chatPanelWidth, getHeight() - 100);
+                    this.chatScrollPane.revalidate();
+                    this.chatScrollPane.repaint();
+                    break;   
             }
 
             g.setColor(Color.WHITE);
