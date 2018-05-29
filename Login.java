@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 class Login extends GeiPanel implements ActionListener, KeyListener, MouseListener {
 
-	private final GeiTextField emailField;
+	private final GeiTextField emailOrUserField;
 	private final JPasswordField passwordField;
 	private final JLabel emailOrUserLabel;
 	private final JLabel passwordLabel;
@@ -66,7 +66,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 			Main.errorQuit(e);
 		}
 
-		this.emailField = new GeiTextField();
+		this.emailOrUserField = new GeiTextField();
 		this.passwordField = new JPasswordField();
 
 		this.emailOrUserLabel = new JLabel("Email/Username");
@@ -83,13 +83,13 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 		this.loginButton.setEnabled(false);
 
 		// Submit on enter
-		this.emailField.addActionListener(e -> this.loginButton.doClick());
+		this.emailOrUserField.addActionListener(e -> this.loginButton.doClick());
 
 		this.passwordField.addActionListener(e -> this.loginButton.doClick());
 
 		// Validate text
-		this.emailField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		this.emailField.addKeyListener(new KeyAdapter() {
+		this.emailOrUserField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		this.emailOrUserField.addKeyListener(new KeyAdapter() {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -138,7 +138,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 		this.add(this.forgetPasswordLabel);
 		this.add(this.createAccountLabel);
 
-		this.add(this.emailField);
+		this.add(this.emailOrUserField);
 		this.add(this.passwordField);
 
 		this.add(this.loginButton);
@@ -146,7 +146,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 	}
 
 	private void validateText() {
-		if (this.emailField.getText().length() > 0 && String.valueOf(this.passwordField.getPassword()).length() > 0) {
+		if (this.emailOrUserField.getText().length() > 0 && String.valueOf(this.passwordField.getPassword()).length() > 0) {
 			this.loginButton.setEnabled(true);
 		} else {
 			this.loginButton.setEnabled(false);
@@ -156,14 +156,14 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 	private void disableLogin() {
 		this.loginButton.setEnabled(false);
 		this.passwordField.setEditable(false);
-		this.emailField.setEditable(false);
+		this.emailOrUserField.setEditable(false);
 		this.loginButton.setText("Authenticating...");
 	}
 
 	private void enableLogin() {
 
 		this.passwordField.setEditable(true);
-		this.emailField.setEditable(true);
+		this.emailOrUserField.setEditable(true);
 		this.passwordField.setText("");
 		this.loginButton.setText("SIGN IN");
 	}
@@ -213,7 +213,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 				Thread authentication = new Thread(() -> {
 
 					//Session session = new Session("Hi", "Hi");
-					Session session = Communicator.login(Login.this.emailField.getText(), String.valueOf(Login.this.passwordField.getPassword()));
+					Session session = Communicator.login(Login.this.emailOrUserField.getText(), String.valueOf(Login.this.passwordField.getPassword()));
 
 					if (session == null) {
 						JOptionPane.showMessageDialog(null, "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
@@ -253,7 +253,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 		this.parent.updateFrameRate();
 
 		this.emailOrUserLabel.setBounds(Main.w - 230, 140, 210, 20);
-		this.emailField.setBounds(Main.w - 230, 160, 210, 30);
+		this.emailOrUserField.setBounds(Main.w - 230, 160, 210, 30);
 
 		this.passwordLabel.setBounds(Main.w - 230, 200, 210, 20);
 		this.passwordField.setBounds(Main.w - 230, 220, 210, 30);

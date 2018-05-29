@@ -9,7 +9,45 @@ import org.json.JSONObject;
 
 public class Communicator {
 
-	public static JSONObject refresh(String token) {
+    public static JSONObject getShop() {
+        try {
+
+            // Init connection
+            //HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/shop/").openConnection();
+            HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/shop/").openConnection();
+
+            // Header stuff
+            socket.setRequestMethod("GET");
+            socket.setConnectTimeout(5000);
+            socket.setRequestProperty("User-Agent", "Mozilla/5.0");
+            socket.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+            socket.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+            System.out.println("Getting Response of " + socket.getResponseCode());
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            String data = "";
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                data += line;
+            }
+
+            return new JSONObject(data);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Main.errorQuit("Unable to download resources. Please try again later.");
+
+            e.printStackTrace();
+            System.out.println("lol something went wrong");
+            return null;
+        }
+    }
+
+
+    public static JSONObject refresh(String token) {
 		try {
 
 			// Init connection

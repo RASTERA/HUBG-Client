@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sun.misc.base64decoder">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/sun.misc.base64decoder.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 
 class Menu extends GeiPanel implements KeyListener, ActionListener {
 
@@ -79,7 +80,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
         try {
             this.recentActionsPanel = new GeiStatsPanel(this.activityPanelWidth, Main.session.user.getJSONArray("actions"));
-            this.shopPanel = new GeiShopPanel(this.shopPanelWidth, Main.session.user.getJSONArray("actions"));
+            this.shopPanel = new GeiShopPanel(this.shopPanelWidth);
             this.chatPanel = new GeiChatPanel(this.chatPanelWidth, Main.session.user.getJSONArray("actions"));
         } catch (Exception e) {
             Main.errorQuit(e);
@@ -108,6 +109,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
         this.recentActionsPanel.setParent(this.activityScrollPane);
         this.shopPanel.setParent(this.shopScrollPane);
+        this.chatPanel.setParent(this.chatScrollPane);
 
         this.add(this.loadingBar);
         this.addKeyListener(this);
@@ -116,6 +118,14 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         Thread loadResources = new Thread(() -> {
 
             System.out.println("Loading stats...");
+
+            try {
+                Main.shopData = Communicator.getShop();
+            } catch (Exception e) {
+                Main.errorQuit(e);
+            }
+
+            Menu.this.shopPanel.updateItems();
             Menu.this.updateStats();
             Menu.this.statsLoaded = true;
 
@@ -138,6 +148,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
     public void updateStats() {
         try {
+
             JSONObject tempUser = Communicator.refresh(Main.session.getToken());
 
             if (tempUser != null) {
@@ -147,11 +158,21 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 System.out.println(tempUser);
 
                 this.statsText = String.format("%s Kills      |      %s Deaths      |      %s Matches      |      %s Zhekko", Main.session.user.getString("kills"), Main.session.user.getString("deaths"), Main.session.user.getString("matches"), Main.session.user.getString("money"));
-                this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
                 this.lastUpdated = System.currentTimeMillis();
 
             } else {
                 System.out.println("Unable to connect to server");
+            }
+
+            switch (currentPanel) {
+                case ACTIVITY:
+                    this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
+                    break;
+                case SHOP:
+                    this.shopPanel.update(Main.session.user.getJSONObject("skins"));
+                case CHAT:
+                    this.chatPanel.update(Main.session.user.getJSONArray("actions"));
+
             }
 
         } catch (Exception e) {
@@ -173,6 +194,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 this.removeKeyListener(this);
                 this.parent.startPage(Main.Pages.GAME);
+
                 break;
 
             case "chat":
@@ -189,6 +211,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 clearPanels();
                 add(chatScrollPane);
+                this.updateStats();
 
                 repaint();
 
@@ -211,6 +234,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 clearPanels();
                 add(shopScrollPane);
+                this.updateStats();
 
                 repaint();
 
@@ -232,6 +256,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 clearPanels();
                 add(activityScrollPane);
+                this.updateStats();
 
                 repaint();
 

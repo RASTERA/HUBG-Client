@@ -1,5 +1,7 @@
 // Main.java
 
+import org.json.JSONObject;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -18,6 +20,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	private static GeiPanel panel;
 	private static Pages page = Pages.LOGIN;
 	public static Session session;
+	public static JSONObject shopData;
 	private static final HashMap<String, Font> fontHashMap = new HashMap<>();
 
 	private static long prevFrame = 0;
