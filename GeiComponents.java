@@ -3,37 +3,78 @@ import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
 class GeiShopItem {
 
-    public String name;
+    public String name, description;
     public long cost;
     public BufferedImage texture;
     public boolean unlocked;
-    public static final int height = 100;
-    public static int width = 210;
+    public static final int height = 150;
+    public static int width = 500;
+    public GeiPanel parent;
 
-    public GeiShopItem(String name, JSONObject data) {
+    private GeiButton buyButton, useButton;
+
+    public GeiShopItem(GeiPanel parent, String name, JSONObject data) {
+        this.parent = parent;
+
         try {
+            this.description = data.getString("description");
             this.name = name;
             this.cost = data.getLong("cost");
             this.texture = Rah.decodeToImage(data.getString("image"));
         } catch (Exception e) {
             Main.errorQuit(e);
         }
+
+        this.buyButton = new GeiButton(String.format("Buy: Z$%d", this.cost));
+        this.buyButton.setActionCommand("buy-" + this.name);
+        this.buyButton.addActionListener((ActionListener) this.parent);
+
+        this.useButton = new GeiButton(String.format("Wear", this.cost));
+        this.useButton.setActionCommand("use-" + this.name);
+        this.useButton.addActionListener((ActionListener) this.parent);
+
+		this.updateButtonState();
+
+        this.parent.add(this.buyButton);
+        this.parent.add(this.useButton);
     }
 
+    public void updateButtonState() {
+		if (this.unlocked) {
+			this.buyButton.setEnabled(false);
+			this.useButton.setEnabled(true);
+		} else {
+			this.useButton.setEnabled(false);
+			this.buyButton.setEnabled(true);
+		}
+	}
+
     public void update(Graphics g, int x, int y, int width) {
+
+        this.buyButton.setBounds(x + width - 150, y + 40, 120, 30);
+        this.useButton.setBounds(x + width - 150, y + 80, 120, 30);
+
         GeiShopItem.width = width; // Dynamically changes width based on presence of nasty scrollbar
 
         g.setColor(new Color(5, 15, 24));
         g.fillRect(x, y, GeiShopItem.width, height);
 
-        g.drawImage(this.texture, x, y, 100, 100, null);
+        g.drawImage(this.texture, x + 20, y + 25, 100, 100, null);
+
+        g.setColor(Color.WHITE);
+
+        g.setFont(Main.getFont("Lato-Light", 30));
+        g.drawString(this.name, x + 140, y + 70);
 
         g.setFont(Main.getFont("Lato-Light", 15));
+        g.drawString(this.description, x + 141, y + 88);
 
 
     }
@@ -149,11 +190,11 @@ abstract class GeiPanel extends JPanel {
 
 }
 
-class GeiStatsPanel extends JPanel {
+class GeiStatsPanel extends GeiPanel {
 
 	private ArrayList<GeiActionEvent> eventArrayList = new ArrayList<>();
 	private final int width;
-	private JScrollPane parent;
+	private GeiScrollPane parent;
 	private long currentTime;
 
 	public GeiStatsPanel(int width, JSONArray actionArray) {
@@ -188,18 +229,19 @@ class GeiStatsPanel extends JPanel {
 
 	}
 
-	public void setParent(JScrollPane parent) {
+	public void setParent(GeiScrollPane parent) {
 		this.parent = parent;
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
+
 		g.setColor(new Color(1, 10, 19));
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
 		g.setColor(Color.WHITE);
 		g.setFont(Main.getFont("Lato-Light", 15));
-		g.drawString("Recent Activity", 20, 20);
+		g.drawString("Recent Activity", 20, 30);
 
 		boolean scrollEnabled = 60 + this.eventArrayList.size() * (GeiActionEvent.height + 20) > this.parent.getHeight();
 
@@ -210,11 +252,11 @@ class GeiStatsPanel extends JPanel {
 
 }
 
-class GeiChatPanel extends JPanel {
+class GeiChatPanel extends GeiPanel {
 
 	private ArrayList<GeiActionEvent> chatArrayList = new ArrayList<>();
 	private final int width;
-	private JScrollPane parent;
+	private GeiScrollPane parent;
 	private GeiTextField textField;
 	private long currentTime;
 	private JSONArray chatArray;
@@ -256,7 +298,7 @@ class GeiChatPanel extends JPanel {
 
 	}
 
-	public void setParent(JScrollPane parent) {
+	public void setParent(GeiScrollPane parent) {
 		this.parent = parent;
         this.update(this.chatArray);
 	}
@@ -271,15 +313,41 @@ class GeiChatPanel extends JPanel {
 }
 
 
-class GeiShopPanel extends JPanel {
+class GeiShopPanel extends GeiPanel implements ActionListener {
 
 	private ArrayList<GeiShopItem> itemArrayList = new ArrayList<>();
 	private int width;
-	private JScrollPane parent;
+	private GeiScrollPane parent;
 
 	public GeiShopPanel(int width) {
-		this.width = width;;
+		this.width = width;
 	}
+
+    public void actionPerformed(ActionEvent e) {
+
+		String[] eventSource = e.getActionCommand().split("-");
+
+		for (GeiShopItem item : itemArrayList) {
+			if (eventSource[1].equals(item.name)) {
+
+				String response = Communicator.shopRequest(eventSource[0], eventSource[1]);
+
+				System.out.println(response);
+
+				if (response.equals("ok")) {
+					this.parent.getParent().updateData();
+
+					if (eventSource[0].equals("buy")) {
+						JOptionPane.showMessageDialog(this.parent.getParent().parent, "Successfully purchased: " + eventSource[1], "HUBG Shop", JOptionPane.INFORMATION_MESSAGE);
+					}
+				} else {
+					JOptionPane.showMessageDialog(this.parent.getParent().parent, response, "HUBG Shop", JOptionPane.ERROR_MESSAGE);
+				}
+
+			}
+ 		}
+
+    }
 
 	public void updateItems() {
 
@@ -290,31 +358,27 @@ class GeiShopPanel extends JPanel {
         try {
             while (keys.hasNext()) {
                 key = keys.next().toString();
-                itemArrayList.add(new GeiShopItem(key, Main.shopData.getJSONObject(key)));
+                itemArrayList.add(new GeiShopItem(this, key, Main.shopData.getJSONObject(key)));
             }
         } catch (Exception e) {
             Main.errorQuit(e);
         }
 
+        this.setPreferredSize(new Dimension(this.width, 20 + this.itemArrayList.size() * (GeiShopItem.height + 20)));
+
     }
 
-	public void update(JSONObject purchasedSkins) {
-
-        Iterator keys = purchasedSkins.keys();
-
-        String key;
+	public void update(JSONArray purchasedSkins) {
 
         try {
-            while (keys.hasNext()) {
-                key = keys.next().toString();
-
+            for (int i = 0; i < purchasedSkins.length(); i++) {
                 for (GeiShopItem item : itemArrayList) {
-                    if (item.name == key) {
+                    if (item.name.equals(purchasedSkins.getString(i))) {
                         item.unlocked = true;
+                        item.updateButtonState();
                         break;
                     }
                 }
-
             }
         } catch (Exception e) {
             Main.errorQuit(e);
@@ -322,7 +386,7 @@ class GeiShopPanel extends JPanel {
 
 	}
 
-	public void setParent(JScrollPane parent) {
+	public void setParent(GeiScrollPane parent) {
 		this.parent = parent;
 	}
 
@@ -331,19 +395,30 @@ class GeiShopPanel extends JPanel {
 		g.setColor(new Color(1, 10, 19));
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-
         boolean scrollEnabled = 60 + this.itemArrayList.size() * (GeiShopItem.height + 20) > this.parent.getHeight();
 
-        for (int i = 0; i < itemArrayList.size(); i += 2) {
-            itemArrayList.get(i).update(g, 20, 20 + 120 * i, scrollEnabled ? 205 : 210);
-
-            if (i + 1 < itemArrayList.size()) {
-                itemArrayList.get(i + 1).update(g, 40 + (scrollEnabled ? 205 : 210), 20 + 120 * i, scrollEnabled ? 205 : 210);
-            }
+        for (int i = 0; i < itemArrayList.size(); i ++) {
+            itemArrayList.get(i).update(g, 20, 20 + 170 * i, scrollEnabled ? 455 : 460);
         }
 
     }
 
+}
+
+class GeiScrollPane extends JScrollPane {
+	private Menu parent;
+
+	public GeiScrollPane(GeiPanel child) {
+		super(child);
+	}
+
+	public void setParent(Menu parent) {
+		this.parent = parent;
+	}
+
+	public Menu getParent() {
+		return this.parent;
+	}
 }
 
 class GeiTextField extends JTextField {

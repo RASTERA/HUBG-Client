@@ -9,6 +9,59 @@ import org.json.JSONObject;
 
 public class Communicator {
 
+	public static String shopRequest(String type, String item) {
+		try {
+
+			// Init connection
+			//HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/shopItem/").openConnection();
+			HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/shopItem/").openConnection();
+
+			// Header stuff
+			socket.setRequestMethod("POST");
+			socket.setConnectTimeout(5000);
+			socket.setRequestProperty("User-Agent", "Mozilla/5.0");
+			socket.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+			socket.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+			socket.setDoOutput(true);
+			OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream());
+
+			// Some Json magic stuff
+			JSONObject credentials = new JSONObject() {
+				{
+					this.put("type", type);
+					this.put("item", item);
+					this.put("token", Main.session.getToken());
+				}
+			};
+
+			writer.write(credentials.toString());
+			writer.flush();
+			writer.close();
+
+			System.out.println("Getting Response of " + socket.getResponseCode());
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+			JSONObject inJSON = new JSONObject(reader.readLine().trim());
+
+			System.out.println(inJSON);
+
+			if (inJSON.has("success")) {
+				return "ok";
+			} else if (inJSON.has("error")) {
+				return inJSON.getString("error");
+			} else {
+				throw new Exception("Empty response");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			Main.errorQuit("Unable to process request. Please try again later.");
+			return null;
+		}
+	}
+
     public static JSONObject getShop() {
         try {
 
@@ -51,8 +104,8 @@ public class Communicator {
 		try {
 
 			// Init connection
-			HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/refresh/" + token).openConnection();
-			//HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/refresh/" + token).openConnection();
+			//HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/refresh/" + token).openConnection();
+			HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/refresh/" + token).openConnection();
 
 			// Header stuff
 			socket.setRequestMethod("GET");
@@ -91,8 +144,8 @@ public class Communicator {
 		try {
 
 			// Init connection
-			HttpsURLConnection socket = (HttpsURLConnection) new URL("https://authentication.rastera.xyz/login").openConnection();
-			//HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/auth/login").openConnection();
+			//HttpsURLConnection socket = (HttpsURLConnection) new URL("https://authentication.rastera.xyz/login").openConnection();
+			HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/auth/login").openConnection();
 
 			// Header stuff
 			socket.setRequestMethod("POST");

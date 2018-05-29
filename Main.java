@@ -4,7 +4,11 @@ import org.json.JSONObject;
 
 import java.awt.*;
 import java.awt.event.*;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
+import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -21,6 +25,9 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	private static Pages page = Pages.LOGIN;
 	public static Session session;
 	public static JSONObject shopData;
+	public static Clip menuMusic;
+	public static AudioInputStream audioIn;
+	public static HashMap<String, BufferedImage> skinHashMap = new HashMap<>();
 	private static final HashMap<String, Font> fontHashMap = new HashMap<>();
 
 	private static long prevFrame = 0;
@@ -38,9 +45,12 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 		this.getContentPane().addComponentListener(this);
 		this.setVisible(true);
-
-
+		
 		try {
+			audioIn = AudioSystem.getAudioInputStream(this.getClass().getResource("music/menu.wav"));
+
+			startMusic();
+			
 			InputStream is;
 
 			String[] fonts = new String[]{"Lato-Light", "Lato-Normal", "Lato-Thin", "Lato-Bold", "Lato-Black"};
@@ -50,6 +60,17 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 			}
 		} catch (Exception e) {
 			errorQuit(e);
+		}
+	}
+
+	public static void startMusic() {
+		try {
+			menuMusic = AudioSystem.getClip();
+			menuMusic.open(Main.audioIn);
+			menuMusic.start();
+			menuMusic.loop(menuMusic.LOOP_CONTINUOUSLY);
+		} catch (Exception e) {
+			Main.errorQuit(e);
 		}
 	}
 
@@ -155,7 +176,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 			}
 
 			if (panel instanceof Menu) {
-				((Menu) panel).updateStats();
+				((Menu) panel).updateData();
 			}
 
 		}

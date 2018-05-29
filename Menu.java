@@ -12,7 +12,6 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 
 class Menu extends GeiPanel implements KeyListener, ActionListener {
@@ -24,9 +23,9 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     private final GeiButton shopButton;
     private final GeiButton chatButton;
     private final GeiButton logoutButton;
-    private final JScrollPane activityScrollPane;
-    private final JScrollPane chatScrollPane;
-    private final JScrollPane shopScrollPane;
+    private final GeiScrollPane activityScrollPane;
+    private final GeiScrollPane chatScrollPane;
+    private final GeiScrollPane shopScrollPane;
     private final JProgressBar loadingBar;
     private GeiStatsPanel recentActionsPanel;
     private GeiShopPanel shopPanel;
@@ -41,7 +40,6 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     private BufferedImage background;
     private String statsText = "";
     private long lastUpdated = System.currentTimeMillis();
-    private final HashMap<String, BufferedImage> skinHashMap = new HashMap<>();
     private volatile boolean statsLoaded = false;
 
     public Menu(Main parent) {
@@ -52,8 +50,6 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
         try {
             this.background = ImageIO.read(new File("images/menu-background-2.png"));
-
-            this.skinHashMap.put("PENGUIN", ImageIO.read(new File("images/skins/penguin.png")));
         } catch (Exception e) {
             Main.errorQuit(e);
         }
@@ -89,23 +85,26 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.loadingBar = new JProgressBar();
         this.loadingBar.setIndeterminate(true);
         
-        this.chatScrollPane = new JScrollPane(this.chatPanel);
+        this.chatScrollPane = new GeiScrollPane(this.chatPanel);
         this.chatScrollPane.setBorder(null);
         this.chatScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         this.chatScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
-        this.chatScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.chatScrollPane.setHorizontalScrollBarPolicy(GeiScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.chatScrollPane.setParent(this);
 
-        this.shopScrollPane = new JScrollPane(this.shopPanel);
+        this.shopScrollPane = new GeiScrollPane(this.shopPanel);
         this.shopScrollPane.setBorder(null);
         this.shopScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         this.shopScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
-        this.shopScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.shopScrollPane.setHorizontalScrollBarPolicy(GeiScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.shopScrollPane.setParent(this);
 
-        this.activityScrollPane = new JScrollPane(this.recentActionsPanel);
+        this.activityScrollPane = new GeiScrollPane(this.recentActionsPanel);
         this.activityScrollPane.setBorder(null);
         this.activityScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         this.activityScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
-        this.activityScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.activityScrollPane.setHorizontalScrollBarPolicy(GeiScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.activityScrollPane.setParent(this);
 
         this.recentActionsPanel.setParent(this.activityScrollPane);
         this.shopPanel.setParent(this.shopScrollPane);
@@ -121,12 +120,23 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             try {
                 Main.shopData = Communicator.getShop();
+
+                Iterator keys = Main.shopData.keys();
+
+                String key;
+                while (keys.hasNext()){
+                    key = keys.next().toString();
+                    Main.skinHashMap.put(key, Rah.decodeToImage(Main.shopData.getJSONObject(key).getString("image")));
+                }
+
             } catch (Exception e) {
                 Main.errorQuit(e);
             }
 
+
+
             Menu.this.shopPanel.updateItems();
-            Menu.this.updateStats();
+            Menu.this.updateData();
             Menu.this.statsLoaded = true;
 
             // Waits for stats stuff to load
@@ -146,34 +156,31 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
     }
 
-    public void updateStats() {
+    public void updateData() {
         try {
 
             JSONObject tempUser = Communicator.refresh(Main.session.getToken());
 
-            if (tempUser != null) {
-                Main.session.user = tempUser;
-                Main.session.updateJSON();
+            Main.session.user = tempUser;
+            Main.session.updateJSON();
 
-                System.out.println(tempUser);
+            System.out.println(tempUser);
 
-                this.statsText = String.format("%s Kills      |      %s Deaths      |      %s Matches      |      %s Zhekko", Main.session.user.getString("kills"), Main.session.user.getString("deaths"), Main.session.user.getString("matches"), Main.session.user.getString("money"));
-                this.lastUpdated = System.currentTimeMillis();
-
-            } else {
-                System.out.println("Unable to connect to server");
-            }
+            this.statsText = String.format("%s Kills      |      %s Deaths      |      %s Matches      |      %s Zhekko", Main.session.user.getString("kills"), Main.session.user.getString("deaths"), Main.session.user.getString("matches"), Main.session.user.getString("money"));
+            this.lastUpdated = System.currentTimeMillis();
 
             switch (currentPanel) {
                 case ACTIVITY:
                     this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
                     break;
                 case SHOP:
-                    this.shopPanel.update(Main.session.user.getJSONObject("skins"));
+                    this.shopPanel.update(Main.session.user.getJSONArray("skins"));
                 case CHAT:
                     this.chatPanel.update(Main.session.user.getJSONArray("actions"));
 
             }
+
+            this.repaint();
 
         } catch (Exception e) {
             Main.errorQuit(e);
@@ -211,7 +218,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 clearPanels();
                 add(chatScrollPane);
-                this.updateStats();
+                this.updateData();
 
                 repaint();
 
@@ -234,7 +241,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 clearPanels();
                 add(shopScrollPane);
-                this.updateStats();
+                this.updateData();
 
                 repaint();
 
@@ -256,7 +263,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 clearPanels();
                 add(activityScrollPane);
-                this.updateStats();
+                this.updateData();
 
                 repaint();
 
@@ -406,7 +413,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             // Penguin preview
             int dimension = (int) (Math.min(this.getHeight(), this.getWidth()) * 0.6);
-            g.drawImage(this.skinHashMap.get(Main.session.getSkin()), (this.getWidth() - this.currentPanelWidth) / 2 - dimension / 2, (this.getHeight() + 60) / 2 - dimension / 2, dimension, dimension, this);
+            g.drawImage(Main.skinHashMap.get(Main.session.getSkin()), (this.getWidth() - this.currentPanelWidth) / 2 - dimension / 2, (this.getHeight() + 60) / 2 - dimension / 2, dimension, dimension, this);
         }
     }
 }
