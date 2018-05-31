@@ -163,6 +163,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             Main.session.user = tempUser;
             Main.session.updateJSON();
+            Main.messages = Communicator.getMessages();
 
             System.out.println(tempUser);
 
@@ -176,7 +177,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 case SHOP:
                     this.shopPanel.update(Main.session.user.getJSONArray("skins"));
                 case CHAT:
-                    this.chatPanel.update(Main.session.user.getJSONArray("actions"));
+                    this.chatPanel.update(Main.messages);
 
             }
 

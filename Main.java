@@ -25,6 +25,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	private static Pages page = Pages.LOGIN;
 	public static Session session;
 	public static JSONObject shopData;
+	public static JSONObject messages;
 	public static Clip menuMusic;
 	public static AudioInputStream audioIn;
 	public static HashMap<String, BufferedImage> skinHashMap = new HashMap<>();

@@ -3,9 +3,42 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import Decoder.BASE64Decoder;
 
 class Rah {
+
+
+    public static ArrayList<String> wrapText(int width, String text, FontMetrics metrics) {
+        ArrayList<String> lines = new ArrayList<>();
+        ArrayList<String> words = new ArrayList<>(Arrays.asList(text.split(" ")));
+        String currentLine = "";
+        int lineWidth = (int) (width * 0.9);
+
+        while (true) {
+
+            if (words.size() > 0 && metrics.stringWidth(words.get(0)) > lineWidth) {
+                words.set(0, words.get(0).substring(0, 6) + "...");
+            }
+
+            if (words.size() > 0 && metrics.stringWidth(currentLine + " " + words.get(0)) <= lineWidth) {
+                currentLine += " " + words.get(0);
+                words.remove(0);
+            } else {
+                lines.add(currentLine.trim());
+                currentLine = "";
+
+                if (words.size() == 0) {
+                    break;
+                }
+            }
+        }
+
+        return lines;
+    }
+
     public static BufferedImage decodeToImage(String imageString) {
 
         BufferedImage image = null;
