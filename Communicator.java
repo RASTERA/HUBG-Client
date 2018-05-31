@@ -15,7 +15,7 @@ public class Communicator {
 
     public static JSONObject getMessages() {
         try {
-            return request(RequestType.GET, null, "http://localhost:3005/api/messages/" + Main.session.getToken());
+            return request(RequestType.GET, null, /*"http://localhost:3005/api/messages/"*/ "https://api.rastera.xyz/messages/" + Main.session.getToken());
         } catch (Exception e) {
             Main.errorQuit(e);
         }
@@ -32,7 +32,7 @@ public class Communicator {
                 }
             };
 
-            return request(RequestType.POST, data, "http://localhost:3005/api/chat");
+            return request(RequestType.POST, data, "https://api.rastera.xyz/chat"); //"http://localhost:3005/api/chat");
         } catch (Exception e) {
             Main.errorQuit(e);
         }
@@ -44,8 +44,8 @@ public class Communicator {
         try {
             // Init connection
 
-            //HttpsURLConnection socket = (HttpsURLConnection) new URL(destination).openConnection();
-            HttpURLConnection socket = (HttpURLConnection) new URL(destination).openConnection();
+            HttpsURLConnection socket = (HttpsURLConnection) new URL(destination).openConnection();
+            //HttpURLConnection socket = (HttpURLConnection) new URL(destination).openConnection();
 
             // Header stuff
             socket.setRequestMethod(type.toString());
@@ -87,8 +87,8 @@ public class Communicator {
         try {
 
             // Init connection
-            //HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/shopItem/").openConnection();
-            HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/shopItem/").openConnection();
+            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/shopItem/").openConnection();
+            //HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/shopItem/").openConnection();
 
             // Header stuff
             socket.setRequestMethod("POST");
@@ -140,8 +140,8 @@ public class Communicator {
         try {
 
             // Init connection
-            //HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/shop/").openConnection();
-            HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/shop/").openConnection();
+            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/shop/").openConnection();
+            //HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/shop/").openConnection();
 
             // Header stuff
             socket.setRequestMethod("GET");
@@ -178,8 +178,8 @@ public class Communicator {
         try {
 
             // Init connection
-            //HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/refresh/" + token).openConnection();
-            HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/refresh/" + token).openConnection();
+            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/refresh/" + token).openConnection();
+            //HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/refresh/" + token).openConnection();
 
             // Header stuff
             socket.setRequestMethod("GET");
@@ -218,8 +218,8 @@ public class Communicator {
         try {
 
             // Init connection
-            //HttpsURLConnection socket = (HttpsURLConnection) new URL("https://authentication.rastera.xyz/login").openConnection();
-            HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/auth/login").openConnection();
+            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://authentication.rastera.xyz/login").openConnection();
+            //HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/auth/login").openConnection();
 
             // Header stuff
             socket.setRequestMethod("POST");
