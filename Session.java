@@ -1,3 +1,4 @@
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Session {
@@ -8,6 +9,7 @@ public class Session {
     private String skin;
     private int rank;
     public JSONObject user;
+    public JSONArray messages = new JSONArray();
 
     public Session(String email, String token) {
         this.token = token;

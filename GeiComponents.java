@@ -295,35 +295,68 @@ class GeiChatPanel extends GeiPanel {
         this.textField.addActionListener(e -> this.sendMessage());
     }
 
+    public static void updateMessages(JSONObject newMessages) {
+        try {
+
+            if (newMessages.has("messages")) {
+
+                JSONArray messages = newMessages.getJSONArray("messages");
+
+                boolean located;
+                JSONObject existingMsg, newMsg;
+                for (int i = messages.length() - 1; i > -1; i--) {
+
+                    located = false;
+
+                    for (int m = Main.session.messages.length() - 1; m > -1; m--) {
+                        existingMsg = Main.session.messages.getJSONObject(m);
+                        newMsg = messages.getJSONObject(i);
+                        if (existingMsg.getString("message").equals(newMsg.getString("message")) && existingMsg.getLong("time") == newMsg.getLong("time")) {
+                            located = true;
+                            break;
+                        }
+                    }
+
+                    if (!located) {
+                        Main.session.messages.put(messages.getJSONObject(i));
+                    } else {
+                        break;
+                    }
+                }
+
+            } else {
+                Main.errorQuit(newMessages.getString("error"));
+            }
+
+
+        } catch (Exception e) {
+            Main.errorQuit(e);
+        }
+    }
+
     public void sendMessage() {
         String message = this.textField.getText();
         this.textField.setText("");
 
         if (message != null && message.length() > 0) {
-            Main.messages = Communicator.sendMessage(message);
 
-            this.update(Main.messages);
+            JSONObject newMessages = Communicator.sendMessage(message);
+            updateMessages(newMessages);
+
+            this.update(Main.session.messages);
+            this.repaint();
         }
     }
 
-    public void update(JSONObject chatArray) {
+    public void update(JSONArray chatArray) {
 
         this.currentTime = System.currentTimeMillis();
         this.chatArrayList = new ArrayList<>();
 
-        System.out.println(this.parent.getHeight() + "lol");
-
         try {
-            if (chatArray.has("messages")) {
-                JSONArray messages = chatArray.getJSONArray("messages");
-
-                for (int i = 0; i < messages.length(); i++) {
-                    this.chatArrayList.add(new GeiChatItem(messages.getJSONObject(i).getString("message"), Rah.getTimestamp(messages.getJSONObject(i).getLong("time"))));
-                }
-            } else {
-                Main.errorQuit(chatArray.getString("error"));
+            for (int i = chatArray.length() - 1; i > -1; i--) {
+                this.chatArrayList.add(new GeiChatItem(chatArray.getJSONObject(i).getString("message"), Rah.getTimestamp(chatArray.getJSONObject(i).getLong("time"))));
             }
-
         } catch (Exception e) {
             Main.errorQuit(e);
         }
@@ -346,10 +379,6 @@ class GeiChatPanel extends GeiPanel {
         for (int i = 0; i < chatArrayList.size(); i++) {
             chatArrayList.get(i).update(g, 20, 20 + 170 * i, scrollEnabled ? 455 : 460);
         }
-
-
-
-
     }
 
 }

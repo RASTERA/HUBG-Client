@@ -45,7 +45,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     public Menu(Main parent) {
 
         this.parent = parent;
-        this.parent.setMasterTimer(10000);
+        this.parent.setMasterTimer(5000);
         this.constantUpdate = true;
 
         try {
@@ -163,7 +163,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             Main.session.user = tempUser;
             Main.session.updateJSON();
-            Main.messages = Communicator.getMessages();
+            GeiChatPanel.updateMessages(Communicator.getMessages());
 
             System.out.println(tempUser);
 
@@ -177,7 +177,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 case SHOP:
                     this.shopPanel.update(Main.session.user.getJSONArray("skins"));
                 case CHAT:
-                    this.chatPanel.update(Main.messages);
+                    this.chatPanel.update(Main.session.messages);
 
             }
 
@@ -274,7 +274,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             case "logout":
 
-                if(JOptionPane.showConfirmDialog (null, "Are you sure you want to logout?","RASTERA Authentication Service", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+                if(JOptionPane.showConfirmDialog (this.parent, "Are you sure you want to logout?","RASTERA Authentication Service", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION){
                     System.out.println("SWITCH");
 
                     Main.session = null;
