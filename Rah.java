@@ -1,6 +1,6 @@
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+import java.io.*;
 import java.net.URI;
 import java.awt.*;
 import java.util.ArrayList;
@@ -9,7 +9,6 @@ import java.util.Arrays;
 import Decoder.BASE64Decoder;
 
 class Rah {
-
 
     public static ArrayList<String> wrapText(int width, String text, FontMetrics metrics) {
         ArrayList<String> lines = new ArrayList<>();

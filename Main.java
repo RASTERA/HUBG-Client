@@ -9,6 +9,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		try {
 			audioIn = AudioSystem.getAudioInputStream(this.getClass().getResource("music/menu.wav"));
 
-			startMusic();
+			//startMusic();
 			
 			InputStream is;
 
@@ -60,6 +61,27 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 			}
 		} catch (Exception e) {
 			errorQuit(e);
+		}
+
+		AuthToken tempAuth = Session.readSession();
+
+		if (tempAuth != null) {
+			System.out.println("Login from token");
+
+			// Refresh token
+			Session tempSession = Communicator.login(tempAuth);
+
+			if (tempSession != null) {
+				Main.session = tempSession;
+				Main.page = Pages.MENU;
+			} else {
+
+				Session.destroySession();
+
+				JOptionPane.showMessageDialog(null, "Unable to login with token", "HUBG Error", JOptionPane.ERROR_MESSAGE);
+			}
+
+
 		}
 	}
 

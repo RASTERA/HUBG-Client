@@ -61,8 +61,13 @@ class GeiShopItem {
             }
         } else {
             this.useButton.setEnabled(false);
-            this.buyButton.setEnabled(true);
             this.useButton.setText("\uD83D\uDD12 LOCKED");
+
+            if (Main.session.getMoney() - this.cost <= 0) {
+                this.buyButton.setEnabled(false);
+            } else {
+                this.buyButton.setEnabled(true);
+            }
         }
 
     }
@@ -155,6 +160,7 @@ class GeiButton extends JButton {
 
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
+        /*
 		this.setForeground(new Color(92, 91, 87));
 		this.setBackground(new Color(30, 35, 40));
 		this.setFocusPainted(false);
@@ -167,7 +173,7 @@ class GeiButton extends JButton {
 			} else {
 				this.setBackground(new Color(30, 35, 40));
 			}
-		});
+		}); */
     }
 }
 
@@ -241,7 +247,7 @@ class GeiStatsPanel extends GeiPanel {
 
 class GeiChatItem {
 
-    public static final int height = 150;
+    public static final int height = 50;
     public static int width = 500;
 
     private String text;
@@ -282,17 +288,12 @@ class GeiChatPanel extends GeiPanel {
     private ArrayList<GeiChatItem> chatArrayList = new ArrayList<>();
     private final int width;
     private GeiScrollPane parent;
-    private GeiTextField textField;
     private long currentTime;
     private JSONArray chatArray;
 
     public GeiChatPanel(int width, JSONArray chatArray) {
         this.width = width;
-        this.textField = new GeiTextField();
         this.chatArray = chatArray;
-
-        this.add(this.textField);
-        this.textField.addActionListener(e -> this.sendMessage());
     }
 
     public static void updateMessages(JSONObject newMessages) {
@@ -334,20 +335,6 @@ class GeiChatPanel extends GeiPanel {
         }
     }
 
-    public void sendMessage() {
-        String message = this.textField.getText();
-        this.textField.setText("");
-
-        if (message != null && message.length() > 0) {
-
-            JSONObject newMessages = Communicator.sendMessage(message);
-            updateMessages(newMessages);
-
-            this.update(Main.session.messages);
-            this.repaint();
-        }
-    }
-
     public void update(JSONArray chatArray) {
 
         this.currentTime = System.currentTimeMillis();
@@ -370,14 +357,13 @@ class GeiChatPanel extends GeiPanel {
     public void paintComponent(Graphics g) {
         g.setColor(new Color(1, 10, 19));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        this.textField.setBounds(0, this.parent.getHeight() - 30, this.width, 30);
 
-        this.setPreferredSize(new Dimension(this.width, 60 + this.chatArrayList.size() * (GeiActionEvent.height + 20)));
+        this.setPreferredSize(new Dimension(this.width, 20 + this.chatArrayList.size() * (GeiChatItem.height + 20)));
 
         boolean scrollEnabled = 60 + this.chatArrayList.size() * (GeiChatItem.height + 20) > this.parent.getHeight();
 
         for (int i = 0; i < chatArrayList.size(); i++) {
-            chatArrayList.get(i).update(g, 20, 20 + 170 * i, scrollEnabled ? 455 : 460);
+            chatArrayList.get(i).update(g, 20, 20 + (GeiChatItem.height + 20) * i, scrollEnabled ? 455 : 460);
         }
     }
 
@@ -400,6 +386,13 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
 
         for (GeiShopItem item : itemArrayList) {
             if (eventSource[1].equals(item.name)) {
+
+                if (eventSource[0].equals("buy")) {
+                    if(JOptionPane.showConfirmDialog (this.parent, String.format("Are you sure you want to buy %s for Z$%d?", item.name, item.cost),"HUBG Shop", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION){
+                        return;
+                    }
+                }
+
 
                 String response = Communicator.shopRequest(eventSource[0], eventSource[1]);
 

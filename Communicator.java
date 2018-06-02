@@ -1,21 +1,45 @@
 import java.io.*;
 import java.net.*;
-import javax.net.ssl.HttpsURLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeoutException;
 
 import org.json.JSONObject;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class Communicator {
 
+    private static final boolean developmentMode = true;
+
+    private static final HashMap<RequestDestination, String> baseProductionHashMap = new HashMap<RequestDestination, String>() {
+        {
+            put(RequestDestination.URL, "https://rastera.xyz/");
+            put(RequestDestination.API, "https://api.rastera.xyz/");
+            put(RequestDestination.AUTH, "https://authentication.rastera.xyz/");
+        }
+    };
+
+    private static final HashMap<RequestDestination, String> baseDevelopmentHashMap = new HashMap<RequestDestination, String>() {
+        {
+            put(RequestDestination.URL, "http://localhost:3005/");
+            put(RequestDestination.API, "http://localhost:3005/api/");
+            put(RequestDestination.AUTH, "http://localhost:3005/auth/");
+        }
+    };
+
     public enum RequestType {POST, GET}
+    public enum RequestDestination {URL, API, AUTH}
+
+    public static String getURL(RequestDestination destination) {
+        if (Communicator.developmentMode) {
+            return baseDevelopmentHashMap.get(destination);
+        } else {
+            return baseProductionHashMap.get(destination);
+        }
+    }
 
     public static JSONObject getMessages() {
         try {
-            return request(RequestType.GET, null, /*"http://localhost:3005/api/messages/"*/ "https://api.rastera.xyz/messages/" + Main.session.getToken());
+            return request(RequestType.GET, null, Communicator.getURL(RequestDestination.API) + "messages/" + Main.session.getToken());
         } catch (Exception e) {
             Main.errorQuit(e);
         }
@@ -32,7 +56,7 @@ public class Communicator {
                 }
             };
 
-            return request(RequestType.POST, data, "https://api.rastera.xyz/chat"); //"http://localhost:3005/api/chat");
+            return request(RequestType.POST, data, Communicator.getURL(RequestDestination.API) + "chat");
         } catch (Exception e) {
             Main.errorQuit(e);
         }
@@ -44,11 +68,16 @@ public class Communicator {
         try {
             // Init connection
 
-            HttpsURLConnection socket = (HttpsURLConnection) new URL(destination).openConnection();
-            //HttpURLConnection socket = (HttpURLConnection) new URL(destination).openConnection();
+            URLConnection socket;
+            if (Communicator.developmentMode) {
+                socket = (HttpURLConnection) new URL(destination).openConnection();
+                ((HttpURLConnection) socket).setRequestMethod(type.toString());
+            } else {
+                socket = (HttpsURLConnection) new URL(destination).openConnection();
+                ((HttpsURLConnection) socket).setRequestMethod(type.toString());
+            }
 
             // Header stuff
-            socket.setRequestMethod(type.toString());
             socket.setConnectTimeout(5000);
             socket.setRequestProperty("User-Agent", "Mozilla/5.0");
             socket.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
@@ -63,7 +92,7 @@ public class Communicator {
                 writer.close();
             }
 
-            System.out.println("Getting Response of " + socket.getResponseCode());
+            //System.out.println("Getting Response of " + socket.getResponseCode());
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -86,22 +115,7 @@ public class Communicator {
     public static String shopRequest(String type, String item) {
         try {
 
-            // Init connection
-            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/shopItem/").openConnection();
-            //HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/shopItem/").openConnection();
-
-            // Header stuff
-            socket.setRequestMethod("POST");
-            socket.setConnectTimeout(5000);
-            socket.setRequestProperty("User-Agent", "Mozilla/5.0");
-            socket.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-            socket.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-
-            socket.setDoOutput(true);
-            OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream());
-
-            // Some Json magic stuff
-            JSONObject credentials = new JSONObject() {
+            JSONObject request = new JSONObject() {
                 {
                     this.put("type", type);
                     this.put("item", item);
@@ -109,17 +123,7 @@ public class Communicator {
                 }
             };
 
-            writer.write(credentials.toString());
-            writer.flush();
-            writer.close();
-
-            System.out.println("Getting Response of " + socket.getResponseCode());
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            JSONObject inJSON = new JSONObject(reader.readLine().trim());
-
-            System.out.println(inJSON);
+            JSONObject inJSON = Communicator.request(RequestType.POST, request, Communicator.getURL(RequestDestination.API) + "shopItem/");
 
             if (inJSON.has("success")) {
                 return "ok";
@@ -137,68 +141,16 @@ public class Communicator {
     }
 
     public static JSONObject getShop() {
-        try {
-
-            // Init connection
-            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/shop/").openConnection();
-            //HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/shop/").openConnection();
-
-            // Header stuff
-            socket.setRequestMethod("GET");
-            socket.setConnectTimeout(5000);
-            socket.setRequestProperty("User-Agent", "Mozilla/5.0");
-            socket.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-            socket.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-
-            System.out.println("Getting Response of " + socket.getResponseCode());
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            String data = "";
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                data += line;
-            }
-
-            return new JSONObject(data);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Main.errorQuit("Unable to download resources. Please try again later.");
-
-            e.printStackTrace();
-            System.out.println("lol something went wrong");
-            return null;
-        }
+        return Communicator.request(RequestType.GET, null, Communicator.getURL(RequestDestination.API) + "shop/");
     }
-
 
     public static JSONObject refresh(String token) {
         try {
 
-            // Init connection
-            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://api.rastera.xyz/refresh/" + token).openConnection();
-            //HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/api/refresh/" + token).openConnection();
-
-            // Header stuff
-            socket.setRequestMethod("GET");
-            socket.setConnectTimeout(5000);
-            socket.setRequestProperty("User-Agent", "Mozilla/5.0");
-            socket.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-            socket.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-
-            System.out.println("Getting Response of " + socket.getResponseCode());
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            String data = reader.readLine().trim();
-
-            JSONObject dataJSON = new JSONObject(data);
-
-            System.out.println(data);
+            JSONObject dataJSON = Communicator.request(RequestType.GET, null, Communicator.getURL(RequestDestination.API) + "refresh/" + token);
 
             if (dataJSON.has("error")) {
+                Main.errorQuit(dataJSON.getString("error"));
                 return null;
             }
 
@@ -206,32 +158,47 @@ public class Communicator {
 
         } catch (Exception e) {
             Main.errorQuit("Unable to synchronize with server. Please try again later.");
-
-            e.printStackTrace();
-            System.out.println("lol something went wrong");
             return null;
         }
     }
 
+    public static Session login(JSONObject credentials) {
+        try {
+            JSONObject dataJSON = Communicator.request(RequestType.POST, credentials, Communicator.getURL(RequestDestination.AUTH) + "login/");
+
+            if (dataJSON.has("error")) {
+                System.out.println(dataJSON.getString("error"));
+                return null;
+            }
+
+            return new Session(dataJSON.getString("token"), dataJSON.getJSONObject("user"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Session login(AuthToken token) {
+        try {
+
+            JSONObject credentials = new JSONObject() {
+                {
+                    this.put("token", token);
+                }
+            };
+
+            return login(credentials);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public static Session login(String email, String password) {
         try {
 
-            // Init connection
-            HttpsURLConnection socket = (HttpsURLConnection) new URL("https://authentication.rastera.xyz/login").openConnection();
-            //HttpURLConnection socket = (HttpURLConnection) new URL("http://localhost:3005/auth/login").openConnection();
-
-            // Header stuff
-            socket.setRequestMethod("POST");
-            socket.setConnectTimeout(5000);
-            socket.setRequestProperty("User-Agent", "Mozilla/5.0");
-            socket.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-            socket.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-
-            socket.setDoOutput(true);
-            OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream());
-
-            // Some Json magic stuff
             JSONObject credentials = new JSONObject() {
                 {
                     this.put("email", email);
@@ -239,27 +206,10 @@ public class Communicator {
                 }
             };
 
-            writer.write(credentials.toString());
-            writer.flush();
-            writer.close();
-
-            System.out.println("Getting Response of " + socket.getResponseCode());
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            String data = reader.readLine().trim();
-
-            JSONObject dataJSON = new JSONObject(data);
-
-            if (dataJSON.has("error")) {
-                return new Session("", dataJSON.getString("error"));
-            }
-
-            return new Session(email, dataJSON.getString("token"), dataJSON.getJSONObject("user"));
+            return login(credentials);
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("lol something went wrong");
             return null;
         }
     }

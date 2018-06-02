@@ -27,6 +27,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     private final GeiScrollPane chatScrollPane;
     private final GeiScrollPane shopScrollPane;
     private final JProgressBar loadingBar;
+    private GeiTextField chatTextField;
     private GeiStatsPanel recentActionsPanel;
     private GeiShopPanel shopPanel;
     private GeiChatPanel chatPanel;
@@ -91,6 +92,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.chatScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
         this.chatScrollPane.setHorizontalScrollBarPolicy(GeiScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.chatScrollPane.setParent(this);
+        this.chatTextField = new GeiTextField();
 
         this.shopScrollPane = new GeiScrollPane(this.shopPanel);
         this.shopScrollPane.setBorder(null);
@@ -113,6 +115,8 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.add(this.loadingBar);
         this.addKeyListener(this);
         this.setFocusable(true);
+
+        this.chatTextField.addActionListener(e -> this.sendMessage());
 
         Thread loadResources = new Thread(() -> {
 
@@ -149,12 +153,27 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             Menu.this.add(Menu.this.shopButton);
             Menu.this.add(Menu.this.chatButton);
             Menu.this.add(Menu.this.logoutButton);
+            this.resetButtons();
 
         });
 
         loadResources.start();
 
     }
+
+    public void sendMessage() {
+        String message = this.chatTextField.getText();
+        this.chatTextField.setText("");
+
+        if (message != null && message.length() > 0) {
+
+            JSONObject newMessages = Communicator.sendMessage(message);
+            this.chatPanel.updateMessages(newMessages);
+            this.chatPanel.update(Main.session.messages);
+            this.chatPanel.repaint();
+        }
+    }
+
 
     public void updateData() {
         try {
@@ -192,10 +211,31 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         remove(shopScrollPane);
         remove(chatScrollPane);
         remove(activityScrollPane);
+        remove(chatTextField);
+
+        this.shopButton.setEnabled(true);
+        this.activityButton.setEnabled(true);
+        this.chatButton.setEnabled(true);
+    }
+
+    public void resetButtons() {
+        switch (this.currentPanel) {
+            case ACTIVITY:
+                this.activityButton.setEnabled(false);
+                break;
+            case SHOP:
+                this.shopButton.setEnabled(false);
+                break;
+            case CHAT:
+                this.chatButton.setEnabled(false);
+                break;
+        }
     }
 
     public void actionPerformed(ActionEvent e) {
+
         switch (e.getActionCommand()) {
+
             case "start":
 
                 System.out.println("SWITCH");
@@ -219,6 +259,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 clearPanels();
                 add(chatScrollPane);
+                add(this.chatTextField);
                 this.updateData();
 
                 repaint();
@@ -277,15 +318,17 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 if(JOptionPane.showConfirmDialog (this.parent, "Are you sure you want to logout?","RASTERA Authentication Service", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION){
                     System.out.println("SWITCH");
 
-                    Main.session = null;
+                    Session.destroySession();
                     this.removeKeyListener(this);
                     this.parent.startPage(Main.Pages.LOGIN);
-
                 }
 
 
                 break;
         }
+
+        this.resetButtons();
+
     }
 
 
@@ -385,9 +428,11 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                     break;
 
                 case CHAT:
-                    this.chatScrollPane.setBounds(getWidth() - this.chatPanelWidth, 60, this.chatPanelWidth, getHeight() - 100);
+                    this.chatScrollPane.setBounds(getWidth() - this.chatPanelWidth, 60, this.chatPanelWidth, getHeight() - 130);
                     this.chatScrollPane.revalidate();
                     this.chatScrollPane.repaint();
+                    this.chatTextField.setBounds(getWidth() - this.chatPanelWidth, getHeight() - 70, this.chatPanelWidth, 30);
+
                     break;   
             }
 

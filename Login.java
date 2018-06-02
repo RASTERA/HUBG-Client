@@ -1,9 +1,6 @@
 // Some game magic bs
 
 import javax.imageio.ImageIO;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -137,7 +134,6 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.add(this.passwordField);
 
         this.add(this.loginButton);
-
     }
 
     private void validateText() {
@@ -166,6 +162,9 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
     private void startMenu(Session session) {
         System.out.println("Login Successful");
         Main.session = session;
+
+        Session.writeSession();
+
         this.removeKeyListener(this);
         this.parent.startPage(Main.Pages.MENU);
     }
