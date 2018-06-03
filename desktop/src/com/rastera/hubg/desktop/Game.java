@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.rastera.hubg.Main;
+import com.rastera.hubg.HUBGMain;
 
 class Game extends GeiPanel {
 
@@ -31,7 +31,7 @@ class Game extends GeiPanel {
 		//Rah.webbrowserOpen("https://agar.io");
 		com.rastera.hubg.desktop.Main.stopMusic();
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new Main(), config);
+		new LwjglApplication(new HUBGMain(), config);
 	}
 
 	public void exitGame() {
