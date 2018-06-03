@@ -5,7 +5,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.*;
-import com.rastera.hubg.Main;
+import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Sprites.Brick;
 import com.rastera.hubg.Sprites.Coin;
 
@@ -22,11 +22,11 @@ public class B2WorldCreator {
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
             bdef.type= BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2) / Main.PPM, (rect.getY() + rect.getHeight() / 2) / Main.PPM);
+            bdef.position.set((rect.getX() + rect.getWidth() / 2) / HUBGMain.PPM, (rect.getY() + rect.getHeight() / 2) / HUBGMain.PPM);
 
             body = world.createBody(bdef);
 
-            shape.setAsBox(rect.getWidth() / 2 / Main.PPM, rect.getHeight() / 2 / Main.PPM);
+            shape.setAsBox(rect.getWidth() / 2 / HUBGMain.PPM, rect.getHeight() / 2 / HUBGMain.PPM);
             fdef.shape = shape;
 
             body.createFixture(fdef);
@@ -36,11 +36,11 @@ public class B2WorldCreator {
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
             bdef.type= BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2) / Main.PPM, (rect.getY() + rect.getHeight() / 2) / Main.PPM);
+            bdef.position.set((rect.getX() + rect.getWidth() / 2) / HUBGMain.PPM, (rect.getY() + rect.getHeight() / 2) / HUBGMain.PPM);
 
             body = world.createBody(bdef);
 
-            shape.setAsBox(rect.getWidth() / 2 / Main.PPM, rect.getHeight() / 2 / Main.PPM);
+            shape.setAsBox(rect.getWidth() / 2 / HUBGMain.PPM, rect.getHeight() / 2 / HUBGMain.PPM);
             fdef.shape = shape;
 
             body.createFixture(fdef);

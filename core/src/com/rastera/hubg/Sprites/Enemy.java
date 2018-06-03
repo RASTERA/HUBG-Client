@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.*;
-import com.rastera.hubg.Main;
+import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Screens.HUBGGame;
 
 public class Enemy extends Sprite {
@@ -50,9 +50,9 @@ public class Enemy extends Sprite {
             return;
         }
 
-        float xstep = travelx / Main.SYNC_INTERVAL * dt;
-        float ystep = travely / Main.SYNC_INTERVAL * dt;
-        float rstep = travelr / Main.SYNC_INTERVAL * dt;
+        float xstep = travelx / HUBGMain.SYNC_INTERVAL * dt;
+        float ystep = travely / HUBGMain.SYNC_INTERVAL * dt;
+        float rstep = travelr / HUBGMain.SYNC_INTERVAL * dt;
 
         if (xstep > 0 && b2body.getPosition().x + xstep < distx) {
             xstep = b2body.getPosition().x + xstep;

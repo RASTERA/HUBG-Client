@@ -4,7 +4,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.*;
-import com.rastera.hubg.Main;
+import com.rastera.hubg.HUBGMain;
 
 public abstract class InteractiveTileObject {
     protected World world;
