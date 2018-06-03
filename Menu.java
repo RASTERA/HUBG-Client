@@ -46,7 +46,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     public Menu(Main parent) {
 
         this.parent = parent;
-        this.parent.setMasterTimer(5000);
+        this.parent.setMasterTimer(10000);
         this.constantUpdate = true;
 
         try {
@@ -208,6 +208,8 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     }
 
     public void clearPanels() {
+        this.parent.setMasterTimer(10000);
+
         remove(shopScrollPane);
         remove(chatScrollPane);
         remove(activityScrollPane);
@@ -247,24 +249,18 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             case "chat":
 
-                //if (this.currentPanelVelocity == 0) {
-
                 System.out.println("SWITCHED TO CHAT");
 
                 this.currentPanel = SUBPANEL.CHAT;
                 this.currentPanelWidth = this.chatPanelWidth;
-                //this.currentPanelTarget = this.shopPanelWidth;
-                //this.currentPanelVelocity = this.currentPanelTarget > this.currentPanelWidth ? 1 : -1;
-                //this.parent.setMasterTimer(500);
 
                 clearPanels();
                 add(chatScrollPane);
                 add(this.chatTextField);
                 this.updateData();
+                this.parent.setMasterTimer(2000);
 
                 repaint();
-
-                //}
 
                 break;
 
@@ -347,6 +343,10 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
         Graphics2D g = (Graphics2D) graphics;
 
+        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+
         if (!this.statsLoaded) {
             this.loadingBar.setBounds(50, this.getHeight() / 2 + 40, this.getWidth() - 100, 20);
 
@@ -390,9 +390,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 }
             } */
 
-            g.setRenderingHint(
-                    RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+            //g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
 
             this.parent.updateFrameRate();
 
@@ -452,10 +450,10 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             g.drawString(this.statsText, this.getWidth() / 2 - metrics.stringWidth(this.statsText) / 2, 35);
 
             // Last updated
-            String updateText = "Last sync: " + new Date(this.lastUpdated / 1000).toString();
+            String updateText = String.format("Last sync: %s   |   Users online: %d", new Date(this.lastUpdated).toString(), Main.usersOnline);
             g.setColor(new Color(50, 50, 50));
             g.setFont(Main.getFont("Lato-Light", 12));
-            g.drawString(updateText, 10, this.getHeight() - 15);
+            g.drawString(updateText, 10, this.getHeight() - 10);
 
             // Penguin preview
             int dimension = (int) (Math.min(this.getHeight(), this.getWidth()) * 0.6);

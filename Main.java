@@ -20,8 +20,9 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	public enum Pages {MENU, GAME, LOGIN}
 
 	private static Timer masterTimer;
-	public static int w = 1160;
-	public static int h = 600;
+	public static int usersOnline = 0;
+	public static int w = 1100;
+	public static int h = 500;
 	private static GeiPanel panel;
 	private static Pages page = Pages.LOGIN;
 	public static Session session;
@@ -39,14 +40,18 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.setSize(w, h);
-		this.setMinimumSize(new Dimension(1160, 600));
+		this.setMinimumSize(new Dimension(1100, 500));
 		this.setLayout(new BorderLayout());
 
 		this.startGraphics();
 
 		this.getContentPane().addComponentListener(this);
 		this.setVisible(true);
-		
+
+
+		//System.setProperty("awt.useSystemAAFontSettings","on");
+		//System.setProperty("swing.aatext", "true");
+
 		try {
 			audioIn = AudioSystem.getAudioInputStream(this.getClass().getResource("music/menu.wav"));
 
@@ -63,6 +68,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 			errorQuit(e);
 		}
 
+		/*
 		AuthToken tempAuth = Session.readSession();
 
 		if (tempAuth != null) {
@@ -80,9 +86,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 				JOptionPane.showMessageDialog(null, "Unable to login with token", "HUBG Error", JOptionPane.ERROR_MESSAGE);
 			}
-
-
-		}
+		}*/
 	}
 
 	public static void startMusic() {

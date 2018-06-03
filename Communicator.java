@@ -8,7 +8,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class Communicator {
 
-    private static final boolean developmentMode = true;
+    private static final boolean developmentMode = !true;
 
     private static final HashMap<RequestDestination, String> baseProductionHashMap = new HashMap<RequestDestination, String>() {
         {
@@ -47,7 +47,7 @@ public class Communicator {
         return null;
     }
 
-        public static JSONObject sendMessage(String message) {
+    public static JSONObject sendMessage(String message) {
         try {
             JSONObject data = new JSONObject() {
                 {
@@ -127,10 +127,8 @@ public class Communicator {
 
             if (inJSON.has("success")) {
                 return "ok";
-            } else if (inJSON.has("error")) {
-                return inJSON.getString("error");
             } else {
-                throw new Exception("Empty response");
+                return inJSON.getString("error");
             }
 
         } catch (Exception e) {
@@ -153,6 +151,8 @@ public class Communicator {
                 Main.errorQuit(dataJSON.getString("error"));
                 return null;
             }
+
+            Main.usersOnline = dataJSON.getInt("online");
 
             return dataJSON.getJSONObject("user");
 

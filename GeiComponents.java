@@ -72,7 +72,13 @@ class GeiShopItem {
 
     }
 
-    public void update(Graphics g, int x, int y, int width) {
+    public void update(Graphics graphics, int x, int y, int width) {
+
+        Graphics2D g = (Graphics2D) graphics;
+
+        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
 
         this.buyButton.setBounds(x + width - 150, y + 40, 120, 30);
         this.useButton.setBounds(x + width - 150, y + 80, 120, 30);
@@ -128,7 +134,13 @@ class GeiActionEvent {
         this.type = type;
     }
 
-    public void update(Graphics g, int x, int y, int width) {
+    public void update(Graphics graphics, int x, int y, int width) {
+
+        Graphics2D g = (Graphics2D) graphics;
+
+        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
 
         GeiActionEvent.width = width; // Dynamically changes width based on presence of nasty scrollbar
 
@@ -155,13 +167,34 @@ class GeiActionEvent {
 }
 
 class GeiButton extends JButton {
+
+    public GeiButton(ImageIcon icon) {
+        super(icon);
+
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        /*
+        this.setForeground(new Color(200, 200, 200));
+        this.setBackground(new Color(30, 35, 40));
+        this.setFocusPainted(false);
+
+        this.addChangeListener(evt -> {
+            if (this.getModel().isPressed()) {
+                this.setBackground(new Color(30, 35, 40));
+            } else if (GeiButton.this.getModel().isRollover()) {
+                this.setBackground(new Color(30, 35, 40));
+            } else {
+                this.setBackground(new Color(30, 35, 40));
+            }
+        }); */
+    }
+
     public GeiButton(String text) {
         super(text);
 
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        /*
-		this.setForeground(new Color(92, 91, 87));
+		this.setForeground(new Color(200, 200, 200));
 		this.setBackground(new Color(30, 35, 40));
 		this.setFocusPainted(false);
 
@@ -173,7 +206,7 @@ class GeiButton extends JButton {
 			} else {
 				this.setBackground(new Color(30, 35, 40));
 			}
-		}); */
+		});
     }
 }
 
@@ -227,7 +260,13 @@ class GeiStatsPanel extends GeiPanel {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics graphics) {
+
+        Graphics2D g = (Graphics2D) graphics;
+
+        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
 
         g.setColor(new Color(1, 10, 19));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
@@ -258,7 +297,13 @@ class GeiChatItem {
         this.time = time;
     }
 
-    public void update(Graphics g, int x, int y, int width) {
+    public void update(Graphics graphics, int x, int y, int width) {
+
+        Graphics2D g = (Graphics2D) graphics;
+
+        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
 
         GeiChatItem.width = width; // Dynamically changes width based on presence of nasty scrollbar
 
@@ -354,7 +399,13 @@ class GeiChatPanel extends GeiPanel {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics graphics) {
+
+        Graphics2D g = (Graphics2D) graphics;
+
+        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
         g.setColor(new Color(1, 10, 19));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
@@ -392,7 +443,6 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
                         return;
                     }
                 }
-
 
                 String response = Communicator.shopRequest(eventSource[0], eventSource[1]);
 
@@ -455,7 +505,14 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics graphics) {
+
+        Graphics2D g = (Graphics2D) graphics;
+
+        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+
         g.setColor(new Color(1, 10, 19));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 

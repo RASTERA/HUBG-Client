@@ -27,12 +27,19 @@ class Game extends GeiPanel {
 		Rah.webbrowserOpen("https://agar.io");
 	}
 
+	public void exitGame() {
+		this.parent.startPage(Main.Pages.MENU);
+	}
+
 	@Override
 	public void paintComponent(Graphics graphics) {
 
 		this.parent.updateFrameRate();
 
 		Graphics2D g = (Graphics2D) graphics;
+
+		g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 		int dimension = Math.max(this.getHeight(), this.getWidth());
 		g.drawImage(this.background, 0, 0, dimension, dimension, this);
