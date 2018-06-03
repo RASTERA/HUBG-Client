@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.rastera.hubg.HUBGHUBGMain;
+import com.rastera.hubg.HUBGMain;
 
 public class HUD implements Disposable{
     public Stage stage;
@@ -33,7 +33,7 @@ public class HUD implements Disposable{
         timeCount = 0;
         score = 0;
 
-        viewport = new FitViewport(HUBGHUBGMain.V_WIDTH, HUBGHUBGMain.V_HEIGHT, new OrthographicCamera());
+        viewport = new FitViewport(HUBGMain.V_WIDTH, HUBGMain.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, sb);
 
         Table table = new Table();
