@@ -52,14 +52,17 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		System.setProperty("swing.aatext", "true");
 
 		try {
-			audioIn = AudioSystem.getAudioInputStream(this.getClass().getResource("music/menu.wav"));
+
+		    //System.out.println(this.getClass().getResource("music/menu.wav"));
+
+			audioIn = AudioSystem.getAudioInputStream(new File("music/menu.wav"));
 			startMusic();
 			
-			InputStream is;
+			File is;
 
 			String[] fonts = new String[]{"Lato-Light", "Lato-Normal", "Lato-Thin", "Lato-Bold", "Lato-Black"};
 			for (String font : fonts) {
-				is = Main.class.getResourceAsStream(String.format("fonts/%s.ttf", font));
+				is = new File(String.format("fonts/%s.ttf", font));
 				fontHashMap.put(font, Font.createFont(Font.TRUETYPE_FONT, is));
 			}
 		} catch (Exception e) {

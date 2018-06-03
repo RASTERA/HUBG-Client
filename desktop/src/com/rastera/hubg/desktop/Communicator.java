@@ -12,7 +12,7 @@ public class Communicator {
 
     private static final boolean developmentMode = !true;
 
-    private static final HashMap<RequestDestination, String> baseProductionHashMap = new HashMap<RequestDestination, String>() {
+    private static final HashMap<RequestDestination, String> baseProductionHashMap = new HashMap<>() {
         {
             put(RequestDestination.URL, "https://rastera.xyz/");
             put(RequestDestination.API, "https://api.rastera.xyz/");
@@ -20,7 +20,7 @@ public class Communicator {
         }
     };
 
-    private static final HashMap<RequestDestination, String> baseDevelopmentHashMap = new HashMap<RequestDestination, String>() {
+    private static final HashMap<RequestDestination, String> baseDevelopmentHashMap = new HashMap<>() {
         {
             put(RequestDestination.URL, "http://localhost:3005/");
             put(RequestDestination.API, "http://localhost:3005/api/");
