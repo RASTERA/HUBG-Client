@@ -30,7 +30,6 @@ import com.rastera.hubg.Util.Rah;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Timer;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class HUBGGame implements Screen {

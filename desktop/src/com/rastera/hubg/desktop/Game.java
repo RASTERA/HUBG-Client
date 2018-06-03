@@ -4,18 +4,17 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.rastera.hubg.HUBGMain;
+import com.rastera.hubg.Main;
 
 class Game extends GeiPanel {
 
 	private BufferedImage background;
 
-	public Game(Main parent) {
+	public Game(com.rastera.hubg.desktop.Main parent) {
 		this.parent = parent;
 		this.parent.setMasterTimer(50);
 		this.constantUpdate = false;
@@ -23,20 +22,20 @@ class Game extends GeiPanel {
 		try {
 			this.background = ImageIO.read(new File("images/menu-background.png"));
 		} catch (Exception e) {
-			Main.errorQuit(e);
+			com.rastera.hubg.desktop.Main.errorQuit(e);
 		}
 
 		this.repaint();
 		System.out.println("IM ALIVE!!!!");
 
 		//Rah.webbrowserOpen("https://agar.io");
-		Main.stopMusic();
+		com.rastera.hubg.desktop.Main.stopMusic();
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new HUBGMain(), config);
+		new LwjglApplication(new Main(), config);
 	}
 
 	public void exitGame() {
-		this.parent.startPage(Main.Pages.MENU);
+		this.parent.startPage(com.rastera.hubg.desktop.Main.Pages.MENU);
 	}
 
 	@Override
@@ -55,8 +54,8 @@ class Game extends GeiPanel {
 		String loadingMessage = "Game is in progress...";
 
 		g.setColor(Color.WHITE);
-		g.setFont(Main.getFont("Lato-Light", 30));
-		FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 30));
+		g.setFont(com.rastera.hubg.desktop.Main.getFont("Lato-Light", 30));
+		FontMetrics metrics = g.getFontMetrics(com.rastera.hubg.desktop.Main.getFont("Lato-Light", 30));
 		g.drawString(loadingMessage, this.getWidth() / 2 - metrics.stringWidth(loadingMessage) / 2, this.getHeight() / 2 - metrics.getHeight() / 2);
 
         try {

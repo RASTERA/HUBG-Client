@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.rastera.hubg.Main;
+import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Screens.HUBGGame;
 import com.rastera.hubg.Screens.PlayScreen;
 
@@ -25,13 +25,13 @@ public class Player extends Sprite {
 
         definePlayer(location);
 
-        setBounds(0, 0, 100 / Main.PPM, 100 / Main.PPM);
+        setBounds(0, 0, 100 / HUBGMain.PPM, 100 / HUBGMain.PPM);
 
         update(1);
     }
 
     public void update(float dt) {
-        setOrigin(50 / Main.PPM, 50 / Main.PPM);
+        setOrigin(50 / HUBGMain.PPM, 50 / HUBGMain.PPM);
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
         setRotation(MathUtils.radiansToDegrees * b2body.getAngle());
     }
@@ -43,7 +43,7 @@ public class Player extends Sprite {
 
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(50 / Main.PPM);
+        shape.setRadius(50 / HUBGMain.PPM);
 
         fdef.shape = shape;
 
