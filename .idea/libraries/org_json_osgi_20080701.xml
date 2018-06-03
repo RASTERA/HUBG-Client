@@ -2,6 +2,7 @@
   <library name="org.json-osgi-20080701">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/org.json-osgi-20080701.jar!/" />
+      <root url="jar://$PROJECT_DIR$/sun.misc.base64decoder.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
