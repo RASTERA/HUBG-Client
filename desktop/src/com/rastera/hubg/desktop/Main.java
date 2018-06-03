@@ -48,9 +48,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		this.getContentPane().addComponentListener(this);
 		this.setVisible(true);
 
-
-		//System.setProperty("awt.useSystemAAFontSettings","on");
-		//System.setProperty("swing.aatext", "true");
+		System.setProperty("awt.useSystemAAFontSettings","on");
+		System.setProperty("swing.aatext", "true");
 
 		try {
 			audioIn = AudioSystem.getAudioInputStream(this.getClass().getResource("music/menu.wav"));
@@ -139,7 +138,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 
 	private void startGraphics() {
-		if (panel == null || !panel.getClass().getName().toUpperCase().equals(page.toString())) {
+		if (panel == null || panel.getClass().getName().toUpperCase().indexOf(page.toString()) == -1) {
 
 			if (masterTimer != null) {
 				masterTimer.stop();
