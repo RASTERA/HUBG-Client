@@ -136,7 +136,6 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		prevFrame = currentTime;
 	}
 
-
 	private void startGraphics() {
 		if (panel == null || panel.getClass().getName().toUpperCase().indexOf(page.toString()) == -1) {
 
