@@ -22,15 +22,15 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	private static Timer masterTimer;
 	public static int usersOnline = 0;
 	public static int w = 1100;
-	public static int h = 500;
-	private static GeiPanel panel;
-	private static Pages page = Pages.LOGIN;
+	public static int h = 600;
 	public static Session session;
 	public static JSONObject shopData;
 	public static Clip menuMusic;
 	public static AudioInputStream audioIn;
 	public static HashMap<String, BufferedImage> skinHashMap = new HashMap<>();
 	private static final HashMap<String, Font> fontHashMap = new HashMap<>();
+    private static GeiPanel panel;
+    private static Pages page = Pages.LOGIN;
 
 	private static long prevFrame = 0;
 	private static boolean graphicsStarted = false;
@@ -40,7 +40,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.setSize(w, h);
-		this.setMinimumSize(new Dimension(1100, 500));
+		this.setMinimumSize(new Dimension(1100, 600));
 		this.setLayout(new BorderLayout());
 
 		this.startGraphics();
@@ -55,7 +55,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		try {
 			audioIn = AudioSystem.getAudioInputStream(this.getClass().getResource("music/menu.wav"));
 
-			//startMusic();
+			startMusic();
 			
 			InputStream is;
 
@@ -93,11 +93,21 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		try {
 			menuMusic = AudioSystem.getClip();
 			menuMusic.open(Main.audioIn);
+
 			menuMusic.start();
 			menuMusic.loop(menuMusic.LOOP_CONTINUOUSLY);
 		} catch (Exception e) {
 			Main.errorQuit(e);
 		}
+	}
+
+	public static void stopMusic() {
+		menuMusic.stop();
+		menuMusic.setFramePosition(0);
+	}
+
+	public static boolean musicPlaying() {
+		return !(menuMusic.getFramePosition() == 0);
 	}
 
 	public static Font getFont(String name, float size) {
@@ -223,7 +233,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		}
 
 		System.out.println("Something went wrong");
-		JOptionPane.showMessageDialog(null, "HUBG experienced an unexpected error:\n\n" + e, "HUBG Error", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(Rah.checkParent(panel), "HUBG experienced an unexpected error:\n\n" + e, "HUBG Error", JOptionPane.ERROR_MESSAGE);
 
 		System.exit(0);
 	}

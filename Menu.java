@@ -159,6 +159,10 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
         loadResources.start();
 
+        if (!Main.musicPlaying()) {
+            Main.startMusic();
+        }
+
     }
 
     public void sendMessage() {
@@ -311,7 +315,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             case "logout":
 
-                if(JOptionPane.showConfirmDialog (this.parent, "Are you sure you want to logout?","RASTERA Authentication Service", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION){
+                if(JOptionPane.showConfirmDialog (Rah.checkParent(this.parent), "Are you sure you want to logout?","RASTERA Authentication Service", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION){
                     System.out.println("SWITCH");
 
                     Session.destroySession();

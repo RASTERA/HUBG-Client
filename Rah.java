@@ -3,12 +3,26 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
 import java.awt.*;
+import java.awt.Component;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import Decoder.BASE64Decoder;
 
 class Rah {
+
+    // ToDo: Figure out why exception is thrown
+    public static Component checkParent(Component parent) {
+        try {
+            Insets screenInsets = parent.getToolkit().getScreenInsets(parent.getGraphicsConfiguration());
+
+            return parent;
+        } catch (Exception e) {
+            System.out.println("Window is zero?");
+            return null;
+        }
+    }
 
     public static ArrayList<String> wrapText(int width, String text, FontMetrics metrics) {
         ArrayList<String> lines = new ArrayList<>();

@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 class Game extends GeiPanel {
 
@@ -25,6 +26,8 @@ class Game extends GeiPanel {
 		System.out.println("IM ALIVE!!!!");
 
 		Rah.webbrowserOpen("https://agar.io");
+		Main.stopMusic();
+
 	}
 
 	public void exitGame() {
@@ -51,6 +54,13 @@ class Game extends GeiPanel {
 		FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 30));
 		g.drawString(loadingMessage, this.getWidth() / 2 - metrics.stringWidth(loadingMessage) / 2, this.getHeight() / 2 - metrics.getHeight() / 2);
 
+        try {
+            TimeUnit.SECONDS.sleep(5);
+            exitGame();
+
+        } catch (Exception e) {
+
+        }
 
 	}
 

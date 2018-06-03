@@ -439,7 +439,7 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
             if (eventSource[1].equals(item.name)) {
 
                 if (eventSource[0].equals("buy")) {
-                    if(JOptionPane.showConfirmDialog (this.parent, String.format("Are you sure you want to buy %s for Z$%d?", item.name, item.cost),"HUBG Shop", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION){
+                    if(JOptionPane.showConfirmDialog (Rah.checkParent(this.parent), String.format("Are you sure you want to buy %s for Z$%d?", item.name, item.cost),"HUBG Shop", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION){
                         return;
                     }
                 }
@@ -452,10 +452,10 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
                     this.parent.getParent().updateData();
 
                     if (eventSource[0].equals("buy")) {
-                        JOptionPane.showMessageDialog(this.parent.getParent().parent, "Successfully purchased: " + eventSource[1], "HUBG Shop", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(Rah.checkParent(this.parent.getParent().parent), "Successfully purchased: " + eventSource[1], "HUBG Shop", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(this.parent.getParent().parent, response, "HUBG Shop", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(Rah.checkParent(this.parent.getParent().parent), response, "HUBG Shop", JOptionPane.ERROR_MESSAGE);
                 }
 
             }
