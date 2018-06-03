@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="HUBG-Client">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/sun.misc.base64decoder.jar!/" />
+      <root url="jar://$PROJECT_DIR$/org.json-osgi-20080701.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

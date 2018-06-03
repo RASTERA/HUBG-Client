@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="200" tileheight="200" infinite="0" nextobjectid="1">
- <tileset firstgid="1" source="TestMap.tsx"/>
- <layer name="Background" width="64" height="64">
-  <data encoding="base64" compression="zlib">
-   eJztw8EJAAAMA6Ej+w/dMfpRcNVUVVVVVVVVVVVVVVVVVVXV1we8ACAB
-  </data>
- </layer>
-</map>
