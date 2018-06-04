@@ -63,6 +63,8 @@ public class HUBGGame implements Screen {
     private int raycastID;
     private Vector2 raycastPoint;
     private boolean shoot = false;
+    private boolean canShoot = true;
+    private float fireDelay = 0;
 
     public Brick b;
 
@@ -107,28 +109,24 @@ public class HUBGGame implements Screen {
     }
 
     public int calculateBullet (float range) {
-        range += 50;
+        range += player.getWidth();
         closestFraction = 99999;
         raycastPoint = new Vector2(player.getLocation().x + range * MathUtils.cos(player.getAngle()), player.getLocation().y + range * MathUtils.sin(player.getAngle()));
         raycastID = -1;
 
-        RayCastCallback callback = new RayCastCallback() {
-
-            @Override
-            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                if ( fraction < closestFraction ) {
-                    closestFraction = fraction;
-                    raycastPoint.set(point);
-                    raycastID = (Integer) fixture.getUserData();
-                }
-
-                return 1;
+        RayCastCallback callback = (fixture, point, normal, fraction) -> {
+            if ( fraction < closestFraction && (int) fixture.getUserData() != -1) {
+                closestFraction = fraction;
+                raycastPoint.set(point);
+                raycastID = (Integer) fixture.getUserData();
             }
+
+            return 1;
         };
 
         world.rayCast(callback, player.getLocation(), new Vector2(player.getLocation().x + range * MathUtils.cos(player.getAngle()), player.getLocation().y + range * MathUtils.sin(player.getAngle())));
 
-        return ID;
+        return raycastID;
     }
 
     public float getCameraRotation() {
@@ -227,11 +225,23 @@ public class HUBGGame implements Screen {
 
         player.b2body.setTransform(movement, getCameraRotation());
 
+        fireDelay += dt;
+        if (fireDelay >= 0.3) {
+            canShoot = true;
+            fireDelay -= 0.3;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.P) && canShoot) {
+            int enemyID = calculateBullet(400);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            calculateBullet(400);
+            if (networkConnected && enemyID != -1) {
+                conn.write(11, enemyID);
+            } else if (networkConnected) {
+                conn.write(11, -1);
+            }
+
             System.out.println(raycastID);
             shoot = true;
+            canShoot = false;
         } else {
             shoot = false;
         }
@@ -286,7 +296,7 @@ public class HUBGGame implements Screen {
     public void update(float dt) {
         handleNetworking(dt);
 
-        world.step(1/120f, 6, 2);
+        world.step(1/60f, 6, 2);
 
         if (gameStart) {
             handleInput(dt);
