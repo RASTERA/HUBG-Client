@@ -10,7 +10,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.rastera.hubg.HUBGMain;
 
-class Game extends GeiPanel {
+public class Game extends GeiPanel {
 
 	private BufferedImage background;
 
@@ -32,7 +32,7 @@ class Game extends GeiPanel {
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
-        config.fullscreen = true;
+        //config.fullscreen = true;
 		config.forceExit = false;
 
 		new LwjglApplication(new HUBGMain(), config);

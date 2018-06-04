@@ -154,8 +154,6 @@ public class HUBGGame implements Screen {
                 if (this.ID == cords[3]) {
                     break;
                 }
-
-                System.out.println("Update Location: " + Arrays.toString(cords));
                 boolean found = false;
 
                 for (Enemy aEnemyList : EnemyList) {
@@ -174,6 +172,16 @@ public class HUBGGame implements Screen {
                     GLProcess.add(Rah.messageBuilder(1, a));
                 }
                 break;
+            case 11:
+
+                if (((int[]) ServerMessage.message)[0] == this.ID) {
+                    // weapon lookup here
+
+                    if (player.damage(1)) {
+                        System.out.println("Player dead");
+                    }
+
+                }
         }
     }
 
@@ -250,9 +258,9 @@ public class HUBGGame implements Screen {
             int enemyID = calculateBullet(400);
 
             if (networkConnected && enemyID != -1) {
-                conn.write(11, enemyID);
+                conn.write(11, new int[] {enemyID, this.ID});
             } else if (networkConnected) {
-                conn.write(11, -1);
+                conn.write(11, new int[] {-1, this.ID});
             }
 
             System.out.println(raycastID);

@@ -27,7 +27,7 @@ public class Enemy extends Sprite {
         this.name = name;
         this.id = (int) info[3];
 
-        setBounds(0, 0, 100, 100);
+        setBounds(0, 0, 100 / HUBGMain.PPM, 100 / HUBGMain.PPM);
 
         defineEnemy(info);
         updateLocation(info);
@@ -38,7 +38,7 @@ public class Enemy extends Sprite {
     public void updateLocation(float[] newLocation) {
         travelx = newLocation[0] - b2body.getPosition().x;
         travely = newLocation[1] - b2body.getPosition().y;
-        travelr = newLocation[2] - b2body.getAngle();
+        travelr = Math.min(newLocation[2] - b2body.getAngle(), newLocation[2] + b2body.getAngle());
 
         distx = newLocation[0];
         disty = newLocation[1];
@@ -49,7 +49,6 @@ public class Enemy extends Sprite {
         if (travelx == 0 && travely == 0 && travelr == 0) {
             return;
         }
-
         float xstep = travelx / HUBGMain.SYNC_INTERVAL * dt;
         float ystep = travely / HUBGMain.SYNC_INTERVAL * dt;
         float rstep = travelr / HUBGMain.SYNC_INTERVAL * dt;
@@ -86,7 +85,7 @@ public class Enemy extends Sprite {
     }
 
     public void updateSprite() {
-        setOrigin(50, 50);
+        setOrigin(getWidth() / 2, getHeight() / 2);
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
         setRotation(MathUtils.radiansToDegrees * b2body.getAngle());
     }
@@ -98,7 +97,7 @@ public class Enemy extends Sprite {
 
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(50);
+        shape.setRadius(getWidth() / 2);
 
         fdef.shape = shape;
 

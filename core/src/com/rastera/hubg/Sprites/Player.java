@@ -14,6 +14,7 @@ import com.rastera.hubg.Screens.HUBGGame;
 public class Player extends Sprite {
     public World world;
     public Body b2body;
+    private float health = 100;
     private TextureRegion marioStand;
     private Texture playerImage;
 
@@ -30,7 +31,7 @@ public class Player extends Sprite {
     }
 
     public void update(float dt) {
-        setOrigin(50 / HUBGMain.PPM, 50 / HUBGMain.PPM);
+        setOrigin(getWidth() / 2, getHeight() / 2);
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
         setRotation(MathUtils.radiansToDegrees * b2body.getAngle());
     }
@@ -49,6 +50,18 @@ public class Player extends Sprite {
         b2body.createFixture(fdef);
 
         b2body.setTransform(location[0], location[1], location[2]);
+    }
+
+    public boolean damage(float damage) {
+        this.health -= damage;
+
+        System.out.println(health);
+
+        if (health <= 0) {
+            System.out.print("Player dead");
+            return true;
+        }
+        return false;
     }
 
     public Vector2 getLocation() {
