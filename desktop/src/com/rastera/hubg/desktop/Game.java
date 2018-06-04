@@ -31,6 +31,8 @@ class Game extends GeiPanel {
 		//Rah.webbrowserOpen("https://agar.io");
 		com.rastera.hubg.desktop.Main.stopMusic();
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+
+		config.forceExit = false;
 		new LwjglApplication(new HUBGMain(), config);
 	}
 
