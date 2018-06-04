@@ -51,6 +51,8 @@ public class HUBGGame implements Screen {
     private float dTotal = 0;
 
     private boolean gameStart = false;
+    private boolean paused = false;
+    private boolean pausedLock = true;
     private boolean networkConnected = false;
     private ArrayList<Enemy> EnemyList = new ArrayList<Enemy>();
     private LinkedBlockingQueue<Message> GLProcess = new LinkedBlockingQueue<Message>();
@@ -184,42 +186,56 @@ public class HUBGGame implements Screen {
 
         Vector2 impulse = new Vector2();
 
-        //PHYSICS HW, 610 1-3, 611 2, DRAWING CIRCUITS 1-4
+        if (!paused) {
+            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                impulse.add(new Vector2(-200 * player.b2body.getMass() * MathUtils.cos(r), -200 * player.b2body.getMass() * MathUtils.sin(r)));
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            impulse.add(new Vector2(-200 * player.b2body.getMass() * MathUtils.cos(r), -200 * player.b2body.getMass() * MathUtils.sin(r)));
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                impulse.add(new Vector2(200 * player.b2body.getMass() * MathUtils.cos(r), 200 * player.b2body.getMass() * MathUtils.sin(r)));
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            impulse.add(new Vector2(200 * player.b2body.getMass() * MathUtils.cos(r), 200 * player.b2body.getMass() * MathUtils.sin(r)));
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                impulse.add(new Vector2(-200 * MathUtils.cos(r - MathUtils.PI / 2), -200 * player.b2body.getMass() * MathUtils.sin(r - MathUtils.PI / 2)));
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            impulse.add(new Vector2(-200 * MathUtils.cos(r - MathUtils.PI / 2), -200 * player.b2body.getMass() * MathUtils.sin(r - MathUtils.PI / 2)));
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                impulse.add(new Vector2(-200 * MathUtils.cos(r + MathUtils.PI / 2), -200 * player.b2body.getMass() * MathUtils.sin(r + MathUtils.PI / 2)));
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            impulse.add(new Vector2(-200 * MathUtils.cos(r + MathUtils.PI / 2), -200 * player.b2body.getMass() * MathUtils.sin(r + MathUtils.PI / 2)));
         }
 
         player.b2body.applyLinearImpulse(impulse, player.b2body.getWorldCenter(), true);
 
         r = 0;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-            r -= 90 * dt;
+        if (!paused) {
+
+            if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+                r -= 90 * dt;
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+                r += 90 * dt;
+            }
+
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-            r += 90 * dt;
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && gamecam.zoom < 2 / HUBGMain.PPM + defaultZoom) {
+        if (!paused && Gdx.input.isKeyPressed(Input.Keys.SPACE) && gamecam.zoom < 2 / HUBGMain.PPM + defaultZoom) {
             gamecam.zoom += 0.01;
         } else if (gamecam.zoom > defaultZoom && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             gamecam.zoom -= 0.01;
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            if (pausedLock) {
+                System.out.println("TOGGLE");
+                paused = !paused;
+            }
+            pausedLock = false;
+        } else {
+            pausedLock = true;
+        }
 
         gamecam.position.x = movement.x;
         gamecam.position.y = movement.y;
@@ -330,6 +346,7 @@ public class HUBGGame implements Screen {
             for (Enemy e : EnemyList) {
                 e.draw(main.batch);
             }
+
             main.batch.end();
         }
 

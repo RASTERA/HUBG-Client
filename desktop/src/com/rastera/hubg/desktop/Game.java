@@ -28,10 +28,14 @@ class Game extends GeiPanel {
 		this.repaint();
 		System.out.println("IM ALIVE!!!!");
 
-		//Rah.webbrowserOpen("https://agar.io");
 		com.rastera.hubg.desktop.Main.stopMusic();
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new HUBGMain(), config);
+
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+
+        config.fullscreen = true;
+
+        LwjglApplication application = new LwjglApplication(new HUBGMain(), config);
+
 	}
 
 	public void exitGame() {
@@ -57,14 +61,6 @@ class Game extends GeiPanel {
 		g.setFont(com.rastera.hubg.desktop.Main.getFont("Lato-Light", 30));
 		FontMetrics metrics = g.getFontMetrics(com.rastera.hubg.desktop.Main.getFont("Lato-Light", 30));
 		g.drawString(loadingMessage, this.getWidth() / 2 - metrics.stringWidth(loadingMessage) / 2, this.getHeight() / 2 - metrics.getHeight() / 2);
-
-        try {
-            TimeUnit.SECONDS.sleep(5);
-            exitGame();
-
-        } catch (Exception e) {
-
-        }
 
 	}
 

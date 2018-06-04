@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Screens.HUBGGame;
-import com.rastera.hubg.Screens.PlayScreen;
 
 public class Player extends Sprite {
     public World world;
