@@ -20,7 +20,7 @@ class GeiShopItem {
     public static int width = 500;
     public GeiPanel parent;
 
-    private GeiButton buyButton, useButton;
+    public GeiButton buyButton, useButton;
 
     public GeiShopItem(GeiPanel parent, String name, JSONObject data) {
         this.parent = parent;
@@ -152,7 +152,7 @@ class GeiActionEvent {
         g.setFont(Main.getFont("Lato-Light", 15));
 
         FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 15));
-        ArrayList<String> lines = Rah.wrapText(this.width, this.caption, metrics);
+        ArrayList<String> lines = Rah.wrapText(GeiActionEvent.width, this.caption, metrics);
         g.setColor(Color.WHITE);
 
         for (int i = 0; i < lines.size(); i++) {
@@ -307,9 +307,9 @@ class GeiChatItem {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 15));
-        ArrayList<String> lines = Rah.wrapText(this.width, text, metrics);
+        ArrayList<String> lines = Rah.wrapText(GeiChatItem.width, text, metrics);
 
-        this.height = 50 + 10 * lines.size();
+        height = 50 + 10 * lines.size();
         GeiChatItem.width = width; // Dynamically changes width based on presence of nasty scrollbar
 
         g.setColor(new Color(5, 15, 24));
@@ -420,7 +420,7 @@ class GeiChatPanel extends GeiPanel {
 
         // Determine expected chat height
         for (int i = 0; i < chatArrayList.size(); i++) {
-            totalHeight += this.chatArrayList.size() * (chatArrayList.get(i).height + 20);
+            totalHeight += this.chatArrayList.size() * (GeiChatItem.height + 20);
         }
 
         boolean scrollEnabled = 60 + totalHeight > this.parent.getHeight();
@@ -429,7 +429,7 @@ class GeiChatPanel extends GeiPanel {
         for (int i = 0; i < chatArrayList.size(); i++) {
             chatArrayList.get(i).update(g, 20, yPos, scrollEnabled ? 455 : 460);
 
-            yPos += chatArrayList.get(i).height + 10;
+            yPos += GeiChatItem.height + 10;
         }
     }
 
@@ -457,14 +457,22 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
                     if(JOptionPane.showConfirmDialog (Rah.checkParent(this.parent), String.format("Are you sure you want to buy %s for Z$%d?", item.name, item.cost),"HUBG Shop", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION){
                         return;
                     }
+
+                    item.buyButton.setEnabled(false);
+                    item.buyButton.setText("Loading");
+
+                } else {
+                    item.useButton.setEnabled(false);
+                    item.useButton.setText("Loading");
                 }
 
-                String response = Communicator.shopRequest(eventSource[0], eventSource[1]);
+                String response = Communicator.shopRequest(parent.getParent().parent, eventSource[0], eventSource[1]);
 
                 System.out.println(response);
 
                 if (response.equals("ok")) {
                     this.parent.getParent().updateData();
+                    item.updateButtonState();
 
                     if (eventSource[0].equals("buy")) {
                         JOptionPane.showMessageDialog(Rah.checkParent(this.parent.getParent().parent), "Successfully purchased: " + eventSource[1], "HUBG Shop", JOptionPane.INFORMATION_MESSAGE);
@@ -500,8 +508,11 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
     public void update(JSONArray purchasedSkins) {
 
         try {
-            for (int i = 0; i < purchasedSkins.length(); i++) {
-                for (GeiShopItem item : itemArrayList) {
+            for (GeiShopItem item : itemArrayList) {
+                item.unlocked = false;
+                item.updateButtonState();
+
+                for (int i = 0; i < purchasedSkins.length(); i++) {
                     if (item.name.equals(purchasedSkins.getString(i))) {
                         item.unlocked = true;
                         item.updateButtonState();
@@ -509,6 +520,7 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
                     }
                 }
             }
+
         } catch (Exception e) {
             Main.errorQuit(e);
         }

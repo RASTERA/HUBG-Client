@@ -1,5 +1,6 @@
 package com.rastera.hubg.desktop;
 
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
@@ -7,6 +8,8 @@ import java.util.HashMap;
 import org.json.JSONObject;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.swing.*;
+import javax.swing.border.Border;
 
 public class Communicator {
 
@@ -72,10 +75,10 @@ public class Communicator {
 
             URLConnection socket;
             if (Communicator.developmentMode) {
-                socket = (HttpURLConnection) new URL(destination).openConnection();
+                socket = new URL(destination).openConnection();
                 ((HttpURLConnection) socket).setRequestMethod(type.toString());
             } else {
-                socket = (HttpsURLConnection) new URL(destination).openConnection();
+                socket = new URL(destination).openConnection();
                 ((HttpsURLConnection) socket).setRequestMethod(type.toString());
             }
 
@@ -114,9 +117,9 @@ public class Communicator {
         }
     }
 
-    public static String shopRequest(String type, String item) {
-        try {
+    public static String shopRequest(JFrame parent, String type, String item) {
 
+        try {
             JSONObject request = new JSONObject() {
                 {
                     this.put("type", type);

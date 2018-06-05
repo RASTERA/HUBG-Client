@@ -174,7 +174,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         if (message != null && message.length() > 0) {
 
             JSONObject newMessages = Communicator.sendMessage(message);
-            this.chatPanel.updateMessages(newMessages);
+            GeiChatPanel.updateMessages(newMessages);
             this.chatPanel.update(Main.session.messages);
             this.chatPanel.repaint();
         }
@@ -360,7 +360,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         if (!this.statsLoaded) {
             this.loadingBar.setBounds(50, this.getHeight() / 2 + 40, this.getWidth() - 100, 20);
 
-            String loadingMessage = "Waiting for server";
+            String loadingMessage = "Downloading Resources";
 
             int size = Math.max(getWidth(), getHeight());
 

@@ -15,5 +15,6 @@
     <orderEntry type="module" module-name="desktop" />
     <orderEntry type="module" module-name="desktop_main" />
     <orderEntry type="module" module-name="desktop_test" />
+    <orderEntry type="library" name="org.json-osgi-20080701" level="project" />
   </component>
 </module>

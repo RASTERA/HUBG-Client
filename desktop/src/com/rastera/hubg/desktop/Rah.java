@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 import Decoder.BASE64Decoder;
 
-class Rah {
+public class Rah {
 
     // ToDo: Figure out why exception is thrown
     public static Component checkParent(Component parent) {
