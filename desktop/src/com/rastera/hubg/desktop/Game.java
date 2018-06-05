@@ -2,15 +2,18 @@ package com.rastera.hubg.desktop;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.rastera.hubg.HUBGMain;
 
-class Game extends GeiPanel {
+public class Game extends GeiPanel {
 
 	private BufferedImage background;
 
@@ -26,19 +29,21 @@ class Game extends GeiPanel {
 		}
 
 		this.repaint();
-		System.out.println("IM ALIVE!!!!");
 
 		com.rastera.hubg.desktop.Main.stopMusic();
 
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
-        config.fullscreen = true;
+		config.fullscreen = true;
 		config.forceExit = false;
 
-		new LwjglApplication(new HUBGMain(), config);
+		new LwjglApplication(new HUBGMain(this), config);
+
+
 	}
 
 	public void exitGame() {
+		this.parent.setState(Frame.NORMAL);
 		this.parent.startPage(com.rastera.hubg.desktop.Main.Pages.MENU);
 	}
 
@@ -55,7 +60,7 @@ class Game extends GeiPanel {
 		int dimension = Math.max(this.getHeight(), this.getWidth());
 		g.drawImage(this.background, 0, 0, dimension, dimension, this);
 
-		String loadingMessage = "Game is in progress...";
+		String loadingMessage = "Game is still in progress...";
 
 		g.setColor(Color.WHITE);
 		g.setFont(com.rastera.hubg.desktop.Main.getFont("Lato-Light", 30));

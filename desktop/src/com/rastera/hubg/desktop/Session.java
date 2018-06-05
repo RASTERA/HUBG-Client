@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.time.Instant;
 
 class AuthToken implements Serializable {
     private String token;
@@ -26,7 +27,6 @@ public class Session {
     private String username;
     private AuthToken authToken;
     private String skin;
-    private int rank;
     public JSONObject user;
     public JSONArray messages = new JSONArray();
 
@@ -40,6 +40,17 @@ public class Session {
         this.user = user;
 
         this.updateJSON();
+
+        try {
+            messages.put(new JSONObject() {
+                {
+                    put("message", "[System] Welcome to HUBG Chat!");
+                    put("time", Instant.now().toEpochMilli());
+                }
+            });
+        } catch (Exception e) {
+
+        }
     }
 
     public static void destroySession() {
@@ -83,7 +94,6 @@ public class Session {
 
     public void updateJSON() {
         try {
-            this.rank = this.user.getInt("rank");
             this.username = this.user.getString("username");
             this.skin = this.user.getString("skin");
         } catch (Exception e) {
@@ -91,17 +101,13 @@ public class Session {
         }
     }
 
-    public Integer getMoney() {
+    public Long getMoney() {
         try {
-            return this.user.getInt("money");
+            return this.user.getLong("money");
         } catch (Exception e) {
             Main.errorQuit(e);
         }
         return null;
-    }
-
-    public int getRank() {
-        return this.rank;
     }
 
     public String getSkin() {

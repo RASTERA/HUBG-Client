@@ -1,5 +1,6 @@
 package com.rastera.hubg.Screens;
 
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -69,10 +70,12 @@ public class HUBGGame implements Screen {
     private float fireDelay = 0;
 
     public Brick b;
+    public com.rastera.hubg.desktop.Game parentGame;
 
 
-    public HUBGGame(HUBGMain main) {
+    public HUBGGame(HUBGMain main, com.rastera.hubg.desktop.Game parentGame) {
         this.main = main;
+        this.parentGame = parentGame;
 
         gamecam = new OrthographicCamera();
         gamePort = new ScreenViewport(gamecam);
@@ -219,10 +222,10 @@ public class HUBGGame implements Screen {
 
         }
 
-        if (!paused && Gdx.input.isKeyPressed(Input.Keys.SPACE) && gamecam.zoom < 2 / HUBGMain.PPM + defaultZoom) {
-            gamecam.zoom += 0.01;
-        } else if (gamecam.zoom > defaultZoom && !Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            gamecam.zoom -= 0.01;
+        if (!paused && Gdx.input.isKeyPressed(Input.Keys.SPACE) && gamecam.zoom < 2000 / HUBGMain.PPM + defaultZoom) {
+            gamecam.zoom += 0.02;
+        } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
+            gamecam.zoom -= 0.02;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -357,6 +360,18 @@ public class HUBGGame implements Screen {
                 e.draw(main.batch);
             }
 
+            /*
+            if (paused) {
+                ShapeRenderer sr = new ShapeRenderer();
+                sr.setColor(Color.WHITE);
+                sr.setProjectionMatrix(main.batch.getProjectionMatrix());
+
+                sr.begin(ShapeRenderer.ShapeType.Filled);
+                sr.setColor(new Color(200, 200, 200, 100));
+                sr.rect(0, 0, 100, 100);
+                sr.end();
+            }*/
+
             main.batch.end();
         }
 
@@ -385,6 +400,7 @@ public class HUBGGame implements Screen {
 
     @Override
     public void dispose() {
-
+        System.out.println("lol");
+        this.parentGame.exitGame();
     }
 }

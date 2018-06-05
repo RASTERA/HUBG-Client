@@ -34,7 +34,7 @@ class GeiShopItem {
             Main.errorQuit(e);
         }
 
-        this.buyButton = new GeiButton(String.format("Buy: Z$%d", this.cost));
+        this.buyButton = new GeiButton(String.format("Z$%d", this.cost));
         this.buyButton.setActionCommand("buy-" + this.name);
         this.buyButton.addActionListener((ActionListener) this.parent);
 
@@ -82,8 +82,8 @@ class GeiShopItem {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 
-        this.buyButton.setBounds(x + width - 150, y + 40, 120, 30);
-        this.useButton.setBounds(x + width - 150, y + 80, 120, 30);
+        this.buyButton.setBounds(x + 140, y + 85, 120, 30);
+        this.useButton.setBounds(x + 270, y + 85, 120, 30);
 
         GeiShopItem.width = width; // Dynamically changes width based on presence of nasty scrollbar
 
@@ -95,10 +95,10 @@ class GeiShopItem {
         g.setColor(Color.WHITE);
 
         g.setFont(Main.getFont("Lato-Light", 30));
-        g.drawString(this.name, x + 140, y + 70);
+        g.drawString(this.name, x + 140, y + 55);
 
         g.setFont(Main.getFont("Lato-Light", 15));
-        g.drawString(this.description, x + 141, y + 88);
+        g.drawString(this.description, x + 141, y + 73);
 
 
     }
@@ -219,14 +219,14 @@ abstract class GeiPanel extends JPanel {
 
 }
 
-class GeiStatsPanel extends GeiPanel {
+class GeiActionPanel extends GeiPanel {
 
     private ArrayList<GeiActionEvent> eventArrayList = new ArrayList<>();
     private final int width;
     private GeiScrollPane parent;
     private long currentTime;
 
-    public GeiStatsPanel(int width, JSONArray actionArray) {
+    public GeiActionPanel(int width, JSONArray actionArray) {
         this.width = width;
 
         this.update(actionArray);
@@ -252,7 +252,7 @@ class GeiStatsPanel extends GeiPanel {
             Main.errorQuit(e);
         }
 
-        this.setPreferredSize(new Dimension(this.width, 60 + this.eventArrayList.size() * (GeiActionEvent.height + 20)));
+        this.setPreferredSize(new Dimension(this.width, 60 + this.eventArrayList.size() * (GeiActionEvent.height + 10)));
 
 
     }
@@ -277,10 +277,10 @@ class GeiStatsPanel extends GeiPanel {
         g.setFont(Main.getFont("Lato-Light", 15));
         g.drawString("Recent Activity", 20, 30);
 
-        boolean scrollEnabled = 60 + this.eventArrayList.size() * (GeiActionEvent.height + 20) > this.parent.getHeight();
+        boolean scrollEnabled = 60 + this.eventArrayList.size() * (GeiActionEvent.height + 10) > this.parent.getHeight();
 
         for (int y = 0; y < this.eventArrayList.size(); y++) {
-            this.eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 20), scrollEnabled ? 205 : 210);
+            this.eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 10), scrollEnabled ? 205 : 210);
         }
     }
 }
@@ -288,7 +288,7 @@ class GeiStatsPanel extends GeiPanel {
 
 class GeiChatItem {
 
-    public static final int height = 50;
+    public static int height = 50;
     public static int width = 500;
 
     private String text;
@@ -306,7 +306,10 @@ class GeiChatItem {
         g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+        FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 15));
+        ArrayList<String> lines = Rah.wrapText(this.width, text, metrics);
 
+        this.height = 50 + 10 * lines.size();
         GeiChatItem.width = width; // Dynamically changes width based on presence of nasty scrollbar
 
         g.setColor(new Color(5, 15, 24));
@@ -314,9 +317,8 @@ class GeiChatItem {
 
         g.setFont(Main.getFont("Lato-Light", 15));
 
-        FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 15));
 
-        ArrayList<String> lines = Rah.wrapText(this.width, text, metrics);
+
 
         g.setColor(Color.WHITE);
 
@@ -405,7 +407,7 @@ class GeiChatPanel extends GeiPanel {
 
         Graphics2D g = (Graphics2D) graphics;
 
-        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         g.setColor(new Color(1, 10, 19));
@@ -413,10 +415,21 @@ class GeiChatPanel extends GeiPanel {
 
         this.setPreferredSize(new Dimension(this.width, 20 + this.chatArrayList.size() * (GeiChatItem.height + 20)));
 
-        boolean scrollEnabled = 60 + this.chatArrayList.size() * (GeiChatItem.height + 20) > this.parent.getHeight();
+        int totalHeight = 0;
+        int yPos = 20;
 
+        // Determine expected chat height
         for (int i = 0; i < chatArrayList.size(); i++) {
-            chatArrayList.get(i).update(g, 20, 20 + (GeiChatItem.height + 20) * i, scrollEnabled ? 455 : 460);
+            totalHeight += this.chatArrayList.size() * (chatArrayList.get(i).height + 20);
+        }
+
+        boolean scrollEnabled = 60 + totalHeight > this.parent.getHeight();
+
+        // Updates chat items
+        for (int i = 0; i < chatArrayList.size(); i++) {
+            chatArrayList.get(i).update(g, 20, yPos, scrollEnabled ? 455 : 460);
+
+            yPos += chatArrayList.get(i).height + 10;
         }
     }
 
@@ -480,7 +493,7 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
             Main.errorQuit(e);
         }
 
-        this.setPreferredSize(new Dimension(this.width, 20 + this.itemArrayList.size() * (GeiShopItem.height + 20)));
+        this.setPreferredSize(new Dimension(this.width, 20 + this.itemArrayList.size() * (GeiShopItem.height + 10)));
 
     }
 
@@ -518,10 +531,10 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
         g.setColor(new Color(1, 10, 19));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        boolean scrollEnabled = 60 + this.itemArrayList.size() * (GeiShopItem.height + 20) > this.parent.getHeight();
+        boolean scrollEnabled = 60 + this.itemArrayList.size() * (GeiShopItem.height + 10) > this.parent.getHeight();
 
         for (int i = 0; i < itemArrayList.size(); i++) {
-            itemArrayList.get(i).update(g, 20, 20 + 170 * i, scrollEnabled ? 455 : 460);
+            itemArrayList.get(i).update(g, 20, 20 + 160 * i, scrollEnabled ? 455 : 460);
         }
 
     }

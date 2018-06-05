@@ -48,6 +48,10 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		this.getContentPane().addComponentListener(this);
 		this.setVisible(true);
 
+		// https://stackoverflow.com/questions/2442599/how-to-set-jframe-to-appear-centered-regardless-of-monitor-resolution?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
 

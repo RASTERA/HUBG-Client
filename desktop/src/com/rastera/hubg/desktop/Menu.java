@@ -30,7 +30,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     private final GeiScrollPane shopScrollPane;
     private final JProgressBar loadingBar;
     private GeiTextField chatTextField;
-    private GeiStatsPanel recentActionsPanel;
+    private GeiActionPanel recentActionsPanel;
     private GeiShopPanel shopPanel;
     private GeiChatPanel chatPanel;
     private final int activityPanelWidth = 250;
@@ -78,7 +78,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.logoutButton.addActionListener(this);
 
         try {
-            this.recentActionsPanel = new GeiStatsPanel(this.activityPanelWidth, Main.session.user.getJSONArray("actions"));
+            this.recentActionsPanel = new GeiActionPanel(this.activityPanelWidth, Main.session.user.getJSONArray("actions"));
             this.shopPanel = new GeiShopPanel(this.shopPanelWidth);
             this.chatPanel = new GeiChatPanel(this.chatPanelWidth, Main.session.user.getJSONArray("actions"));
         } catch (Exception e) {
@@ -182,35 +182,40 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
 
     public void updateData() {
-        try {
+        Thread data = new Thread(() -> {
+            try {
 
-            JSONObject tempUser = Communicator.refresh(Main.session.getToken());
+                JSONObject tempUser = Communicator.refresh(Main.session.getToken());
 
-            Main.session.user = tempUser;
-            Main.session.updateJSON();
-            GeiChatPanel.updateMessages(Communicator.getMessages());
+                Main.session.user = tempUser;
+                Main.session.updateJSON();
+                GeiChatPanel.updateMessages(Communicator.getMessages());
 
-            System.out.println(tempUser);
+                System.out.println(tempUser);
 
-            this.statsText = String.format("%s Kills      |      %s Deaths      |      %s Matches      |      %s Zhekko", Main.session.user.getString("kills"), Main.session.user.getString("deaths"), Main.session.user.getString("matches"), Main.session.user.getString("money"));
-            this.lastUpdated = System.currentTimeMillis();
+                Menu.this.statsText = String.format("%s Kills      |      %s Deaths      |      %s Matches      |      %s Zhekko", Main.session.user.getString("kills"), Main.session.user.getString("deaths"), Main.session.user.getString("matches"), Main.session.user.getString("money"));
+                Menu.this.lastUpdated = System.currentTimeMillis();
 
-            switch (currentPanel) {
-                case ACTIVITY:
-                    this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
-                    break;
-                case SHOP:
-                    this.shopPanel.update(Main.session.user.getJSONArray("skins"));
-                case CHAT:
-                    this.chatPanel.update(Main.session.messages);
+                switch (currentPanel) {
+                    case ACTIVITY:
+                        Menu.this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
+                        break;
+                    case SHOP:
+                        Menu.this.shopPanel.update(Main.session.user.getJSONArray("skins"));
+                    case CHAT:
+                        Menu.this.chatPanel.update(Main.session.messages);
 
+                }
+
+                Menu.this.repaint();
+
+            } catch (Exception e) {
+                Main.errorQuit(e);
             }
+        });
 
-            this.repaint();
+        data.start();
 
-        } catch (Exception e) {
-            Main.errorQuit(e);
-        }
     }
 
     public void clearPanels() {
@@ -352,14 +357,17 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-
         if (!this.statsLoaded) {
             this.loadingBar.setBounds(50, this.getHeight() / 2 + 40, this.getWidth() - 100, 20);
 
             String loadingMessage = "Waiting for server";
 
-            g.setColor(Color.WHITE);
-            g.fillRect(0, 0, this.getWidth(), this.getHeight());
+            int size = Math.max(getWidth(), getHeight());
+
+            g.drawImage(this.background, 0, 0, size, size, this);
+
+            //g.setColor(Color.WHITE);
+            //g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
             g.setColor(Color.BLACK);
             g.setFont(Main.getFont("Lato-Light", 30));
@@ -442,13 +450,9 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             g.setColor(Color.WHITE);
 
-            // Rank badge
-            g.setFont(Main.getFont("Lato-Normal", 30));
-            g.drawString("" + Main.session.getRank(), Main.w - this.activityPanelWidth + 20, 40);
-
             // Username
-            g.setFont(Main.getFont("Lato-Light", 30));
-            g.drawString(Main.session.getUsername(), Main.w - this.activityPanelWidth + 60, 40);
+            //g.setFont(Main.getFont("Lato-Light", 30));
+            //g.drawString(Main.session.getUsername(), Main.w - this.activityPanelWidth + 60, 40);
 
             // Top Bar stats
             g.setFont(Main.getFont("Lato-Light", 20));

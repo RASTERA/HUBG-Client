@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="desktop">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/desktop" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/desktop" />
+    </SOURCES>
+  </library>
+</component>
