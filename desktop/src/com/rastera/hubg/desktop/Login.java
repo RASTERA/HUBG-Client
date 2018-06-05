@@ -188,6 +188,14 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.loginButton.setText("SIGN IN");
     }
 
+    /*
+    *
+    * k so let's say you had a very short amount of time to code a game (which will be interviewed and stuff) and someone had code for a portion of the program, but it was only usable for that one person (since only they can understand it); although the logic's there, it would take you a long time to understand, it's unfinished, and requires quite a bit of revision.
+you create a new system that fits the basic criteria of your assignment and propose that they implement their own code in later.
+they want to implement their complex system right away, even though you have this short time span and don't have the basics of the project done.
+what do you do?
+    * */
+
     private void startMenu(Session session) {
         System.out.println("Login Successful");
         Main.session = session;
