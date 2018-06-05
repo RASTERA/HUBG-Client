@@ -23,11 +23,11 @@ public abstract class InteractiveTileObject {
         PolygonShape shape = new PolygonShape();
 
         bdef.type= BodyDef.BodyType.StaticBody;
-        bdef.position.set((float) (bounds.getX() + bounds.getWidth() / 2), (float) (bounds.getY() + bounds.getHeight() / 2));
+        bdef.position.set(bounds.getX() + bounds.getWidth() / 2, bounds.getY() + bounds.getHeight() / 2);
 
         body = world.createBody(bdef);
 
-        shape.setAsBox((float)bounds.getWidth(), (float) bounds.getHeight());
+        shape.setAsBox(bounds.getWidth(), bounds.getHeight());
         fdef.shape = shape;
 
         body.createFixture(fdef);

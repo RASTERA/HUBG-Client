@@ -43,6 +43,18 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		this.setMinimumSize(new Dimension(1100, 600));
 		this.setLayout(new BorderLayout());
 
+		try {
+			File is;
+
+			String[] fonts = new String[]{"Lato-Light", "Lato-Normal", "Lato-Thin", "Lato-Bold", "Lato-Black"};
+			for (String font : fonts) {
+				is = new File(String.format("fonts/%s.ttf", font));
+				fontHashMap.put(font, Font.createFont(Font.TRUETYPE_FONT, is));
+			}
+		} catch (Exception e) {
+			Main.errorQuit(e);
+		}
+
 		this.startGraphics();
 
 		this.getContentPane().addComponentListener(this);
@@ -61,14 +73,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 			audioIn = AudioSystem.getAudioInputStream(new File("music/menu.wav"));
 			startMusic();
-			
-			File is;
 
-			String[] fonts = new String[]{"Lato-Light", "Lato-Normal", "Lato-Thin", "Lato-Bold", "Lato-Black"};
-			for (String font : fonts) {
-				is = new File(String.format("fonts/%s.ttf", font));
-				fontHashMap.put(font, Font.createFont(Font.TRUETYPE_FONT, is));
-			}
 		} catch (Exception e) {
 			errorQuit(e);
 		}

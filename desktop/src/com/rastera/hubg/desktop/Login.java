@@ -34,17 +34,26 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
     private int frame = 0;
     private final int frameCap = 30;
 
+    private volatile boolean tokenLogin = true;
+    private BufferedImage background;
+    private JProgressBar loadingBar;
+
     public Login(Main parent) {
         this.parent = parent;
         this.parent.setMasterTimer(45);
 
         //this.constantUpdate = false;
 
+        this.loadingBar = new JProgressBar();
+        this.loadingBar.setIndeterminate(true);
+
         this.addKeyListener(this);
         this.setFocusable(true);
         this.setLayout(null);
 
         try {
+            this.background = ImageIO.read(new File("images/menu-background-2.png"));
+
             String fileName;
 
             for (int i = 0; i <= this.frameCap; i++) {
@@ -126,21 +135,14 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
             }
         });
 
-        this.add(this.emailOrUserLabel);
-        this.add(this.passwordLabel);
-        this.add(this.forgetPasswordLabel);
-        this.add(this.createAccountLabel);
-
-        this.add(this.emailOrUserField);
-        this.add(this.passwordField);
-
-        this.add(this.loginButton);
+        this.add(Login.this.loadingBar);
 
         Thread tokenRefresh = new Thread(() -> {
             AuthToken tempAuth = Session.readSession();
 
             if (tempAuth != null) {
-                disableLogin();
+
+                //disableLogin();
 
                 System.out.println("Login from token");
 
@@ -154,15 +156,32 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
                 } else {
 
                     Session.destroySession();
-
-                    JOptionPane.showMessageDialog(null, "Unable to login with token", "HUBG Error", JOptionPane.ERROR_MESSAGE);
-                    enableLogin();
+                    startLoginUI();
 
                 }
+            } else {
+                startLoginUI();
             }
         });
 
         tokenRefresh.start();
+    }
+
+    public void startLoginUI() {
+        remove(Login.this.loadingBar);
+        tokenLogin = false;
+        repaint();
+
+
+        this.add(this.emailOrUserLabel);
+        this.add(this.passwordLabel);
+        this.add(this.forgetPasswordLabel);
+        this.add(this.createAccountLabel);
+
+        this.add(this.emailOrUserField);
+        this.add(this.passwordField);
+
+        this.add(this.loginButton);
     }
 
     private void validateText() {
@@ -278,42 +297,63 @@ what do you do?
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics graphics) {
+
+        Graphics2D g = (Graphics2D) graphics;
 
         this.parent.updateFrameRate();
 
-        this.emailOrUserLabel.setBounds(Main.w - 230, 140, 210, 20);
-        this.emailOrUserField.setBounds(Main.w - 230, 160, 210, 30);
+        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        this.passwordLabel.setBounds(Main.w - 230, 200, 210, 20);
-        this.passwordField.setBounds(Main.w - 230, 220, 210, 30);
+        if (this.tokenLogin) {
+            this.loadingBar.setBounds(50, this.getHeight() / 2 + 40, this.getWidth() - 100, 20);
 
-        this.loginButton.setBounds(Main.w - 230, Main.h - 200, 210, 30);
+            String loadingMessage = "Authenticating";
 
-        this.forgetPasswordLabel.setBounds(Main.w - 230, Main.h - 70, 210, 20);
-        this.createAccountLabel.setBounds(Main.w - 230, Main.h - 90, 210, 20);
+            int size = Math.max(getWidth(), getHeight());
 
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, Main.w, Main.h);
+            g.drawImage(this.background, 0, 0, size, size, this);
 
-        int size = Math.max(Main.w - 250, Main.h);
+            g.setColor(Color.BLACK);
+            g.setFont(Main.getFont("Lato-Light", 30));
 
-        g.drawImage(this.backgroundFrames.get(this.frame), 0, Main.h - size, size, size, this);
-        g.drawImage(this.rasteraLogo, 30, this.getHeight() - 55, 150, 25, this);
+            FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 30));
+            g.drawString(loadingMessage, this.getWidth() / 2 - metrics.stringWidth(loadingMessage) / 2, this.getHeight() / 2 - metrics.getHeight() / 2);
 
-
-        g.setColor(new Color(1, 10, 19));
-        g.fillRect(Main.w - 250, 0, 250, Main.h);
-
-        g.drawImage(this.hubgLogo, Main.w - 230, 40, 210, 66, this);
-
-        if (this.frame == this.frameCap) {
-            this.frame = 0;
         } else {
-            this.frame++;
+
+            this.emailOrUserLabel.setBounds(Main.w - 230, 140, 210, 20);
+            this.emailOrUserField.setBounds(Main.w - 230, 160, 210, 30);
+
+            this.passwordLabel.setBounds(Main.w - 230, 200, 210, 20);
+            this.passwordField.setBounds(Main.w - 230, 220, 210, 30);
+
+            this.loginButton.setBounds(Main.w - 230, Main.h - 200, 210, 30);
+
+            this.forgetPasswordLabel.setBounds(Main.w - 230, Main.h - 70, 210, 20);
+            this.createAccountLabel.setBounds(Main.w - 230, Main.h - 90, 210, 20);
+
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, Main.w, Main.h);
+
+            int size = Math.max(Main.w - 250, Main.h);
+
+            g.drawImage(this.backgroundFrames.get(this.frame), 0, Main.h - size, size, size, this);
+            g.drawImage(this.rasteraLogo, 30, this.getHeight() - 55, 150, 25, this);
+
+
+            g.setColor(new Color(1, 10, 19));
+            g.fillRect(Main.w - 250, 0, 250, Main.h);
+
+            g.drawImage(this.hubgLogo, Main.w - 230, 40, 210, 66, this);
+
+            if (this.frame == this.frameCap) {
+                this.frame = 0;
+            } else {
+                this.frame++;
+            }
+
         }
-
     }
-
-
 }
