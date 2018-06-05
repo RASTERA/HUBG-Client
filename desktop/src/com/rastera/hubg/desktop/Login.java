@@ -135,6 +135,34 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.add(this.passwordField);
 
         this.add(this.loginButton);
+
+        Thread tokenRefresh = new Thread(() -> {
+            AuthToken tempAuth = Session.readSession();
+
+            if (tempAuth != null) {
+                disableLogin();
+
+                System.out.println("Login from token");
+
+                // Refresh token
+                Session tempSession = Communicator.login(tempAuth);
+
+                if (tempSession != null) {
+                    Main.session = tempSession;
+                    this.removeKeyListener(this);
+                    this.parent.startPage(Main.Pages.MENU);
+                } else {
+
+                    Session.destroySession();
+
+                    JOptionPane.showMessageDialog(null, "Unable to login with token", "HUBG Error", JOptionPane.ERROR_MESSAGE);
+                    enableLogin();
+
+                }
+            }
+        });
+
+        tokenRefresh.start();
     }
 
     private void validateText() {
@@ -213,7 +241,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
                     if (session == null) {
                         JOptionPane.showMessageDialog(Rah.checkParent(this.parent), "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                         Login.this.enableLogin();
-                    } else if (session.getUsername().equals("")) {
+                    } else if (session.user == null) {
                         JOptionPane.showMessageDialog(Rah.checkParent(this.parent), session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                         Login.this.enableLogin();
                     } else {
