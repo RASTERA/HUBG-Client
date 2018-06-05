@@ -10,7 +10,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class Communicator {
 
-    private static final boolean developmentMode = !true;
+    private static final boolean developmentMode = true;
 
     private static final HashMap<RequestDestination, String> baseProductionHashMap = new HashMap<>() {
         {
@@ -170,7 +170,7 @@ public class Communicator {
 
             if (dataJSON.has("error")) {
                 System.out.println(dataJSON.getString("error"));
-                return null;
+                return new Session(dataJSON.getString("error"), null);
             }
 
             return new Session(dataJSON.getString("token"), dataJSON.getJSONObject("user"));
@@ -186,7 +186,7 @@ public class Communicator {
 
             JSONObject credentials = new JSONObject() {
                 {
-                    this.put("token", token);
+                    this.put("token", token.getToken());
                 }
             };
 

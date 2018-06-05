@@ -39,17 +39,19 @@ public class Session {
         this.authToken = new AuthToken(token);
         this.user = user;
 
-        this.updateJSON();
+        if (this.user != null) {
+            this.updateJSON();
 
-        try {
-            messages.put(new JSONObject() {
-                {
-                    put("message", "[System] Welcome to HUBG Chat!");
-                    put("time", Instant.now().toEpochMilli());
-                }
-            });
-        } catch (Exception e) {
+            try {
+                messages.put(new JSONObject() {
+                    {
+                        put("message", "[System] Welcome to HUBG Chat!");
+                        put("time", Instant.now().toEpochMilli());
+                    }
+                });
+            } catch (Exception e) {
 
+            }
         }
     }
 
