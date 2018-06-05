@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -30,7 +31,6 @@ import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Util.Rah;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class HUBGGame implements Screen {
@@ -44,6 +44,7 @@ public class HUBGGame implements Screen {
     private TiledMap map;
     private TextureAtlas atlas;
     private OrthogonalTiledMapRenderer renderer;
+    private TiledMapTileLayer displayLayer;
     private Box2DDebugRenderer b2dr;
     private World world;
     private Player player;
@@ -69,7 +70,6 @@ public class HUBGGame implements Screen {
     private boolean canShoot = true;
     private float fireDelay = 0;
 
-    public Brick b;
     public com.rastera.hubg.desktop.Game parentGame;
 
 
@@ -83,12 +83,13 @@ public class HUBGGame implements Screen {
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("hubg.tmx");
         renderer = new OrthogonalTiledMapRenderer(map, 5 / HUBGMain.PPM);
+        displayLayer = (TiledMapTileLayer) map.getLayers().get(0);
 
         b2dr = new Box2DDebugRenderer();
         world = new World(new Vector2(0, 0), true);
 
         //////////////////TESTING
-        Brick b = new Brick(world, map, new Rectangle(10, 10, 100, 100));
+        Brick b = new Brick(world, map, new Rectangle(10, 10, 100 / HUBGMain.PPM, HUBGMain.PPM));
         //////////////////////////
 
         gamecam.rotate(90);
@@ -111,32 +112,6 @@ public class HUBGGame implements Screen {
         defaultZoom = gamecam.zoom;
 
         gamecam.update();
-    }
-
-    public int calculateBullet (float range) {
-        range += player.getWidth();
-        closestFraction = 99999;
-        raycastPoint = new Vector2(player.getLocation().x + range * MathUtils.cos(player.getAngle()), player.getLocation().y + range * MathUtils.sin(player.getAngle()));
-        raycastID = -1;
-
-        RayCastCallback callback = (fixture, point, normal, fraction) -> {
-            if ( fraction < closestFraction && (int) fixture.getUserData() != -1) {
-                closestFraction = fraction;
-                raycastPoint.set(point);
-                raycastID = (Integer) fixture.getUserData();
-            }
-
-            return 1;
-        };
-
-        world.rayCast(callback, player.getLocation(), new Vector2(player.getLocation().x + range * MathUtils.cos(player.getAngle()), player.getLocation().y + range * MathUtils.sin(player.getAngle())));
-
-        return raycastID;
-    }
-
-    public float getCameraRotation() {
-
-        return MathUtils.atan2(gamecam.up.y, gamecam.up.x);
     }
 
     public void CommandProcessor(final Message ServerMessage) {
@@ -188,92 +163,6 @@ public class HUBGGame implements Screen {
         }
     }
 
-    public void handleInput(float dt) {
-        player.b2body.setLinearVelocity(0, 0);
-        Vector2 movement = player.b2body.getPosition();
-        float r = getCameraRotation();
-
-        Vector2 impulse = new Vector2();
-
-        if (!paused) {
-            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                impulse.add(new Vector2(-200 * player.b2body.getMass() * MathUtils.cos(r), -200 * player.b2body.getMass() * MathUtils.sin(r)));
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                impulse.add(new Vector2(200 * player.b2body.getMass() * MathUtils.cos(r), 200 * player.b2body.getMass() * MathUtils.sin(r)));
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                impulse.add(new Vector2(-200 * MathUtils.cos(r - MathUtils.PI / 2), -200 * player.b2body.getMass() * MathUtils.sin(r - MathUtils.PI / 2)));
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                impulse.add(new Vector2(-200 * MathUtils.cos(r + MathUtils.PI / 2), -200 * player.b2body.getMass() * MathUtils.sin(r + MathUtils.PI / 2)));
-            }
-
-        }
-
-        player.b2body.applyLinearImpulse(impulse, player.b2body.getWorldCenter(), true);
-
-        r = 0;
-
-        if (!paused) {
-
-            if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-                r -= 90 * dt;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-                r += 90 * dt;
-            }
-
-        }
-
-        if (!paused && Gdx.input.isKeyPressed(Input.Keys.SPACE) && gamecam.zoom < 2000 / HUBGMain.PPM + defaultZoom) {
-            gamecam.zoom += 0.02;
-        } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
-            gamecam.zoom -= 0.02;
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-            if (pausedLock) {
-                System.out.println("TOGGLE");
-                paused = !paused;
-            }
-            pausedLock = false;
-        } else {
-            pausedLock = true;
-        }
-
-        gamecam.position.x = movement.x;
-        gamecam.position.y = movement.y;
-        gamecam.rotate(-r);
-
-        player.b2body.setTransform(movement, getCameraRotation());
-
-        fireDelay += dt;
-        if (fireDelay >= 0.3) {
-            canShoot = true;
-            fireDelay -= 0.3;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.P) && canShoot) {
-            int enemyID = calculateBullet(400);
-
-            if (networkConnected && enemyID != -1) {
-                conn.write(11, new int[] {enemyID, this.ID});
-            } else if (networkConnected) {
-                conn.write(11, new int[] {-1, this.ID});
-            }
-
-            System.out.println(raycastID);
-            shoot = true;
-            canShoot = false;
-        } else {
-            shoot = false;
-        }
-    }
-
     private void handleNetworking(float dt){
         if (networkConnected && gameStart) {
 
@@ -320,6 +209,115 @@ public class HUBGGame implements Screen {
         }
     }
 
+    public int calculateBullet (float range) {
+        range += player.getWidth();
+        closestFraction = 99999;
+        raycastPoint = new Vector2(player.getLocation().x + range * MathUtils.cos(player.getAngle()), player.getLocation().y + range * MathUtils.sin(player.getAngle()));
+        raycastID = -1;
+
+        RayCastCallback callback = (fixture, point, normal, fraction) -> {
+            if ( fraction < closestFraction && (int) fixture.getUserData() != -1) {
+                closestFraction = fraction;
+                raycastPoint.set(point);
+                raycastID = (Integer) fixture.getUserData();
+            }
+
+            return 1;
+        };
+
+        world.rayCast(callback, player.getLocation(), new Vector2(player.getLocation().x + range * MathUtils.cos(player.getAngle()), player.getLocation().y + range * MathUtils.sin(player.getAngle())));
+
+        return raycastID;
+    }
+
+    public float getCameraRotation() {
+        return MathUtils.atan2(gamecam.up.y, gamecam.up.x);
+    }
+
+    public void handleInput(float dt) {
+        player.b2body.setLinearVelocity(0, 0);
+        Vector2 movement = player.b2body.getPosition();
+        float r = 0;
+
+        Vector2 impulse = new Vector2();
+
+        if (!paused) {
+            r = getCameraRotation();
+
+            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                impulse.add(new Vector2(-200 * player.b2body.getMass() * MathUtils.cos(r), -200 * player.b2body.getMass() * MathUtils.sin(r)));
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                impulse.add(new Vector2(200 * player.b2body.getMass() * MathUtils.cos(r), 200 * player.b2body.getMass() * MathUtils.sin(r)));
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                impulse.add(new Vector2(-200 * MathUtils.cos(r - MathUtils.PI / 2), -200 * player.b2body.getMass() * MathUtils.sin(r - MathUtils.PI / 2)));
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                impulse.add(new Vector2(-200 * MathUtils.cos(r + MathUtils.PI / 2), -200 * player.b2body.getMass() * MathUtils.sin(r + MathUtils.PI / 2)));
+            }
+
+            player.b2body.applyLinearImpulse(impulse, player.b2body.getWorldCenter(), true);
+
+            r = 0;
+
+            if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+                r -= 90 * dt;
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+                r += 90 * dt;
+            }
+        }
+
+        if (!paused && Gdx.input.isKeyPressed(Input.Keys.SPACE) && gamecam.zoom < 2000 / HUBGMain.PPM + defaultZoom) {
+            gamecam.zoom += 0.02;
+        } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
+            gamecam.zoom -= 0.02;
+        }
+
+        gamecam.position.x = movement.x;
+        gamecam.position.y = movement.y;
+        gamecam.rotate(-r);
+
+        player.b2body.setTransform(movement, getCameraRotation());
+
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            if (pausedLock) {
+                System.out.println("TOGGLE");
+                paused = !paused;
+            }
+            pausedLock = false;
+        } else {
+            pausedLock = true;
+        }
+
+        fireDelay += dt;
+        if (fireDelay >= 0.3) {
+            canShoot = true;
+            fireDelay -= 0.3;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.P) && canShoot) {
+            int enemyID = calculateBullet(400);
+
+            if (networkConnected && enemyID != -1) {
+                conn.write(11, new int[] {enemyID, this.ID});
+            } else if (networkConnected) {
+                conn.write(11, new int[] {-1, this.ID});
+            }
+
+            canShoot = false;
+            shoot = true;
+        } else {
+            shoot = false;
+        }
+
+
+    }
+
     public void update(float dt) {
         handleNetworking(dt);
 
@@ -354,7 +352,6 @@ public class HUBGGame implements Screen {
                 ShapeRenderer sr = new ShapeRenderer();
                 sr.setColor(Color.WHITE);
                 sr.setProjectionMatrix(gamecam.combined);
-
                 sr.begin(ShapeRenderer.ShapeType.Line);
                 sr.line(player.getLocation().x, player.getLocation().y, raycastPoint.x, raycastPoint.y);
                 sr.end();

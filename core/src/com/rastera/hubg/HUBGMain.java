@@ -14,7 +14,8 @@ public class HUBGMain extends Game implements ApplicationListener{
 	public static final int V_WIDTH = 400;
 	public static final int V_HEIGHT = 208;
 	public static final float TILESIZE = 48;
-	public static final float PPM = 48/2f;
+	public static final float METERPERTILE = 2;
+	public static final float PPM = 48/METERPERTILE;
 	public static final float SYNC_INTERVAL = 9/60f;
 
 	public SpriteBatch batch;
