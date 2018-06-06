@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.io.InputStream;
 
 public class Main extends JFrame implements ActionListener, ComponentListener {
 
@@ -35,6 +34,10 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	private static long prevFrame = 0;
 	private static boolean graphicsStarted = false;
 
+	private int prevX, prevY;
+
+	public static final boolean borderless = true;
+
 	private Main() {
 		super("HUBG - Henning's Unknown Battle Ground");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,6 +45,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		this.setSize(w, h);
 		this.setMinimumSize(new Dimension(1100, 600));
 		this.setLayout(new BorderLayout());
+
+		this.setUndecorated(borderless);
 
 		try {
 			File is;
@@ -77,6 +82,37 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		} catch (Exception e) {
 			errorQuit(e);
 		}
+
+		if (borderless) {
+			// https://java-demos.blogspot.com/2013/11/how-to-move-undecorated-jframe.html
+
+			addMouseListener(new MouseAdapter() {
+				public void mousePressed(MouseEvent e) {
+					// Get x,y and store them
+					prevX = e.getX();
+					prevY = e.getY();
+				}
+			});
+
+			addMouseMotionListener(new MouseAdapter() {
+				public void mouseDragged(MouseEvent e) {
+					// Set the location
+					// get the current location x-co-ordinate and then get
+					// the current drag x co-ordinate, add them and subtract most recent
+					// mouse pressed x co-ordinate
+					// do same for y co-ordinate
+					setLocation(getLocation().x + e.getX() - prevX, getLocation().y + e.getY() - prevY);
+				}
+			});
+		}
+	}
+
+	public void minimize() {
+		setState(Frame.ICONIFIED);
+	}
+
+	public void close() {
+		System.exit(0);
 	}
 
 	public static void startMusic() {

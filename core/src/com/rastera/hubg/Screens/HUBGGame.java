@@ -36,8 +36,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class HUBGGame implements Screen {
 
     private OrthographicCamera gamecam;
+    private OrthographicCamera staticcam;
     private float defaultZoom;
     private Viewport gamePort;
+    private Viewport staticPort;
     private HUBGMain main;
 
     private TmxMapLoader mapLoader;
@@ -78,7 +80,9 @@ public class HUBGGame implements Screen {
         this.parentGame = parentGame;
 
         gamecam = new OrthographicCamera();
+        staticcam = new OrthographicCamera();
         gamePort = new ScreenViewport(gamecam);
+        staticPort = new ScreenViewport(staticcam);
 
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("hubg.tmx");
@@ -365,27 +369,33 @@ public class HUBGGame implements Screen {
                 e.draw(main.batch);
             }
 
-            /*
-            if (paused) {
-                ShapeRenderer sr = new ShapeRenderer();
-                sr.setColor(Color.WHITE);
-                sr.setProjectionMatrix(main.batch.getProjectionMatrix());
-
-                sr.begin(ShapeRenderer.ShapeType.Filled);
-                sr.setColor(new Color(200, 200, 200, 100));
-                sr.rect(0, 0, 100, 100);
-                sr.end();
-            }*/
-
             main.batch.end();
         }
 
         b2dr.render(world, gamecam.combined);
+
+        if (paused) {
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+            ShapeRenderer sr = new ShapeRenderer();
+            sr.setColor(Color.WHITE);
+            sr.setProjectionMatrix(staticcam.combined);
+
+            sr.begin(ShapeRenderer.ShapeType.Filled);
+            sr.setColor(new Color(0, 0, 0, 0.5f));
+
+            sr.rect(staticPort.getScreenWidth() / -2, staticPort.getScreenHeight() / -2, staticPort.getScreenWidth(), staticPort.getScreenHeight());
+            sr.end();
+
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+        }
     }
 
     @Override
     public void resize(int width, int height) {
         gamePort.update(width, height);
+        staticPort.update(width, height);
     }
 
     @Override

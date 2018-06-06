@@ -25,6 +25,10 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     private final GeiButton shopButton;
     private final GeiButton chatButton;
     private final GeiButton logoutButton;
+
+    private final GeiEdgeButton minimizeButton;
+    private final GeiEdgeButton closeButton;
+
     private final GeiScrollPane activityScrollPane;
     private final GeiScrollPane chatScrollPane;
     private final GeiScrollPane shopScrollPane;
@@ -56,6 +60,14 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         } catch (Exception e) {
             Main.errorQuit(e);
         }
+
+        this.minimizeButton = new GeiEdgeButton("-");
+        this.minimizeButton.setActionCommand("minimize");
+        this.minimizeButton.addActionListener(this);
+
+        this.closeButton = new GeiEdgeButton("X");
+        this.closeButton.setActionCommand("close");
+        this.closeButton.addActionListener(this);
 
         this.startButton = new GeiButton("Start");
         this.startButton.setActionCommand("start");
@@ -118,6 +130,11 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.addKeyListener(this);
         this.setFocusable(true);
 
+        if (Main.borderless) {
+            this.add(Menu.this.minimizeButton);
+            this.add(Menu.this.closeButton);
+        }
+
         this.chatTextField.addActionListener(e -> this.sendMessage());
 
         Thread loadResources = new Thread(() -> {
@@ -139,8 +156,6 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 Main.errorQuit(e);
             }
 
-
-
             Menu.this.shopPanel.updateItems();
             Menu.this.updateData();
             Menu.this.statsLoaded = true;
@@ -155,6 +170,9 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             Menu.this.add(Menu.this.shopButton);
             Menu.this.add(Menu.this.chatButton);
             Menu.this.add(Menu.this.logoutButton);
+
+            this.minimizeButton.setBackgroundDark();
+            this.closeButton.setBackgroundDark();
             this.resetButtons();
 
         });
@@ -332,6 +350,15 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
 
                 break;
+
+
+            case "minimize":
+                this.parent.minimize();
+                break;
+
+            case "close":
+                this.parent.close();
+                break;
         }
 
         this.resetButtons();
@@ -356,6 +383,9 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
         g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        this.minimizeButton.setBounds(getWidth() - 40, 0, 20, 20);
+        this.closeButton.setBounds(getWidth() - 20, 0, 20, 20);
 
         if (!this.statsLoaded) {
             this.loadingBar.setBounds(50, this.getHeight() / 2 + 40, this.getWidth() - 100, 20);

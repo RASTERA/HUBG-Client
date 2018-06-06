@@ -27,6 +27,9 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
     private final JLabel createAccountLabel;
     private final GeiButton loginButton;
 
+    private final GeiEdgeButton minimizeButton;
+    private final GeiEdgeButton closeButton;
+
     private final ArrayList<BufferedImage> backgroundFrames = new ArrayList<>();
     private BufferedImage rasteraLogo;
     private BufferedImage hubgLogo;
@@ -50,6 +53,19 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.addKeyListener(this);
         this.setFocusable(true);
         this.setLayout(null);
+
+        this.minimizeButton = new GeiEdgeButton("-");
+        this.minimizeButton.setActionCommand("minimize");
+        this.minimizeButton.addActionListener(this);
+
+        this.closeButton = new GeiEdgeButton("X");
+        this.closeButton.setActionCommand("close");
+        this.closeButton.addActionListener(this);
+
+        if (Main.borderless) {
+            this.add(this.minimizeButton);
+            this.add(this.closeButton);
+        }
 
         try {
             this.background = ImageIO.read(new File("images/menu-background-2.png"));
@@ -182,6 +198,9 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.add(this.passwordField);
 
         this.add(this.loginButton);
+
+        this.minimizeButton.setBackgroundDark();
+        this.closeButton.setBackgroundDark();
     }
 
     private void validateText() {
@@ -253,6 +272,14 @@ what do you do?
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
+            case "minimize":
+                this.parent.minimize();
+                break;
+
+            case "close":
+                this.parent.close();
+                break;
+
             case "login":
 
                 this.disableLogin();
@@ -300,6 +327,9 @@ what do you do?
     public void paintComponent(Graphics graphics) {
 
         Graphics2D g = (Graphics2D) graphics;
+
+        this.minimizeButton.setBounds(getWidth() - 40, 0, 20, 20);
+        this.closeButton.setBounds(getWidth() - 20, 0, 20, 20);
 
         this.parent.updateFrameRate();
 

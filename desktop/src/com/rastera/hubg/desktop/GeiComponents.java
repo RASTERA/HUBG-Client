@@ -168,6 +168,61 @@ class GeiActionEvent {
     }
 }
 
+class GeiEdgeButton extends JButton {
+
+    private final Color backgroundDark = new Color(1, 10, 19);
+    private final Color foregroundDark = new Color(200, 200, 200);
+
+    private final Color backgroundLight = new Color(200, 200, 200);
+    private final Color foregroundLight = new Color(1, 10, 19);
+
+    private Color currentBackground;
+
+    public GeiEdgeButton(ImageIcon icon) {
+        super(icon);
+        init();
+    }
+
+    public GeiEdgeButton(String text) {
+        super(text);
+        init();
+    }
+
+    public void init() {
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        this.setMargin(new Insets(0,0,0,0));
+        this.setBorderPainted(false);
+        this.setFocusPainted(false);
+
+        this.setBackgroundLight();
+
+        this.addChangeListener(evt -> {
+            if (this.getModel().isPressed()) {
+                this.setBackground(currentBackground);
+            } else if (GeiEdgeButton.this.getModel().isRollover()) {
+                this.setBackground(currentBackground);
+            } else {
+                this.setBackground(currentBackground);
+            }
+        });
+    }
+
+    public void setBackgroundDark() {
+        this.setColor(backgroundDark, foregroundDark);
+    }
+
+    public void setBackgroundLight() {
+        this.setColor(backgroundLight, foregroundLight);
+    }
+
+    public void setColor(Color backgroundColor, Color textColor) {
+        this.setForeground(textColor);
+        this.setBackground(backgroundColor);
+        this.currentBackground = backgroundColor;
+    }
+}
+
 class GeiButton extends JButton {
 
     public GeiButton(ImageIcon icon) {

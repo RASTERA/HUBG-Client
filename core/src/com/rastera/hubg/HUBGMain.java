@@ -40,6 +40,7 @@ public class HUBGMain extends Game implements ApplicationListener{
 		super();
 		this.parentGame = parentGame;
 
+		/*
 		try {
 			skinDataJSON = Communicator.request(Communicator.RequestType.GET, null, Communicator.getURL(Communicator.RequestDestination.API) + "shop/");
 
@@ -57,10 +58,6 @@ public class HUBGMain extends Game implements ApplicationListener{
 				outputImage = Rah.decodeToImage(skinDataJSON.getJSONObject(key).getString("image"));
 				ImageIO.write(outputImage, "png", new File(imageName));
 
-				for (int i = 0; i < 9999; i++) {
-					System.out.println(i * i);
-				}
-
                 skinDataHashMap.put(key, new Texture(Gdx.files.internal(imageName)));
 
 				// Doesn't work, ghetto solution for now
@@ -72,7 +69,8 @@ public class HUBGMain extends Game implements ApplicationListener{
 			Main.errorQuit(e);
 		}
 
-		System.out.println(skinDataHashMap);
+		System.out.println(skinDataHashMap); */
+
 	}
 	
 	@Override
