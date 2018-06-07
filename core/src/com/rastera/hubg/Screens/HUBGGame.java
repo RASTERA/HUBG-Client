@@ -106,7 +106,7 @@ public class HUBGGame implements Screen {
             networkConnected = true;
         } catch (Exception e) {
             e.printStackTrace();
-            this.player = new Player(world, this, new float[] {1000, 1000, 0, 0});
+            this.player = new Player(world, this, new float[] {0, 0, 0, 0});
             gameStart = true;
         }
     }
@@ -330,10 +330,14 @@ public class HUBGGame implements Screen {
     public void update(float dt) {
         handleNetworking(dt);
 
-        if (displayLayer.getCell((int) (player.b2body.getPosition().x / 10), (int) (player.b2body.getPosition().y / 10)).getTile().getId() == 208) {
-            inWater = true;
-        } else {
-            inWater = false;
+        try {
+            if (displayLayer.getCell((int) (player.b2body.getPosition().x / 10), (int) (player.b2body.getPosition().y / 10)).getTile().getId() == 208) {
+                inWater = true;
+            } else {
+                inWater = false;
+            }
+        } catch (Exception e) {
+
         }
 
         //System.out.println(player.b2body.getPosition().x + " " +player.b2body.getPosition().y);

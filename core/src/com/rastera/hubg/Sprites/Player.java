@@ -1,6 +1,7 @@
 package com.rastera.hubg.Sprites;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,8 +9,22 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Base64Coder;
 import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Screens.HUBGGame;
+import com.rastera.hubg.desktop.Communicator;
+import org.json.JSONObject;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import com.rastera.hubg.desktop.Communicator;
+import com.rastera.hubg.desktop.Main;
+import com.rastera.hubg.desktop.Rah;
+
+import javax.imageio.ImageIO;
 
 public class Player extends Sprite {
     public World world;
@@ -18,8 +33,9 @@ public class Player extends Sprite {
     private TextureRegion marioStand;
     private Texture playerImage;
 
+
     public Player(World world, HUBGGame screen, float[] location){
-        super(new Texture(Gdx.files.internal("penguin.png")));
+        super(HUBGMain.getSkin(Main.session.getSkin())); //penguin.png")));
 
         this.world = world;
 

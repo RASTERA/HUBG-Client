@@ -101,25 +101,13 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.loadingBar.setIndeterminate(true);
         
         this.chatScrollPane = new GeiScrollPane(this.chatPanel);
-        this.chatScrollPane.setBorder(null);
-        this.chatScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        this.chatScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
-        this.chatScrollPane.setHorizontalScrollBarPolicy(GeiScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.chatScrollPane.setParent(this);
         this.chatTextField = new GeiTextField();
 
         this.shopScrollPane = new GeiScrollPane(this.shopPanel);
-        this.shopScrollPane.setBorder(null);
-        this.shopScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        this.shopScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
-        this.shopScrollPane.setHorizontalScrollBarPolicy(GeiScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        this.shopScrollPane.setParent(this);
+                this.shopScrollPane.setParent(this);
 
         this.activityScrollPane = new GeiScrollPane(this.recentActionsPanel);
-        this.activityScrollPane.setBorder(null);
-        this.activityScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        this.activityScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
-        this.activityScrollPane.setHorizontalScrollBarPolicy(GeiScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.activityScrollPane.setParent(this);
 
         this.recentActionsPanel.setParent(this.activityScrollPane);

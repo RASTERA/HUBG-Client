@@ -332,10 +332,8 @@ class GeiActionPanel extends GeiPanel {
         g.setFont(Main.getFont("Lato-Light", 15));
         g.drawString("Recent Activity", 20, 30);
 
-        boolean scrollEnabled = 60 + this.eventArrayList.size() * (GeiActionEvent.height + 10) > this.parent.getHeight();
-
         for (int y = 0; y < this.eventArrayList.size(); y++) {
-            this.eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 10), scrollEnabled ? 205 : 210);
+            this.eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 10), 210);
         }
     }
 }
@@ -470,19 +468,11 @@ class GeiChatPanel extends GeiPanel {
 
         this.setPreferredSize(new Dimension(this.width, 20 + this.chatArrayList.size() * (GeiChatItem.height + 20)));
 
-        int totalHeight = 0;
         int yPos = 20;
-
-        // Determine expected chat height
-        for (int i = 0; i < chatArrayList.size(); i++) {
-            totalHeight += this.chatArrayList.size() * (GeiChatItem.height + 20);
-        }
-
-        boolean scrollEnabled = 60 + totalHeight > this.parent.getHeight();
 
         // Updates chat items
         for (int i = 0; i < chatArrayList.size(); i++) {
-            chatArrayList.get(i).update(g, 20, yPos, scrollEnabled ? 455 : 460);
+            chatArrayList.get(i).update(g, 20, yPos, 460);
 
             yPos += GeiChatItem.height + 10;
         }
@@ -598,10 +588,8 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
         g.setColor(new Color(1, 10, 19));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        boolean scrollEnabled = 60 + this.itemArrayList.size() * (GeiShopItem.height + 10) > this.parent.getHeight();
-
         for (int i = 0; i < itemArrayList.size(); i++) {
-            itemArrayList.get(i).update(g, 20, 20 + 160 * i, scrollEnabled ? 455 : 460);
+            itemArrayList.get(i).update(g, 20, 20 + 160 * i, 460);
         }
 
     }
@@ -613,6 +601,11 @@ class GeiScrollPane extends JScrollPane {
 
     public GeiScrollPane(GeiPanel child) {
         super(child);
+
+        this.setBorder(null);
+        this.getVerticalScrollBar().setUnitIncrement(16);
+        this.setHorizontalScrollBarPolicy(GeiScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.getVerticalScrollBar().setPreferredSize(new Dimension(0, Integer.MAX_VALUE));
     }
 
     public void setParent(Menu parent) {
