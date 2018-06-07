@@ -64,6 +64,7 @@ public class HUBGGame implements Screen {
     private float ox = -1;
     private float oy = -1;
     private float or = -1;
+    private boolean inWater = false;
 
     private float closestFraction;
     private int raycastID;
@@ -105,14 +106,14 @@ public class HUBGGame implements Screen {
             networkConnected = true;
         } catch (Exception e) {
             e.printStackTrace();
-            this.player = new Player(world, this, new float[] {0, 0, 0, 0});
+            this.player = new Player(world, this, new float[] {1000, 1000, 0, 0});
             gameStart = true;
         }
     }
 
     @Override
     public void show() {
-        gamecam.zoom = (float) Math.pow(HUBGMain.PPM, -1);
+        gamecam.zoom = (float) (Math.pow(HUBGMain.PPM, -1) * 2);
         defaultZoom = gamecam.zoom;
 
         gamecam.update();
@@ -264,6 +265,10 @@ public class HUBGGame implements Screen {
                 impulse.add(new Vector2(-200 * MathUtils.cos(r + MathUtils.PI / 2), -200 * player.b2body.getMass() * MathUtils.sin(r + MathUtils.PI / 2)));
             }
 
+            if (inWater) {
+                impulse.scl(0.1f);
+            }
+
             player.b2body.applyLinearImpulse(impulse, player.b2body.getWorldCenter(), true);
 
             r = 0;
@@ -325,6 +330,13 @@ public class HUBGGame implements Screen {
     public void update(float dt) {
         handleNetworking(dt);
 
+        if (displayLayer.getCell((int) (player.b2body.getPosition().x / 10), (int) (player.b2body.getPosition().y / 10)).getTile().getId() == 208) {
+            inWater = true;
+        } else {
+            inWater = false;
+        }
+
+        //System.out.println(player.b2body.getPosition().x + " " +player.b2body.getPosition().y);
         world.step(1/60f, 6, 2);
 
         if (gameStart) {
