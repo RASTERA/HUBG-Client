@@ -133,7 +133,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	}
 
 	public static boolean musicPlaying() {
-		return !(menuMusic.getFramePosition() == 0);
+		return !(menuMusic != null && menuMusic.getFramePosition() == 0);
 	}
 
 	public static Font getFont(String name, float size) {

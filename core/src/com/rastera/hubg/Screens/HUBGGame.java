@@ -29,9 +29,13 @@ import com.rastera.hubg.Sprites.Brick;
 import com.rastera.hubg.Sprites.Enemy;
 import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Util.Rah;
+import com.rastera.hubg.desktop.Main;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static javafx.application.Platform.exit;
 
 public class HUBGGame implements Screen {
 
@@ -55,7 +59,7 @@ public class HUBGGame implements Screen {
     private float dTotal = 0;
 
     private boolean gameStart = false;
-    private boolean paused = false;
+    private boolean paused = true;
     private boolean pausedLock = true;
     private boolean networkConnected = false;
     private ArrayList<Enemy> EnemyList = new ArrayList<Enemy>();
@@ -75,6 +79,8 @@ public class HUBGGame implements Screen {
 
     public com.rastera.hubg.desktop.Game parentGame;
 
+    public String serverName;
+    public String serverToken;
 
     public HUBGGame(HUBGMain main, com.rastera.hubg.desktop.Game parentGame) {
         this.main = main;
@@ -106,7 +112,7 @@ public class HUBGGame implements Screen {
             networkConnected = true;
         } catch (Exception e) {
             e.printStackTrace();
-            this.player = new Player(world, this, new float[] {0, 0, 0, 0});
+            this.player = new Player(world, this, new float[] {1000, 1000, 0, 0});
             gameStart = true;
         }
     }
@@ -121,6 +127,29 @@ public class HUBGGame implements Screen {
 
     public void CommandProcessor(final Message ServerMessage) {
         switch (ServerMessage.type) {
+            case -2:
+
+                if (((String) ServerMessage.message).equals("success")) {
+                    System.out.println("Connection Accepted");
+                    paused = false;
+                } else {
+                    Gdx.app.exit();
+                    JOptionPane.showMessageDialog(com.rastera.hubg.desktop.Rah.checkParent(this.parentGame.getParent()), (String) ServerMessage.message, "HUBG Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+                break;
+
+            case -1:
+                this.serverName = (String) ServerMessage.message;
+
+                this.serverToken = com.rastera.hubg.desktop.Communicator.getServerAuthToken(this.serverName);
+
+                System.out.println("Token: " + serverToken);
+
+                conn.write(-2, this.serverToken);
+
+                break;
+
             case 0:
                 this.ID = (Integer) ServerMessage.message;
                 System.out.println("Current ID: " + this.ID);

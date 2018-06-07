@@ -13,7 +13,7 @@ import javax.swing.border.Border;
 
 public class Communicator {
 
-    private static final boolean developmentMode = !true;
+    private static final boolean developmentMode = true;
 
     private static final HashMap<RequestDestination, String> baseProductionHashMap = new HashMap<>() {
         {
@@ -217,6 +217,24 @@ public class Communicator {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static String getServerAuthToken(String serverName) {
+
+        try {
+            JSONObject data = Communicator.request(Communicator.RequestType.GET, null, Communicator.getURL(Communicator.RequestDestination.AUTH) + String.format("getGameAuth/%s/%s/", Main.session.getAuthToken().getToken(), serverName));
+
+            if (data.has("error")) {
+                Main.errorQuit(data.getString("error"));
+            }
+
+            return data.getString("token");
+
+        } catch (Exception e) {
+            Main.errorQuit(e);
+        }
+
+        return null;
     }
 
 }

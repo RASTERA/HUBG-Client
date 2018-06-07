@@ -5,6 +5,8 @@ import com.rastera.hubg.Screens.HUBGGame;
 import com.rastera.hubg.Util.Rah;
 
 import com.rastera.Networking.Message;
+import com.rastera.hubg.desktop.Main;
+import org.json.JSONObject;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -20,6 +22,7 @@ public class Communicator {
     private ObjectInputStream in;
     private LinkedBlockingQueue<Message> message;
     private HUBGGame client;
+    private String serverName;
 
     public Communicator(byte[] ip, int port, final HUBGGame client) throws Exception {
         this.client = client;
@@ -47,6 +50,9 @@ public class Communicator {
 
         receiver.setDaemon(true);
         receiver.start();
+
+        // Request server name
+        this.write(-1, "pls give ur name");
 
     }
 

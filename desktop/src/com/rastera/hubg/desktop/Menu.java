@@ -171,6 +171,8 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             Main.startMusic();
         }
 
+        //System.out.println(Main.session.getAuthToken().getToken());
+
     }
 
     public void sendMessage() {
