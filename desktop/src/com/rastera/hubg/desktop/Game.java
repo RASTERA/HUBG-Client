@@ -37,7 +37,10 @@ public class Game extends GeiPanel {
 		//config.fullscreen = true;
 		config.forceExit = false;
 
+		this.parent.setState(Frame.ICONIFIED);
+
 		new LwjglApplication(new HUBGMain(this), config);
+
 
 
 	}

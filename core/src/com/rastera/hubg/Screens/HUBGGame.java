@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -46,6 +47,7 @@ public class HUBGGame implements Screen {
     private Viewport staticPort;
     private HUBGMain main;
 
+    private BitmapFont latoFont;
     private TmxMapLoader mapLoader;
     private TiledMap map;
     private TextureAtlas atlas;
@@ -59,7 +61,8 @@ public class HUBGGame implements Screen {
     private float dTotal = 0;
 
     private boolean gameStart = false;
-    private boolean paused = true;
+    private boolean paused = false;
+    private boolean connecting = true;
     private boolean pausedLock = true;
     private boolean networkConnected = false;
     private ArrayList<Enemy> EnemyList = new ArrayList<Enemy>();
@@ -85,6 +88,8 @@ public class HUBGGame implements Screen {
     public HUBGGame(HUBGMain main, com.rastera.hubg.desktop.Game parentGame) {
         this.main = main;
         this.parentGame = parentGame;
+
+        latoFont = new BitmapFont(Gdx.files.internal("fnt/Lato-Regular-64.fnt"), Gdx.files.internal("fnt/lato.png"), false);
 
         gamecam = new OrthographicCamera();
         staticcam = new OrthographicCamera();
@@ -131,8 +136,9 @@ public class HUBGGame implements Screen {
 
                 if (((String) ServerMessage.message).equals("success")) {
                     System.out.println("Connection Accepted");
-                    paused = false;
+                    connecting = false;
                 } else {
+
                     Gdx.app.exit();
                     JOptionPane.showMessageDialog(com.rastera.hubg.desktop.Rah.checkParent(this.parentGame.getParent()), (String) ServerMessage.message, "HUBG Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -434,6 +440,33 @@ public class HUBGGame implements Screen {
             sr.end();
 
             Gdx.gl.glDisable(GL20.GL_BLEND);
+        }
+
+        if (connecting) {
+
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+            ShapeRenderer sr = new ShapeRenderer();
+            sr.setColor(Color.WHITE);
+            sr.setProjectionMatrix(staticcam.combined);
+
+            sr.begin(ShapeRenderer.ShapeType.Filled);
+            sr.setColor(new Color(0, 0, 0, 0.5f));
+
+            sr.rect(staticPort.getScreenWidth() / -2, staticPort.getScreenHeight() / -2, staticPort.getScreenWidth(), staticPort.getScreenHeight());
+
+            sr.end();
+
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+
+            /*
+            main.batch.begin();
+
+            latoFont.getData().setScale(100);
+            latoFont.draw(main.batch, "Hello world", 0, 0);
+
+            main.batch.end(); */
         }
     }
 
