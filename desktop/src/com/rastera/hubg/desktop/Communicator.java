@@ -13,7 +13,7 @@ import javax.swing.border.Border;
 
 public class Communicator {
 
-    private static final boolean developmentMode = true;
+    private static final boolean developmentMode = !true;
 
     private static final HashMap<RequestDestination, String> baseProductionHashMap = new HashMap<>() {
         {

@@ -36,7 +36,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 	private int prevX, prevY;
 
-	public static final boolean borderless = false;
+	public static final boolean borderless =  false;
 
 	private Main() {
 		super("HUBG - Henning's Unknown Battle Ground");
