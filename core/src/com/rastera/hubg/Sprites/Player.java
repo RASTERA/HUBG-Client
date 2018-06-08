@@ -3,6 +3,7 @@ package com.rastera.hubg.Sprites;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -32,14 +33,18 @@ public class Player extends Sprite {
     private float health = 100;
     private TextureRegion marioStand;
     private Texture playerImage;
+    public Weapon weapon;
 
 
     public Player(World world, HUBGGame screen, float[] location){
         super(HUBGMain.getSkin(Main.session.getSkin())); //penguin.png")));
 
         this.world = world;
+        weapon = new Weapon(screen, 50 / HUBGMain.PPM);
 
         definePlayer(location);
+
+        weapon.setCurrentWeapon("AK47");
 
         setBounds(0, 0, 100 / HUBGMain.PPM, 100 / HUBGMain.PPM);
 
@@ -50,6 +55,7 @@ public class Player extends Sprite {
         setOrigin(getWidth() / 2, getHeight() / 2);
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
         setRotation(MathUtils.radiansToDegrees * b2body.getAngle());
+        weapon.update(getX(), getY(), getAngle());
     }
 
     public void definePlayer(float[] location) {
@@ -78,6 +84,12 @@ public class Player extends Sprite {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void draw (Batch batch) {
+        super.draw(batch);
+        weapon.draw(batch);
     }
 
     public Vector2 getLocation() {

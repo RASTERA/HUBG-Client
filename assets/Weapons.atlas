@@ -1,0 +1,19 @@
+Weapons.png
+size: 924, 280
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+1911
+  rotate: false
+  xy: 0, 0
+  size: 924, 165
+  orig: 924, 165
+  offset: 0, 0
+  index: -1
+AK47
+  rotate: false
+  xy: 0, 165
+  size: 857, 115
+  orig: 857, 115
+  offset: 0, 0
+  index: -1

@@ -50,7 +50,7 @@ public class HUBGGame implements Screen {
     private BitmapFont latoFont;
     private TmxMapLoader mapLoader;
     private TiledMap map;
-    private TextureAtlas atlas;
+    private TextureAtlas weaponAtlas;
     private OrthogonalTiledMapRenderer renderer;
     private TiledMapTileLayer displayLayer;
     private Box2DDebugRenderer b2dr;
@@ -91,6 +91,8 @@ public class HUBGGame implements Screen {
 
         latoFont = new BitmapFont(Gdx.files.internal("fnt/Lato-Regular-64.fnt"), Gdx.files.internal("fnt/lato.png"), false);
 
+        weaponAtlas = new TextureAtlas(Gdx.files.internal("Weapons.atlas"));
+
         gamecam = new OrthographicCamera();
         staticcam = new OrthographicCamera();
         gamePort = new ScreenViewport(gamecam);
@@ -119,6 +121,7 @@ public class HUBGGame implements Screen {
             e.printStackTrace();
             this.player = new Player(world, this, new float[] {1000, 1000, 0, 0});
             gameStart = true;
+            connecting = false;
         }
     }
 
@@ -400,27 +403,34 @@ public class HUBGGame implements Screen {
 
         renderer.render();
 
+        main.batch.setProjectionMatrix(gamecam.combined);
+        main.batch.begin();
+        player.draw(main.batch);
+
+        for (Enemy e : EnemyList) {
+            e.draw(main.batch);
+        }
+
+        main.batch.end();
+
+        ShapeRenderer sr = new ShapeRenderer();
+        sr.setColor(Color.BLUE);
+        sr.setProjectionMatrix(gamecam.combined);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+        sr.circle(player.getLocation().x, player.getLocation().y + player.weapon.getHeight() / 2, 2);
+        sr.end();
+
         if (gameStart) {
 
 
             if (shoot) {
-                ShapeRenderer sr = new ShapeRenderer();
+                sr = new ShapeRenderer();
                 sr.setColor(Color.WHITE);
                 sr.setProjectionMatrix(gamecam.combined);
                 sr.begin(ShapeRenderer.ShapeType.Line);
                 sr.line(player.getLocation().x, player.getLocation().y, raycastPoint.x, raycastPoint.y);
                 sr.end();
             }
-
-            main.batch.setProjectionMatrix(gamecam.combined);
-            main.batch.begin();
-            player.draw(main.batch);
-
-            for (Enemy e : EnemyList) {
-                e.draw(main.batch);
-            }
-
-            main.batch.end();
         }
 
         b2dr.render(world, gamecam.combined);
@@ -429,7 +439,7 @@ public class HUBGGame implements Screen {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-            ShapeRenderer sr = new ShapeRenderer();
+            sr = new ShapeRenderer();
             sr.setColor(Color.WHITE);
             sr.setProjectionMatrix(staticcam.combined);
 
@@ -447,7 +457,7 @@ public class HUBGGame implements Screen {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-            ShapeRenderer sr = new ShapeRenderer();
+            sr = new ShapeRenderer();
             sr.setColor(Color.WHITE);
             sr.setProjectionMatrix(staticcam.combined);
 
@@ -468,6 +478,10 @@ public class HUBGGame implements Screen {
 
             main.batch.end(); */
         }
+    }
+
+    public TextureAtlas getWeaponAtlas() {
+        return weaponAtlas;
     }
 
     @Override
