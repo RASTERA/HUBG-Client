@@ -403,28 +403,20 @@ public class HUBGGame implements Screen {
 
         renderer.render();
 
-        main.batch.setProjectionMatrix(gamecam.combined);
-        main.batch.begin();
-        player.draw(main.batch);
-
-        for (Enemy e : EnemyList) {
-            e.draw(main.batch);
-        }
-
-        main.batch.end();
-
-        ShapeRenderer sr = new ShapeRenderer();
-        sr.setColor(Color.BLUE);
-        sr.setProjectionMatrix(gamecam.combined);
-        sr.begin(ShapeRenderer.ShapeType.Filled);
-        sr.circle(player.getLocation().x, player.getLocation().y + player.weapon.getHeight() / 2, 2);
-        sr.end();
-
         if (gameStart) {
 
+            main.batch.setProjectionMatrix(gamecam.combined);
+            main.batch.begin();
+            player.draw(main.batch);
+
+            for (Enemy e : EnemyList) {
+                e.draw(main.batch);
+            }
+
+            main.batch.end();
 
             if (shoot) {
-                sr = new ShapeRenderer();
+                ShapeRenderer sr = new ShapeRenderer();
                 sr.setColor(Color.WHITE);
                 sr.setProjectionMatrix(gamecam.combined);
                 sr.begin(ShapeRenderer.ShapeType.Line);
@@ -439,7 +431,7 @@ public class HUBGGame implements Screen {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-            sr = new ShapeRenderer();
+            ShapeRenderer sr = new ShapeRenderer();
             sr.setColor(Color.WHITE);
             sr.setProjectionMatrix(staticcam.combined);
 
@@ -457,7 +449,7 @@ public class HUBGGame implements Screen {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-            sr = new ShapeRenderer();
+            ShapeRenderer sr = new ShapeRenderer();
             sr.setColor(Color.WHITE);
             sr.setProjectionMatrix(staticcam.combined);
 

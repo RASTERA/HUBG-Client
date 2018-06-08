@@ -24,14 +24,15 @@ public class Weapon extends Sprite {
 
     public void setCurrentWeapon(String Weapon) {
         setRegion(game.getWeaponAtlas().findRegion(Weapon));
-        setSize(this.getWidth() / HUBGMain.PPM, this.getHeight() / HUBGMain.PPM);
+        setSize(this.getWidth() / 5/ HUBGMain.PPM, this.getHeight() /5/ HUBGMain.PPM);
     }
 
     public void update(float x, float y, float r) {
 
-        setOrigin(0, getHeight() / 2);
+        setOrigin(0 ,0);
+
+        setPosition(x - getWidth(), y);
         setRotation(MathUtils.radiansToDegrees * r + 180);
-        setPosition(x, y);
 
         System.out.println(getOriginX() + " " + getOriginY() + " " + r);
     }
