@@ -499,6 +499,7 @@ public class HUBGGame implements Screen {
 
     @Override
     public void dispose() {
+        conn.destroy();
         System.out.println("lol");
         this.parentGame.exitGame();
     }

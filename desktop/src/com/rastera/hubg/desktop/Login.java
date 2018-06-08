@@ -138,7 +138,10 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                Rah.webbrowserOpen("https://rastera.xyz");
+
+                JOptionPane.showMessageDialog(Rah.checkParent(Login.this.parent), "Yeah... if you forget your password you're kinda out of luck ¯\\_(ツ)_/¯", "Message from Torvalds", JOptionPane.ERROR_MESSAGE);
+
+                //Rah.webbrowserOpen("https://rastera.xyz");
             }
         });
 

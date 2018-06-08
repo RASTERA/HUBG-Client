@@ -23,6 +23,7 @@ public class Communicator {
     private LinkedBlockingQueue<Message> message;
     private HUBGGame client;
     private String serverName;
+    private boolean listening = true;
 
     public Communicator(byte[] ip, int port, final HUBGGame client) throws Exception {
         this.client = client;
@@ -36,13 +37,14 @@ public class Communicator {
 
         Thread receiver = new Thread(){
             public void run() {
-                while (true) {
+                while (listening) {
                     try {
                         Message msg = (Message) in.readObject();
 
                         client.CommandProcessor(msg);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        Main.errorQuit("Disconnected from server");
                     }
                 }
             }
@@ -74,5 +76,9 @@ public class Communicator {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void destroy() {
+        listening = false;
     }
 }
