@@ -34,6 +34,5 @@ public class Weapon extends Sprite {
         setPosition(x - getWidth(), y);
         setRotation(MathUtils.radiansToDegrees * r + 180);
 
-        System.out.println(getOriginX() + " " + getOriginY() + " " + r);
     }
 }

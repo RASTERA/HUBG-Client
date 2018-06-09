@@ -1,14 +1,15 @@
 package com.rastera.hubg.Screens;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -18,7 +19,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -30,13 +30,9 @@ import com.rastera.hubg.Sprites.Brick;
 import com.rastera.hubg.Sprites.Enemy;
 import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Util.Rah;
-import com.rastera.hubg.desktop.Main;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import static javafx.application.Platform.exit;
 
 public class HUBGGame implements Screen {
 
@@ -80,18 +76,26 @@ public class HUBGGame implements Screen {
     private boolean canShoot = true;
     private float fireDelay = 0;
 
-    public com.rastera.hubg.desktop.Game parentGame;
+    private com.rastera.hubg.desktop.Game parentGame;
 
-    public String serverName;
-    public String serverToken;
+    private String serverName;
+    private String serverToken;
+
+    //MiniMap
+
+    private Texture miniMap;
+    private int minMapPadding = 10;
+    private int miniMapSize = 300;
+    private int miniMapTextureSize = 6000;
+    private TextureRegion miniMapDisplay;
 
     public HUBGGame(HUBGMain main, com.rastera.hubg.desktop.Game parentGame) {
         this.main = main;
         this.parentGame = parentGame;
 
         latoFont = new BitmapFont(Gdx.files.internal("fnt/Lato-Regular-64.fnt"), Gdx.files.internal("fnt/lato.png"), false);
-
         weaponAtlas = new TextureAtlas(Gdx.files.internal("Weapons.atlas"));
+        miniMap = new Texture(Gdx.files.internal("minimap.png"));
 
         gamecam = new OrthographicCamera();
         staticcam = new OrthographicCamera();
@@ -384,7 +388,6 @@ public class HUBGGame implements Screen {
         if (gameStart) {
             handleInput(dt);
             player.update(dt);
-
             for (Enemy e : EnemyList) {
                 e.step(dt);
             }
@@ -415,8 +418,19 @@ public class HUBGGame implements Screen {
 
             main.batch.end();
 
+            main.batch.setProjectionMatrix(staticcam.combined);
+            main.batch.begin();
+            main.batch.draw(miniMap, staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize, miniMapSize, miniMapSize);
+            main.batch.end();
+
+            ShapeRenderer sr = new ShapeRenderer();
+            sr.setProjectionMatrix(staticcam.combined);
+            sr.setColor(Color.RED);
+            sr.begin(ShapeRenderer.ShapeType.Filled);
+            sr.rect(staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + player.b2body.getPosition().x / 10000 * miniMapSize, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + player.b2body.getPosition().y / 10000 * miniMapSize, 5/2, 5/2, 5, 5, 1f, 1f, MathUtils.radiansToDegrees * player.getAngle());
+            sr.end();
+
             if (shoot) {
-                ShapeRenderer sr = new ShapeRenderer();
                 sr.setColor(Color.WHITE);
                 sr.setProjectionMatrix(gamecam.combined);
                 sr.begin(ShapeRenderer.ShapeType.Line);
