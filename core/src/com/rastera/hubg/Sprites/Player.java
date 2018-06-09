@@ -44,7 +44,7 @@ public class Player extends Sprite {
 
         definePlayer(location);
 
-        weapon.setCurrentWeapon("AK47");
+        weapon.setCurrentWeapon("1911");
 
         setBounds(0, 0, 100 / HUBGMain.PPM, 100 / HUBGMain.PPM);
 
@@ -55,7 +55,7 @@ public class Player extends Sprite {
         setOrigin(getWidth() / 2, getHeight() / 2);
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
         setRotation(MathUtils.radiansToDegrees * b2body.getAngle());
-        weapon.update(getX(), getY(), getAngle());
+        weapon.update(b2body.getPosition().x, b2body.getPosition().y, getAngle());
     }
 
     public void definePlayer(float[] location) {
@@ -88,8 +88,8 @@ public class Player extends Sprite {
 
     @Override
     public void draw (Batch batch) {
-        super.draw(batch);
         weapon.draw(batch);
+        super.draw(batch);
     }
 
     public Vector2 getLocation() {

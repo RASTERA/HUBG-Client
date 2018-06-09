@@ -29,10 +29,9 @@ public class Weapon extends Sprite {
 
     public void update(float x, float y, float r) {
 
-        setOrigin(0 ,0);
-
-        setPosition(x - getWidth(), y);
-        setRotation(MathUtils.radiansToDegrees * r + 180);
+        setOrigin(0 ,getHeight() / 2);
+        setPosition(x, y - getHeight() / 2);
+        setRotation(MathUtils.radiansToDegrees * r);
 
     }
 }
