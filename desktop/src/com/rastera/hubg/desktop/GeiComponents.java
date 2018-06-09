@@ -17,7 +17,7 @@ class GeiShopItem {
     public BufferedImage texture;
     public boolean unlocked;
     public static final int height = 150;
-    public static int width = 500;
+    public static final int width = 460;
     public GeiPanel parent;
 
     public GeiButton buyButton, useButton;
@@ -74,7 +74,7 @@ class GeiShopItem {
 
     }
 
-    public void update(Graphics graphics, int x, int y, int width) {
+    public void update(Graphics graphics, int x, int y) {
 
         Graphics2D g = (Graphics2D) graphics;
 
@@ -84,8 +84,6 @@ class GeiShopItem {
 
         this.buyButton.setBounds(x + 140, y + 85, 120, 30);
         this.useButton.setBounds(x + 270, y + 85, 120, 30);
-
-        GeiShopItem.width = width; // Dynamically changes width based on presence of nasty scrollbar
 
         g.setColor(new Color(5, 15, 24));
         g.fillRect(x, y, GeiShopItem.width, height);
@@ -124,7 +122,7 @@ class GeiActionEvent {
     }
 
     public static final int height = 80;
-    private static int width = 210;
+    private static final int width = 210;
 
     private String caption;
     private String time;
@@ -136,15 +134,12 @@ class GeiActionEvent {
         this.type = type;
     }
 
-    public void update(Graphics graphics, int x, int y, int width) {
+    public void update(Graphics graphics, int x, int y) {
 
         Graphics2D g = (Graphics2D) graphics;
 
         g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-
-        GeiActionEvent.width = width; // Dynamically changes width based on presence of nasty scrollbar
 
         g.setColor(new Color(5, 15, 24));
         g.fillRect(x, y, GeiActionEvent.width, height);
@@ -155,7 +150,7 @@ class GeiActionEvent {
         ArrayList<String> lines = Rah.wrapText(GeiActionEvent.width, this.caption, metrics);
         g.setColor(Color.WHITE);
 
-        for (int i = 0; i < lines.size(); i++) {
+        for (int i = 0; i < Math.min(lines.size(), 2); i++) {
             g.drawString(lines.get(i), x + 10, y + 20 + (metrics.getHeight() + 2) * i);
         }
 
@@ -333,7 +328,7 @@ class GeiActionPanel extends GeiPanel {
         g.drawString("Recent Activity", 20, 30);
 
         for (int y = 0; y < this.eventArrayList.size(); y++) {
-            this.eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 10), 210);
+            this.eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 10));
         }
     }
 }
@@ -342,7 +337,7 @@ class GeiActionPanel extends GeiPanel {
 class GeiChatItem {
 
     public static int height = 50;
-    public static int width = 500;
+    public final static int width = 460;
 
     private String text;
     private String time;
@@ -352,7 +347,7 @@ class GeiChatItem {
         this.time = time;
     }
 
-    public void update(Graphics graphics, int x, int y, int width) {
+    public void update(Graphics graphics, int x, int y) {
 
         Graphics2D g = (Graphics2D) graphics;
 
@@ -363,7 +358,6 @@ class GeiChatItem {
         ArrayList<String> lines = Rah.wrapText(GeiChatItem.width, text, metrics);
 
         height = 50 + 10 * lines.size();
-        GeiChatItem.width = width; // Dynamically changes width based on presence of nasty scrollbar
 
         g.setColor(new Color(5, 15, 24));
         g.fillRect(x, y, GeiChatItem.width, height);
@@ -472,7 +466,7 @@ class GeiChatPanel extends GeiPanel {
 
         // Updates chat items
         for (int i = 0; i < chatArrayList.size(); i++) {
-            chatArrayList.get(i).update(g, 20, yPos, 460);
+            chatArrayList.get(i).update(g, 20, yPos);
 
             yPos += GeiChatItem.height + 10;
         }
@@ -589,7 +583,7 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         for (int i = 0; i < itemArrayList.size(); i++) {
-            itemArrayList.get(i).update(g, 20, 20 + 160 * i, 460);
+            itemArrayList.get(i).update(g, 20, 20 + 160 * i);
         }
 
     }

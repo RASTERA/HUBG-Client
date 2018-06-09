@@ -77,11 +77,11 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.activityButton.setActionCommand("activity");
         this.activityButton.addActionListener(this);
 
-        this.shopButton = new GeiButton("Shop");
+        this.shopButton = new GeiButton("\uD83D\uDECD");
         this.shopButton.setActionCommand("shop");
         this.shopButton.addActionListener(this);
 
-        this.chatButton = new GeiButton("Chat");
+        this.chatButton = new GeiButton("\uD83D\uDCAC");
         this.chatButton.setActionCommand("chat");
         this.chatButton.addActionListener(this);
 

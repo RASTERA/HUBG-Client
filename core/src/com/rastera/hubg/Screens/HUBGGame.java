@@ -3,13 +3,12 @@ package com.rastera.hubg.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -32,6 +31,7 @@ import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Util.Rah;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class HUBGGame implements Screen {
@@ -49,6 +49,7 @@ public class HUBGGame implements Screen {
     private TextureAtlas weaponAtlas;
     private OrthogonalTiledMapRenderer renderer;
     private TiledMapTileLayer displayLayer;
+    private HashMap<String, Sound> soundHashMap = new HashMap<>();
     private Box2DDebugRenderer b2dr;
     private World world;
     private Player player;
@@ -92,6 +93,11 @@ public class HUBGGame implements Screen {
     public HUBGGame(HUBGMain main, com.rastera.hubg.desktop.Game parentGame) {
         this.main = main;
         this.parentGame = parentGame;
+
+        // Import audio
+        this.soundHashMap.put("shot", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
+
+
 
         latoFont = new BitmapFont(Gdx.files.internal("fnt/Lato-Regular-64.fnt"), Gdx.files.internal("fnt/lato.png"), false);
         weaponAtlas = new TextureAtlas(Gdx.files.internal("Weapons.atlas"));
@@ -352,6 +358,8 @@ public class HUBGGame implements Screen {
             fireDelay -= 0.3;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.P) && canShoot) {
+            this.soundHashMap.get("shot").play((float) Math.random(), 1f, -1);
+
             int enemyID = calculateBullet(400);
 
             if (networkConnected && enemyID != -1) {
@@ -430,6 +438,13 @@ public class HUBGGame implements Screen {
             sr.rect(staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + player.b2body.getPosition().x / 10000 * miniMapSize, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + player.b2body.getPosition().y / 10000 * miniMapSize, 5/2, 5/2, 5, 5, 1f, 1f, MathUtils.radiansToDegrees * player.getAngle());
             sr.end();
 
+            main.batch.begin();
+
+            latoFont.getData().setScale(0.2f);
+            latoFont.draw(main.batch, String.format("X: %d | Y: %d | R: %d", (int) player.b2body.getPosition().x, (int) player.b2body.getPosition().y, (int) normalizeAngle((player.b2body.getAngle() * 360 / Math.PI))), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
+
+            main.batch.end();
+
             if (shoot) {
                 sr.setColor(Color.WHITE);
                 sr.setProjectionMatrix(gamecam.combined);
@@ -442,6 +457,7 @@ public class HUBGGame implements Screen {
         b2dr.render(world, gamecam.combined);
 
         if (paused) {
+
             Gdx.gl.glEnable(GL20.GL_BLEND);
             Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -456,6 +472,12 @@ public class HUBGGame implements Screen {
             sr.end();
 
             Gdx.gl.glDisable(GL20.GL_BLEND);
+
+            main.batch.begin();
+
+            centerText(main.batch, latoFont, 0.5f, "PAUSED", 0, 0);
+
+            main.batch.end();
         }
 
         if (connecting) {
@@ -476,14 +498,32 @@ public class HUBGGame implements Screen {
 
             Gdx.gl.glDisable(GL20.GL_BLEND);
 
-            /*
             main.batch.begin();
 
-            latoFont.getData().setScale(100);
-            latoFont.draw(main.batch, "Hello world", 0, 0);
+            centerText(main.batch, latoFont, 0.5f, "CONNECTING TO SERVER", staticPort.getScreenWidth() / 2, staticPort.getScreenHeight() / 2);
 
-            main.batch.end(); */
+            main.batch.end();
         }
+    }
+
+    public void centerText(Batch batch, BitmapFont font, float size, String text, int x, int y) {
+
+        font.getData().setScale(size);
+
+        GlyphLayout layout = new GlyphLayout(font, text);
+
+        font.draw(batch, text, x - layout.width / 2, y + layout.height / 2);
+
+    }
+
+    public double normalizeAngle(double angle) {
+        angle = angle % 360;
+
+        if (angle < 0) {
+            angle += 360;
+        }
+
+        return angle;
     }
 
     public TextureAtlas getWeaponAtlas() {

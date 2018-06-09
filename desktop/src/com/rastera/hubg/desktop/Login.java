@@ -25,6 +25,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
     private final JLabel passwordLabel;
     private final JLabel forgetPasswordLabel;
     private final JLabel createAccountLabel;
+    private final JLabel creditsLabel;
     private final GeiButton loginButton;
 
     private final GeiEdgeButton minimizeButton;
@@ -89,6 +90,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
 
         this.emailOrUserLabel = new JLabel("Email/Username");
         this.passwordLabel = new JLabel("Password");
+        this.creditsLabel = new JLabel("About/Credits");
         this.forgetPasswordLabel = new JLabel("Forgot your password?");
         this.createAccountLabel = new JLabel("Create an account");
 
@@ -129,6 +131,18 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
                 if (e.getKeyCode() != KeyEvent.VK_ENTER) {
                     Login.this.validateText();
                 }
+            }
+        });
+
+        this.creditsLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        this.creditsLabel.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                JOptionPane.showMessageDialog(Rah.checkParent(Login.this.parent), "PROJECT HUBG | RASTERA | rastera.xyz\nLicenced under WTFPL\n\nDeveloped by:\nHenry Tu (github.com/henrytwo, henrytu.me)\nRyan Zhang (github.com/ryanz34)\nSyed Safwaan (github.com/syed-safwaan)\n\nICS4U Final Project - 2017/2018\n\nAll copyrighted works are property of their respective owner.", "RASTERA | PROJECT HUBG", JOptionPane.INFORMATION_MESSAGE);
+
+                //Rah.webbrowserOpen("https://rastera.xyz");
             }
         });
 
@@ -196,6 +210,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.add(this.passwordLabel);
         this.add(this.forgetPasswordLabel);
         this.add(this.createAccountLabel);
+        this.add(this.creditsLabel);
 
         this.add(this.emailOrUserField);
         this.add(this.passwordField);
@@ -362,10 +377,12 @@ what do you do?
             this.passwordLabel.setBounds(Main.w - 230, 200, 210, 20);
             this.passwordField.setBounds(Main.w - 230, 220, 210, 30);
 
+
             this.loginButton.setBounds(Main.w - 230, Main.h - 200, 210, 30);
 
             this.forgetPasswordLabel.setBounds(Main.w - 230, Main.h - 70, 210, 20);
             this.createAccountLabel.setBounds(Main.w - 230, Main.h - 90, 210, 20);
+            this.creditsLabel.setBounds(Main.w - 230, Main.h - 110, 210, 20);
 
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, Main.w, Main.h);

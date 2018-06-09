@@ -22,7 +22,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	private static Timer masterTimer;
 	public static int usersOnline = 0;
 	public static int w = 1100;
-	public static int h = 600;
+	public static int h = 700;
 	public static Session session;
 	public static JSONObject shopData;
 	public static Clip menuMusic;
@@ -38,6 +38,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	private int prevX, prevY;
 
 	public static final boolean borderless =  false;
+	public static final boolean showFPS =  false;
 
 	public LwjglApplicationConfiguration config;
 
@@ -46,7 +47,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.setSize(w, h);
-		this.setMinimumSize(new Dimension(1100, 600));
+		this.setMinimumSize(new Dimension(1100, 700));
 		this.setLayout(new BorderLayout());
 
 		this.setUndecorated(borderless);
@@ -79,12 +80,14 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		this.config = new LwjglApplicationConfiguration();
 		//this.config.fullscreen = true;
 		this.config.forceExit = false;
+		this.config.width = 1100;
+		this.config.height = 700;
 
 		try {
 
-		    //System.out.println(this.getClass().getResource("music/menu.wav"));
+		    //System.out.println(this.gepptClass().getResource("music/menu.wav"));
 
-			audioIn = AudioSystem.getAudioInputStream(new File("music/menu.wav"));
+			audioIn = AudioSystem.getAudioInputStream(new File("sounds/menu.wav"));
 			startMusic();
 
 		} catch (Exception e) {
@@ -167,9 +170,11 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	}
 
 	public void updateFrameRate() {
-		long currentTime = System.currentTimeMillis();
-		this.setTitle(String.format("HUBG - Henning's Unknown Battle Ground - [%d FPS]", (currentTime - prevFrame) > 0 ? 1000 / (currentTime - prevFrame) : 0));
-		prevFrame = currentTime;
+		if (showFPS) {
+			long currentTime = System.currentTimeMillis();
+			this.setTitle(String.format("HUBG - Henning's Unknown Battle Ground - [%d FPS]", (currentTime - prevFrame) > 0 ? 1000 / (currentTime - prevFrame) : 0));
+			prevFrame = currentTime;
+		}
 	}
 
 	private void startGraphics() {
