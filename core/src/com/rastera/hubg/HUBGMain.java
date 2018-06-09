@@ -31,6 +31,8 @@ public class HUBGMain extends Game implements ApplicationListener{
 	public static final float SYNC_INTERVAL = 9/60f;
 
 	public static JSONObject skinDataJSON;
+
+	private HUBGGame game;
 	//public static HashMap<String, Texture> skinDataHashMap;
 
 	public SpriteBatch batch;
@@ -58,7 +60,8 @@ public class HUBGMain extends Game implements ApplicationListener{
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		setScreen(new HUBGGame(this, this.parentGame));
+		game = new HUBGGame(this, this.parentGame);
+		setScreen(game);
 	}
 
 	@Override
@@ -67,8 +70,8 @@ public class HUBGMain extends Game implements ApplicationListener{
 	}
 
     public void dispose() {
-        System.out.println("lol");
-        this.parentGame.exitGame();
+		game.conn.write(1000, "terminate");
+		this.parentGame.exitGame();
     }
 
 }

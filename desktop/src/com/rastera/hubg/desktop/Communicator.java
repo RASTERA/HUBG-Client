@@ -1,5 +1,18 @@
 package com.rastera.hubg.desktop;
 
+//
+// Dear programmer (Syed):
+// When I wrote this code, only god and
+// I knew how it worked.
+// Now, only god knows it!
+//
+// Therefore, if you are trying to optimize
+// this routine and it fails lol sucks to be you!
+// Please reconsider your career path.
+//
+// total_hours_wasted_here > 9000
+//
+
 import java.awt.*;
 import java.io.*;
 import java.net.*;

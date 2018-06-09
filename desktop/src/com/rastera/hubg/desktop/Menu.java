@@ -45,7 +45,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     //public int currentPanelVelocity = 0;
     //private int currentPanelTarget = activityPanelWidth;
     private BufferedImage background;
-    private String statsText = "";
+    private String statsText = "-- Kills      |      -- Deaths      |      -- Matches      |      -- Zhekko";
     private long lastUpdated = System.currentTimeMillis();
     private volatile boolean statsLoaded = false;
 
@@ -145,13 +145,14 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             }
 
             Menu.this.shopPanel.updateItems();
-            Menu.this.updateData();
             Menu.this.statsLoaded = true;
 
             // Waits for stats stuff to load
             Menu.this.repaint();
             Menu.this.remove(Menu.this.loadingBar);
             Menu.this.add(Menu.this.activityScrollPane);
+
+            Menu.this.updateData();
 
             Menu.this.add(Menu.this.startButton);
             Menu.this.add(Menu.this.activityButton);
@@ -162,6 +163,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             this.minimizeButton.setBackgroundDark();
             this.closeButton.setBackgroundDark();
             this.resetButtons();
+
 
         });
 
@@ -280,6 +282,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 this.parent.setMasterTimer(2000);
 
                 repaint();
+                this.chatTextField.requestFocus();
 
                 break;
 

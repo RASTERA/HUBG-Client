@@ -25,6 +25,8 @@ public class Communicator {
     private String serverName;
     private boolean listening = true;
 
+    private Thread receiver;
+
     public Communicator(byte[] ip, int port, final HUBGGame client) throws Exception {
         this.client = client;
 
@@ -35,7 +37,7 @@ public class Communicator {
 
         System.out.println("Connected to server: " + Arrays.toString(ip) + ":" + port);
 
-        Thread receiver = new Thread(){
+        receiver = new Thread(){
             public void run() {
                 while (listening) {
                     try {
@@ -44,7 +46,8 @@ public class Communicator {
                         client.CommandProcessor(msg);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Main.errorQuit("Disconnected from server");
+                        break;
+                        //Main.errorQuit("Disconnected from server");
                     }
                 }
             }
@@ -76,9 +79,5 @@ public class Communicator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void destroy() {
-        listening = false;
     }
 }

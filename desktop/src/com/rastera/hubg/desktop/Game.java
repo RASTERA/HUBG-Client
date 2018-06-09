@@ -1,6 +1,7 @@
 package com.rastera.hubg.desktop;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -32,22 +33,30 @@ public class Game extends GeiPanel {
 
 		com.rastera.hubg.desktop.Main.stopMusic();
 
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-
-		//config.fullscreen = true;
-		config.forceExit = false;
-
-		this.parent.setState(Frame.ICONIFIED);
-
-		new LwjglApplication(new HUBGMain(this), config);
-
-
+		startGame();
 
 	}
 
+	public void startGame() {
+
+		System.out.println("STARTING GAME");
+
+		this.parent.setState(Frame.ICONIFIED);
+
+		new LwjglApplication(new HUBGMain(this), this.parent.config);
+	}
+
 	public void exitGame() {
+
 		this.parent.setState(Frame.NORMAL);
 		this.parent.startPage(com.rastera.hubg.desktop.Main.Pages.MENU);
+
+	}
+
+	public void rejectConnection(String message) {
+
+		JOptionPane.showMessageDialog(Rah.checkParent(this.parent), message, "HUBG Error", JOptionPane.ERROR_MESSAGE);
+
 	}
 
 	@Override

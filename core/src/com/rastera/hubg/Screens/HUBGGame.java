@@ -57,8 +57,8 @@ public class HUBGGame implements Screen {
     private World world;
     private Player player;
     private int ID;
-    private Communicator conn;
     private float dTotal = 0;
+    public Communicator conn;
 
     private boolean gameStart = false;
     private boolean paused = false;
@@ -143,7 +143,7 @@ public class HUBGGame implements Screen {
                 } else {
 
                     Gdx.app.exit();
-                    JOptionPane.showMessageDialog(com.rastera.hubg.desktop.Rah.checkParent(this.parentGame.getParent()), (String) ServerMessage.message, "HUBG Error", JOptionPane.ERROR_MESSAGE);
+                    this.parentGame.rejectConnection((String) ServerMessage.message);
                 }
 
                 break;
@@ -499,7 +499,6 @@ public class HUBGGame implements Screen {
 
     @Override
     public void dispose() {
-        conn.destroy();
         System.out.println("lol");
         this.parentGame.exitGame();
     }

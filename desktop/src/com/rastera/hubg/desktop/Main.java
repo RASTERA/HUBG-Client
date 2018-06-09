@@ -1,5 +1,6 @@
 package com.rastera.hubg.desktop;
 
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -38,6 +39,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 	public static final boolean borderless =  false;
 
+	public LwjglApplicationConfiguration config;
+
 	private Main() {
 		super("HUBG - Henning's Unknown Battle Ground");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,6 +74,11 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
+
+		//LIBGDX stuff
+		this.config = new LwjglApplicationConfiguration();
+		//this.config.fullscreen = true;
+		this.config.forceExit = false;
 
 		try {
 
