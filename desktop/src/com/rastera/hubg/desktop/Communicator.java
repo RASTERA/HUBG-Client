@@ -186,7 +186,7 @@ public class Communicator {
 
             if (dataJSON.has("error")) {
                 System.out.println(dataJSON.getString("error"));
-                return null;
+                return new Session(dataJSON.getString("error"), null);
             }
 
             return new Session(dataJSON.getString("token"), dataJSON.getJSONObject("user"));
