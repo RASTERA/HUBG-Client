@@ -33,6 +33,7 @@ public class Game extends GeiPanel {
 
 		com.rastera.hubg.desktop.Main.stopMusic();
 
+
 		startGame();
 
 	}
@@ -44,6 +45,7 @@ public class Game extends GeiPanel {
 		this.parent.setState(Frame.ICONIFIED);
 
 		new LwjglApplication(new HUBGMain(this), this.parent.config);
+
 	}
 
 	public void exitGame() {
@@ -54,9 +56,7 @@ public class Game extends GeiPanel {
 	}
 
 	public void rejectConnection(String message) {
-
 		JOptionPane.showMessageDialog(Rah.checkParent(this.parent), message, "HUBG Error", JOptionPane.ERROR_MESSAGE);
-
 	}
 
 	@Override

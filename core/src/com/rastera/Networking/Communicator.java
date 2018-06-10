@@ -78,6 +78,7 @@ public class Communicator {
             this.out.writeObject(Rah.messageBuilder(type, Message));
         } catch (Exception e) {
             e.printStackTrace();
+            Main.errorQuit("Disconnected from server");
         }
     }
 }

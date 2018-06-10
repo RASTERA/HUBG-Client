@@ -30,7 +30,9 @@ import com.rastera.hubg.Sprites.Brick;
 import com.rastera.hubg.Sprites.Enemy;
 import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Util.Rah;
+import com.rastera.hubg.desktop.Main;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -57,6 +59,8 @@ public class HUBGGame implements Screen {
     private int ID;
     private float dTotal = 0;
     public Communicator conn;
+    private ArrayList<String> actions;
+    private int alive = 0;
 
     private boolean gameStart = false;
     private boolean paused = false;
@@ -83,6 +87,10 @@ public class HUBGGame implements Screen {
     private String serverName;
     private String serverToken;
 
+    // Loading
+
+    private Texture loadingBG;
+
     //MiniMap
 
     private Texture miniMap;
@@ -105,6 +113,8 @@ public class HUBGGame implements Screen {
         latoFont = new BitmapFont(Gdx.files.internal("fnt/Lato-Regular-64.fnt"), Gdx.files.internal("fnt/lato.png"), false);
         weaponAtlas = new TextureAtlas(Gdx.files.internal("Weapons.atlas"));
         miniMap = new Texture(Gdx.files.internal("minimap.png"));
+
+        loadingBG = new Texture(Gdx.files.internal("images/menu-background-2.png"));
 
         gamecam = new OrthographicCamera();
         staticcam = new OrthographicCamera();
@@ -149,11 +159,25 @@ public class HUBGGame implements Screen {
 
     public void CommandProcessor(final Message ServerMessage) {
         switch (ServerMessage.type) {
-            case -2:
 
+            case -3: // Message
+
+                if (((String) ServerMessage.message).contains("killed by")) {
+                    Gdx.app.exit();
+                }
+
+                Thread msg = new Thread(() -> {
+                    JOptionPane.showMessageDialog(((String) ServerMessage.message).contains("killed by") ? com.rastera.hubg.desktop.Rah.checkParent(this.parentGame.getParent()) : null, (String) ServerMessage.message, "Message from server", JOptionPane.INFORMATION_MESSAGE);
+
+                });
+
+                msg.start();
+
+
+            case -2: // Determine if handshake is successful
                 if (((String) ServerMessage.message).equals("success")) {
                     System.out.println("Connection Accepted");
-                    connecting = false;
+
                 } else {
 
                     Gdx.app.exit();
@@ -162,7 +186,7 @@ public class HUBGGame implements Screen {
 
                 break;
 
-            case -1:
+            case -1: // Get server name and issue token
                 this.serverName = (String) ServerMessage.message;
 
                 this.serverToken = com.rastera.hubg.desktop.Communicator.getServerAuthToken(this.serverName);
@@ -173,14 +197,16 @@ public class HUBGGame implements Screen {
 
                 break;
 
-            case 0:
+            case 0: // Assign UID
                 this.ID = (Integer) ServerMessage.message;
                 System.out.println("Current ID: " + this.ID);
                 break;
-            case 1:
+
+            case 1: // Add player
                 GLProcess.add(ServerMessage);
                 break;
-            case 10:
+
+            case 10: // Update position
                 if (!gameStart) {
                     break;
                 }
@@ -207,7 +233,8 @@ public class HUBGGame implements Screen {
                     GLProcess.add(Rah.messageBuilder(1, a));
                 }
                 break;
-            case 11:
+
+            case 11: // Kill
 
                 if (((int[]) ServerMessage.message)[0] == this.ID) {
                     // weapon lookup here
@@ -217,6 +244,22 @@ public class HUBGGame implements Screen {
                     }
 
                 }
+
+                break;
+
+            case 12: // Action log
+                actions.add((String) ServerMessage.message);
+
+                System.out.println(actions);
+
+                break;
+
+            case 13: // Players alive
+                alive = (int) ServerMessage.message;
+
+                break;
+
+
         }
     }
 
@@ -247,6 +290,8 @@ public class HUBGGame implements Screen {
                         System.out.println("Start game:" + pMessage.message);
 
                         for (float[] p : (ArrayList<float[]>) pMessage.message) {
+                            System.out.println(p[3]);
+
                             if (p[3] == this.ID) {
                                 this.player = new Player(world, this, p);
                                 gamecam.position.x = player.b2body.getPosition().x;
@@ -254,12 +299,20 @@ public class HUBGGame implements Screen {
                                 gamecam.rotate(p[2] * MathUtils.radiansToDegrees);
 
                                 gameHUD = new HUD(main.batch, staticPort, player, latoFont);
+
+                                connecting = false;
+
                             } else {
                                 EnemyList.add(new Enemy(world, this, "Karl", p));
                             }
                         }
 
                         gameStart = true;
+
+                        if (this.player == null) {
+                            Main.errorQuit("Player not found");
+                        }
+
                         break;
                 }
             } catch (Exception e) {
@@ -449,7 +502,7 @@ public class HUBGGame implements Screen {
             main.batch.begin();
 
             latoFont.getData().setScale(0.2f);
-            latoFont.draw(main.batch, String.format("X: %d | Y: %d | R: %d", (int) player.b2body.getPosition().x, (int) player.b2body.getPosition().y, (int) normalizeAngle((player.b2body.getAngle() * 360 / Math.PI))), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
+            latoFont.draw(main.batch, String.format("X: %d | Y: %d | R: %d | Alive: %d", (int) player.b2body.getPosition().x, (int) player.b2body.getPosition().y, (int) normalizeAngle((player.b2body.getAngle() * 360 / Math.PI)), alive), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
 
             main.batch.end();
 
@@ -460,11 +513,11 @@ public class HUBGGame implements Screen {
                 sr.line(player.getLocation().x, player.getLocation().y, raycastPoint.x, raycastPoint.y);
                 sr.end();
             }
+
+            gameHUD.draw(main.batch, staticcam);
         }
 
         b2dr.render(world, gamecam.combined);
-
-        gameHUD.draw(main.batch, staticcam);
 
         if (paused) {
 
@@ -492,6 +545,7 @@ public class HUBGGame implements Screen {
 
         if (connecting) {
 
+
             Gdx.gl.glEnable(GL20.GL_BLEND);
             Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -510,7 +564,18 @@ public class HUBGGame implements Screen {
 
             main.batch.begin();
 
+            /*
+
+            int size = Math.min(staticPort.getScreenWidth(), staticPort.getScreenHeight());
+
+            main.batch.begin();
+            main.batch.draw(loadingBG, staticPort.getScreenWidth() / -2, staticPort.getScreenHeight() / -2, size, size);
+
+            latoFont.setColor(Color.BLACK); */
+
             centerText(main.batch, latoFont, 0.5f, "CONNECTING TO SERVER", staticPort.getScreenWidth() / 2, staticPort.getScreenHeight() / 2);
+
+            //latoFont.setColor(Color.WHITE);
 
             main.batch.end();
         }
