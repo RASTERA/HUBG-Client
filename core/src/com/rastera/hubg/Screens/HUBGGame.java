@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.rastera.hubg.HUBGMain;
 import com.rastera.Networking.Communicator;
 import com.rastera.Networking.Message;
+import com.rastera.hubg.Scene.HUD;
 import com.rastera.hubg.Sprites.Brick;
 import com.rastera.hubg.Sprites.Enemy;
 import com.rastera.hubg.Sprites.Player;
@@ -90,14 +91,16 @@ public class HUBGGame implements Screen {
     private int miniMapTextureSize = 6000;
     private TextureRegion miniMapDisplay;
 
+    //HUD
+
+    private HUD gameHUD;
+
     public HUBGGame(HUBGMain main, com.rastera.hubg.desktop.Game parentGame) {
         this.main = main;
         this.parentGame = parentGame;
 
         // Import audio
         this.soundHashMap.put("shot", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
-
-
 
         latoFont = new BitmapFont(Gdx.files.internal("fnt/Lato-Regular-64.fnt"), Gdx.files.internal("fnt/lato.png"), false);
         weaponAtlas = new TextureAtlas(Gdx.files.internal("Weapons.atlas"));
@@ -132,6 +135,7 @@ public class HUBGGame implements Screen {
             this.player = new Player(world, this, new float[] {1000, 1000, 0, 0});
             gameStart = true;
             connecting = false;
+            gameHUD = new HUD(main.batch, staticPort, player, latoFont);
         }
     }
 
@@ -248,6 +252,8 @@ public class HUBGGame implements Screen {
                                 gamecam.position.x = player.b2body.getPosition().x;
                                 gamecam.position.y = player.b2body.getPosition().y;
                                 gamecam.rotate(p[2] * MathUtils.radiansToDegrees);
+
+                                gameHUD = new HUD(main.batch, staticPort, player, latoFont);
                             } else {
                                 EnemyList.add(new Enemy(world, this, "Karl", p));
                             }
@@ -399,6 +405,8 @@ public class HUBGGame implements Screen {
             for (Enemy e : EnemyList) {
                 e.step(dt);
             }
+
+            gameHUD.update(staticPort);
         }
 
         gamecam.update();
@@ -455,6 +463,8 @@ public class HUBGGame implements Screen {
         }
 
         b2dr.render(world, gamecam.combined);
+
+        gameHUD.draw(main.batch, staticcam);
 
         if (paused) {
 

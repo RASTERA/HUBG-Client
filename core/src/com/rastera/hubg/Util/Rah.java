@@ -11,4 +11,9 @@ public class Rah {
 
         return nMessage;
     }
+
+    public static String stringMultiply(int times, String item){
+
+        return new String(new char[times]).replace("\0", item);  // Creates a String using a string array and replace the blanks
+    }
 }

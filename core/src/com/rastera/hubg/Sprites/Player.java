@@ -30,7 +30,7 @@ import javax.imageio.ImageIO;
 public class Player extends Sprite {
     public World world;
     public Body b2body;
-    private float health = 100;
+    private float health = 20;
     private TextureRegion marioStand;
     private Texture playerImage;
     public Weapon weapon;
@@ -98,5 +98,9 @@ public class Player extends Sprite {
 
     public float getAngle() {
         return b2body.getAngle();
+    }
+
+    public float getHealth() {
+        return health;
     }
 }
