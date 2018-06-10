@@ -362,7 +362,7 @@ public class HUBGGame implements Screen {
                         break;
 
                     case 15: // Remove player
-                        GLProcess.add(pMessage);
+
                         for (int i = 0; i < EnemyList.size(); i++) {
                             if (EnemyList.get(i).getId() == (int) pMessage.message) {
                                 this.EnemyList.remove(i);
