@@ -36,7 +36,7 @@ public class Player extends Sprite {
     public Weapon weapon;
 
 
-    public Player(World world, HUBGGame screen, float[] location){
+    public Player(World world, HUBGGame screen, long[] location){
         super(HUBGMain.getSkin(Main.session.getSkin())); //penguin.png")));
 
         this.world = world;
@@ -62,7 +62,7 @@ public class Player extends Sprite {
         weapon.update(b2body.getPosition().x, b2body.getPosition().y, getAngle());
     }
 
-    public void definePlayer(float[] location) {
+    public void definePlayer(long[] location) {
         BodyDef bdef = new BodyDef();
         bdef.type = BodyDef.BodyType.DynamicBody;
         b2body = world.createBody(bdef);
@@ -75,7 +75,7 @@ public class Player extends Sprite {
 
         b2body.createFixture(fdef);
 
-        b2body.setTransform(location[0], location[1], location[2]);
+        b2body.setTransform((float) location[0] / 1000f, (float) location[1] / 1000f, (float) location[2] / 1000f);
     }
 
     public boolean damage(float damage) {

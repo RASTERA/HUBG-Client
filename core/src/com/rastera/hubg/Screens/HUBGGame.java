@@ -149,7 +149,7 @@ public class HUBGGame implements Screen {
             networkConnected = true;
         } catch (Exception e) {
             e.printStackTrace();
-            this.player = new Player(world, this, new float[] {1000, 1000, 0, 0, 100});
+            this.player = new Player(world, this, new long[] {1000000, 1000000, 0, 0, 100});
             gameStart = true;
             connecting = false;
             gameHUD = new HUD(main.batch, staticPort, player, latoFont);
@@ -217,7 +217,9 @@ public class HUBGGame implements Screen {
                 if (!gameStart) {
                     break;
                 }
-                float[] cords = (float[]) ServerMessage.message;
+                long[] cords = (long[]) ServerMessage.message;
+
+                //System.out.println(cords[0] + " " + cords[1] + " " + (int) cords[3]);
 
                 if (this.ID == cords[3]) {
                     break;
@@ -234,7 +236,7 @@ public class HUBGGame implements Screen {
                 }
 
                 if (!found) {
-                    ArrayList<float[]> a = new ArrayList<float[]>();
+                    ArrayList<long[]> a = new ArrayList<long[]>();
                     a.add(cords);
                     GLProcess.add(Rah.messageBuilder(1, a));
                 }
@@ -289,13 +291,12 @@ public class HUBGGame implements Screen {
             case 14: // Set health
                 this.player.setHealth((float) ServerMessage.message);
 
-            case 15: // Remove player
-                for (Enemy enemy : this.EnemyList) {
-                    if (enemy.name.equals((String) ServerMessage.message)) {
-                        this.EnemyList.remove(enemy);
-                    }
-                }
+                break;
 
+            case 15: // Remove player
+                GLProcess.add(ServerMessage);
+
+                break;
 
         }
     }
@@ -313,7 +314,7 @@ public class HUBGGame implements Screen {
                 dTotal -= HUBGMain.SYNC_INTERVAL;
 
                 if (ox != player.b2body.getPosition().x || oy != player.b2body.getPosition().y || or != getCameraRotation()) {
-                    conn.write(10, new float[]{player.b2body.getPosition().x, player.b2body.getPosition().y, getCameraRotation(), ID});
+                          conn.write(10, new long[]{(long) (player.b2body.getPosition().x * 1000f), (long) (player.b2body.getPosition().y * 1000), (long) (getCameraRotation() * 1000f), this.ID});
                 }
 
                 ox = player.b2body.getPosition().x;
@@ -330,21 +331,24 @@ public class HUBGGame implements Screen {
                     case 1:
                         System.out.println("Start game:" + pMessage.message);
 
-                        for (float[] p : (ArrayList<float[]>) pMessage.message) {
+                        for (long[] p : (ArrayList<long[]>) pMessage.message) {
                             System.out.println(p[3]);
 
                             if (p[3] == this.ID) {
-                                this.player = new Player(world, this, p);
-                                this.conn.write(14, null);
-                                gamecam.position.x = player.b2body.getPosition().x;
-                                gamecam.position.y = player.b2body.getPosition().y;
-                                gamecam.rotate(p[2] * MathUtils.radiansToDegrees);
 
-                                gameHUD = new HUD(main.batch, staticPort, player, latoFont);
+                                if (this.player == null) {
+                                    this.player = new Player(world, this, p);
+                                    this.conn.write(14, null);
+                                    gamecam.position.x = player.b2body.getPosition().x;
+                                    gamecam.position.y = player.b2body.getPosition().y;
+                                    gamecam.rotate(p[2] * MathUtils.radiansToDegrees);
 
-                                connecting = false;
+                                    gameHUD = new HUD(main.batch, staticPort, player, latoFont);
 
-                            } else {
+                                    connecting = false;
+                                }
+
+                            } else if (!hasEnemy((int) p[3])) {
                                 EnemyList.add(new Enemy(world, this, "Karl", p));
                             }
                         }
@@ -356,11 +360,33 @@ public class HUBGGame implements Screen {
                         }
 
                         break;
+
+                    case 15: // Remove player
+                        GLProcess.add(pMessage);
+                        for (int i = 0; i < EnemyList.size(); i++) {
+                            if (EnemyList.get(i).getId() == (int) pMessage.message) {
+                                this.EnemyList.remove(i);
+                                break;
+                            }
+                        }
+
+                        break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean hasEnemy(int id) {
+
+        for (Enemy e : EnemyList) {
+            if (e.getId() == id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public int calculateBullet (float range) {

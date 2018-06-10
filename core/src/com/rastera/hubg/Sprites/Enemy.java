@@ -19,7 +19,7 @@ public class Enemy extends Sprite {
     private Texture playerImage;
     private float travelx, travely, travelr, distx, disty, distr;
 
-    public Enemy(World world, HUBGGame screen, String name, float[] info){
+    public Enemy(World world, HUBGGame screen, String name, long[] info){
         super(new Texture(Gdx.files.internal("penguin.png")));
 
         this.world = world;
@@ -35,14 +35,14 @@ public class Enemy extends Sprite {
         updateSprite();
     }
 
-    public void updateLocation(float[] newLocation) {
-        travelx = newLocation[0] - b2body.getPosition().x;
-        travely = newLocation[1] - b2body.getPosition().y;
-        travelr = Math.min(newLocation[2] - b2body.getAngle(), newLocation[2] + b2body.getAngle());
+    public void updateLocation(long[] newLocation) {
+        travelx = (float) newLocation[0] / 1000f - b2body.getPosition().x;
+        travely = (float) newLocation[1] / 1000f - b2body.getPosition().y;
+        travelr = Math.min((float) newLocation[2] / 1000f - b2body.getAngle(), (float) newLocation[2] / 1000f + b2body.getAngle());
 
-        distx = newLocation[0];
-        disty = newLocation[1];
-        distr = newLocation[2];
+        distx = (float) newLocation[0] / 1000f;
+        disty = (float) newLocation[1] / 1000f;
+        distr = (float) newLocation[2] / 1000f;
     }
 
     public void step (float dt) {
@@ -90,7 +90,7 @@ public class Enemy extends Sprite {
         setRotation(MathUtils.radiansToDegrees * b2body.getAngle());
     }
 
-    public void defineEnemy(float[] location) {
+    public void defineEnemy(long[] location) {
         BodyDef bdef = new BodyDef();
         bdef.type = BodyDef.BodyType.StaticBody;
         b2body = world.createBody(bdef);
@@ -106,7 +106,7 @@ public class Enemy extends Sprite {
             e.setUserData(this.id);
         }
 
-        b2body.setTransform(location[0], location[1], location[2]);
+        b2body.setTransform((float) location[0] / 1000f, (float) location[1] / 1000f, (float) location[2] / 1000f);
     }
 
     public int getId() {
