@@ -59,8 +59,9 @@ public class HUBGGame implements Screen {
     private int ID;
     private float dTotal = 0;
     public Communicator conn;
-    private ArrayList<String> actions;
+    private ArrayList<String> actions = new ArrayList<>();
     private int alive = 0;
+    private int purgeCounter = 1;
 
     private boolean gameStart = false;
     private boolean paused = false;
@@ -502,7 +503,27 @@ public class HUBGGame implements Screen {
             main.batch.begin();
 
             latoFont.getData().setScale(0.2f);
-            latoFont.draw(main.batch, String.format("X: %d | Y: %d | R: %d | Alive: %d", (int) player.b2body.getPosition().x, (int) player.b2body.getPosition().y, (int) normalizeAngle((player.b2body.getAngle() * 360 / Math.PI)), alive), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
+            latoFont.draw(main.batch, String.format("X: %d | Y: %d | R: %d | Alive: %d", (int) player.b2body.getPosition().x, (int) player.b2body.getPosition().y, (int) normalizeAngle((player.b2body.getAngle() * 360 / (2 * Math.PI))), alive), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
+
+            int compassTicks = staticPort.getScreenWidth() / 100;
+
+            if (compassTicks % 2 == 0) {
+                compassTicks ++;
+            }
+
+            for (int compassX = compassTicks / -2; compassX <= compassTicks / 2; compassX ++) {
+                centerText(main.batch, latoFont, 0.2f, "" + ((int) normalizeAngle(player.b2body.getAngle() * 360 / (2 * Math.PI)) + compassX * 10),(int) (normalizeAngle(player.b2body.getAngle() * 360 / (2 * Math.PI)) * 5 + compassX * 100), staticPort.getScreenHeight() / 2 - 20);
+            }
+
+            for (int i = 0; i < actions.size(); i++) {
+                latoFont.draw(main.batch, actions.get(i), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize - 10 - 15 * i);
+            }
+
+            purgeCounter = (purgeCounter + 1) % 100;
+
+            if (purgeCounter == 0 && actions.size() > 0) {
+                actions.remove(0);
+            }
 
             main.batch.end();
 
