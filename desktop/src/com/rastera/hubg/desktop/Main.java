@@ -37,8 +37,8 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 	private int prevX, prevY;
 
-	public static final boolean borderless =  false;
-	public static final boolean showFPS =  false;
+	public static final boolean borderless = !false;
+	public static final boolean showFPS = false;
 
 	public LwjglApplicationConfiguration config;
 

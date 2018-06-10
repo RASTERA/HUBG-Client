@@ -45,7 +45,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     //public int currentPanelVelocity = 0;
     //private int currentPanelTarget = activityPanelWidth;
     private BufferedImage background;
-    private String statsText = "-- Kills      |      -- Deaths      |      -- Matches      |      -- Zhekko";
+    private String statsText = "-- Kills      |      -- Deaths      |      -- Matches      |      -- Zhekko      |      -- KTD";
     private long lastUpdated = System.currentTimeMillis();
     private volatile boolean statsLoaded = false;
 
@@ -203,7 +203,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 System.out.println(tempUser);
 
-                Menu.this.statsText = String.format("%s Kills      |      %s Deaths      |      %s Matches      |      %s Zhekko", Main.session.user.getString("kills"), Main.session.user.getString("deaths"), Main.session.user.getString("matches"), Main.session.user.getString("money"));
+                Menu.this.statsText = String.format("%s Kills      |      %s Deaths      |      %.2f KTD      |      %s Zhekko", Main.session.user.getString("kills"), Main.session.user.getString("deaths"), Main.session.user.getDouble("kills") / Math.max(1, Main.session.user.getDouble("deaths")), Main.session.user.getString("money"));
                 Menu.this.lastUpdated = System.currentTimeMillis();
 
                 switch (currentPanel) {
@@ -483,7 +483,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             g.drawString(this.statsText, this.getWidth() / 2 - metrics.stringWidth(this.statsText) / 2, 35);
 
             // Last updated
-            String updateText = String.format("Last sync: %s   |   Users online: %d", new Date(this.lastUpdated).toString(), Main.usersOnline);
+            String updateText = String.format("Last sync: %s   |   Users online: %d   |   Logged in as: %s", new Date(this.lastUpdated).toString(), Main.usersOnline, Main.session.getUsername());
             g.setColor(new Color(50, 50, 50));
             g.setFont(Main.getFont("Lato-Light", 12));
             g.drawString(updateText, 10, this.getHeight() - 10);
