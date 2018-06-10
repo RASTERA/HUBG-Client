@@ -71,7 +71,7 @@ public class HUBGMain extends Game implements ApplicationListener{
 
     public void dispose() {
 		if (game != null && game.conn != null) {
-			game.conn.write(1000, "terminate");
+			game.conn.write(1000, null);
 		}
 
 		this.parentGame.exitGame();
