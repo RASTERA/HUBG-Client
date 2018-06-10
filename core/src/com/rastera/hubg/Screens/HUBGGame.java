@@ -365,6 +365,7 @@ public class HUBGGame implements Screen {
 
                         for (int i = 0; i < EnemyList.size(); i++) {
                             if (EnemyList.get(i).getId() == (int) pMessage.message) {
+                                world.destroyBody(this.EnemyList.get(i).b2body);
                                 this.EnemyList.remove(i);
                                 break;
                             }
