@@ -14,17 +14,24 @@ public class Weapon extends Sprite {
     private HUBGGame game;
     private float playerSize;
     private boolean active = false;
+    private String name;
 
     public Weapon(HUBGGame game, float playerSize){
         super(game.getWeaponAtlas().findRegion("AK47"));
 
+        this.name = "AK47";
         this.game = game;
         this.playerSize = playerSize;
     }
 
     public void setCurrentWeapon(String Weapon) {
+        this.name = Weapon;
         setRegion(game.getWeaponAtlas().findRegion(Weapon));
         setSize(this.getWidth() / 5/ HUBGMain.PPM, this.getHeight() /5/ HUBGMain.PPM);
+    }
+
+    public String getCurrentWeapon() {
+        return this.name;
     }
 
     public void update(float x, float y, float r) {

@@ -30,7 +30,7 @@ import javax.imageio.ImageIO;
 public class Player extends Sprite {
     public World world;
     public Body b2body;
-    private float health = 20;
+    private float health;
     private TextureRegion marioStand;
     private Texture playerImage;
     public Weapon weapon;
@@ -49,6 +49,10 @@ public class Player extends Sprite {
         setBounds(0, 0, 100 / HUBGMain.PPM, 100 / HUBGMain.PPM);
 
         update(1);
+    }
+
+    public void setHealth(float health) {
+        this.health = health;
     }
 
     public void update(float dt) {

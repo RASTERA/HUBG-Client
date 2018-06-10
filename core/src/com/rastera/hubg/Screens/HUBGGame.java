@@ -31,6 +31,7 @@ import com.rastera.hubg.Sprites.Enemy;
 import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Util.Rah;
 import com.rastera.hubg.desktop.Main;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -109,7 +110,8 @@ public class HUBGGame implements Screen {
         this.parentGame = parentGame;
 
         // Import audio
-        this.soundHashMap.put("shot", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
+        this.soundHashMap.put("1911", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
+        this.soundHashMap.put("AK47", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
 
         latoFont = new BitmapFont(Gdx.files.internal("fnt/Lato-Regular-64.fnt"), Gdx.files.internal("fnt/lato.png"), false);
         weaponAtlas = new TextureAtlas(Gdx.files.internal("Weapons.atlas"));
@@ -139,11 +141,15 @@ public class HUBGGame implements Screen {
 
         //Server Loading
         try {
-            conn = new Communicator(new byte[]{127, 0, 0, 1}, 25565, this);
+            JSONObject address = com.rastera.hubg.desktop.Communicator.request(com.rastera.hubg.desktop.Communicator.RequestType.GET, null, com.rastera.hubg.desktop.Communicator.getURL(com.rastera.hubg.desktop.Communicator.RequestDestination.API) + "gameAddress");
+
+            System.out.println(address);
+
+            conn = new Communicator(address.getString("address"), address.getInt("port"), this);
             networkConnected = true;
         } catch (Exception e) {
             e.printStackTrace();
-            this.player = new Player(world, this, new float[] {1000, 1000, 0, 0});
+            this.player = new Player(world, this, new float[] {1000, 1000, 0, 0, 100});
             gameStart = true;
             connecting = false;
             gameHUD = new HUD(main.batch, staticPort, player, latoFont);
@@ -174,13 +180,13 @@ public class HUBGGame implements Screen {
 
                 msg.start();
 
+                break;
 
             case -2: // Determine if handshake is successful
                 if (((String) ServerMessage.message).equals("success")) {
                     System.out.println("Connection Accepted");
 
                 } else {
-
                     Gdx.app.exit();
                     this.parentGame.rejectConnection((String) ServerMessage.message);
                 }
@@ -223,7 +229,6 @@ public class HUBGGame implements Screen {
                         aEnemyList.updateLocation(cords);
                         found = true;
 
-
                         break;
                     }
                 }
@@ -235,15 +240,36 @@ public class HUBGGame implements Screen {
                 }
                 break;
 
-            case 11: // Kill
+            case 11: // Bullet
 
-                if (((int[]) ServerMessage.message)[0] == this.ID) {
-                    // weapon lookup here
+                try {
+                    JSONObject data = new JSONObject((String) ServerMessage.message);
 
-                    if (player.damage(1)) {
-                        System.out.println("Player dead");
+                    if (data.getInt("enemy") == this.ID) {
+                        // weapon lookup here
+
+                        if (player.damage(1)) {
+                            System.out.println("Player dead");
+                        }
+
                     }
 
+                    if (data.getInt("attacker") != this.ID) {
+
+                        for (Enemy aEnemyList : EnemyList) {
+                            if (aEnemyList.getId() == data.getInt("attacker")) {
+
+                                soundHashMap.get(data.getString("weapon")).play(Math.min(50 / dist(this.player.getX(), this.player.getY(), aEnemyList.getX(), aEnemyList.getY()), 1.0f));
+
+                                break;
+                            }
+                        }
+
+
+                    }
+
+                } catch (Exception e) {
+                    Main.errorQuit(e);
                 }
 
                 break;
@@ -260,8 +286,22 @@ public class HUBGGame implements Screen {
 
                 break;
 
+            case 14: // Set health
+                this.player.setHealth((float) ServerMessage.message);
+
+            case 15: // Remove player
+                for (Enemy enemy : this.EnemyList) {
+                    if (enemy.name.equals((String) ServerMessage.message)) {
+                        this.EnemyList.remove(enemy);
+                    }
+                }
+
 
         }
+    }
+
+    public float dist(float x1, float y1, float x2, float y2) {
+        return (float) Math.sqrt(Math.pow((x1 - x2), 2) +  Math.pow((y1 - y2), 2));
     }
 
     private void handleNetworking(float dt){
@@ -295,6 +335,7 @@ public class HUBGGame implements Screen {
 
                             if (p[3] == this.ID) {
                                 this.player = new Player(world, this, p);
+                                this.conn.write(14, null);
                                 gamecam.position.x = player.b2body.getPosition().x;
                                 gamecam.position.y = player.b2body.getPosition().y;
                                 gamecam.rotate(p[2] * MathUtils.radiansToDegrees);
@@ -418,14 +459,22 @@ public class HUBGGame implements Screen {
             fireDelay -= 0.3;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.P) && canShoot) {
-            this.soundHashMap.get("shot").play((float) Math.random(), 1f, -1);
+            this.soundHashMap.get(this.player.weapon.getCurrentWeapon()).play();
 
             int enemyID = calculateBullet(400);
 
-            if (networkConnected && enemyID != -1) {
-                conn.write(11, new int[] {enemyID, this.ID});
-            } else if (networkConnected) {
-                conn.write(11, new int[] {-1, this.ID});
+            try {
+                if (networkConnected) {
+                    conn.write(11, new JSONObject() {
+                        {
+                            put("enemy", enemyID);
+                            put("attacker", ID);
+                            put("weapon", player.weapon.getCurrentWeapon());
+                        }
+                    }.toString());
+                }
+            } catch (Exception e) {
+                Main.errorQuit(e);
             }
 
             canShoot = false;
@@ -506,20 +555,21 @@ public class HUBGGame implements Screen {
             latoFont.draw(main.batch, String.format("X: %d | Y: %d | R: %d | Alive: %d", (int) player.b2body.getPosition().x, (int) player.b2body.getPosition().y, (int) normalizeAngle((player.b2body.getAngle() * 360 / (2 * Math.PI))), alive), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
 
             int compassTicks = staticPort.getScreenWidth() / 100;
+            int angle = (int) normalizeAngle(player.b2body.getAngle() * 360 / (2 * Math.PI));
 
             if (compassTicks % 2 == 0) {
                 compassTicks ++;
             }
 
             for (int compassX = compassTicks / -2; compassX <= compassTicks / 2; compassX ++) {
-                centerText(main.batch, latoFont, 0.2f, "" + ((int) normalizeAngle(player.b2body.getAngle() * 360 / (2 * Math.PI)) + compassX * 10),(int) (normalizeAngle(player.b2body.getAngle() * 360 / (2 * Math.PI)) * 5 + compassX * 100), staticPort.getScreenHeight() / 2 - 20);
+                centerText(main.batch, latoFont, 0.2f, "" + (angle + compassX * 10),angle + compassX * 100, staticPort.getScreenHeight() / 2 - 20);
             }
 
             for (int i = 0; i < actions.size(); i++) {
                 latoFont.draw(main.batch, actions.get(i), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize - 10 - 15 * i);
             }
 
-            purgeCounter = (purgeCounter + 1) % 100;
+            purgeCounter = (purgeCounter + 1) % 1000;
 
             if (purgeCounter == 0 && actions.size() > 0) {
                 actions.remove(0);

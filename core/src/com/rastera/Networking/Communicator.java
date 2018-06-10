@@ -27,15 +27,15 @@ public class Communicator {
 
     private Thread receiver;
 
-    public Communicator(byte[] ip, int port, final HUBGGame client) throws Exception {
+    public Communicator(String ip, int port, final HUBGGame client) throws Exception {
         this.client = client;
 
-        this.serverSock = new Socket(InetAddress.getByAddress(ip), port);
+        this.serverSock = new Socket(InetAddress.getByName(ip), port);
 
         this.out = new ObjectOutputStream(serverSock.getOutputStream());
         this.in = new ObjectInputStream(serverSock.getInputStream());
 
-        System.out.println("Connected to server: " + Arrays.toString(ip) + ":" + port);
+        System.out.println("Connected to server: " + ip + ":" + port);
 
         receiver = new Thread(){
             public void run() {
@@ -57,7 +57,7 @@ public class Communicator {
         receiver.start();
 
         // Request server name
-        this.write(-1, "pls give ur name");
+        this.write(-1, null);
 
     }
 
