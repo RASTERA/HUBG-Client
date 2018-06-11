@@ -34,6 +34,7 @@ public class Player extends Sprite {
     private TextureRegion marioStand;
     private Texture playerImage;
     public Weapon weapon;
+    public int[] playerWeapons = new int[2];
 
 
     public Player(World world, HUBGGame screen, long[] location){
@@ -70,10 +71,11 @@ public class Player extends Sprite {
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
         shape.setRadius(50 / HUBGMain.PPM);
-
         fdef.shape = shape;
 
         b2body.createFixture(fdef);
+        // User is -1000
+        b2body.getFixtureList().get(0).setUserData(-1000);
 
         b2body.setTransform((float) location[0] / 1000f, (float) location[1] / 1000f, (float) location[2] / 1000f);
     }

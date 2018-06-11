@@ -34,7 +34,7 @@ public class HealthBar extends Sprite {
         sr.setColor(200, 200, 200, 0.9f);
         sr.setColor(Color.WHITE);
         sr.begin(ShapeRenderer.ShapeType.Line);
-        sr.rect(getX(), getY()-1, width, 15);
+        sr.rect(getX(), getY(), width, 15);
         sr.end();
 
         if (player.getHealth() < 50) {

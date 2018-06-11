@@ -17,9 +17,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.RayCastCallback;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.rastera.hubg.HUBGMain;
@@ -28,14 +26,19 @@ import com.rastera.Networking.Message;
 import com.rastera.hubg.Scene.HUD;
 import com.rastera.hubg.Sprites.Brick;
 import com.rastera.hubg.Sprites.Enemy;
+import com.rastera.hubg.Sprites.Item;
 import com.rastera.hubg.Sprites.Player;
+import com.rastera.hubg.Util.ItemLoader;
 import com.rastera.hubg.Util.Rah;
+import com.rastera.hubg.collisionListener;
+import com.rastera.hubg.customInputProcessor;
 import com.rastera.hubg.desktop.Main;
 import org.json.JSONObject;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class HUBGGame implements Screen {
@@ -100,6 +103,7 @@ public class HUBGGame implements Screen {
     private int miniMapSize = 300;
     private int miniMapTextureSize = 6000;
     private TextureRegion miniMapDisplay;
+    private LinkedList<Item> displayItems;
 
     //HUD
 
@@ -108,6 +112,8 @@ public class HUBGGame implements Screen {
     public HUBGGame(HUBGMain main, com.rastera.hubg.desktop.Game parentGame) {
         this.main = main;
         this.parentGame = parentGame;
+        ItemLoader.load();
+        displayItems = new LinkedList<>();
 
         // Import audio
         this.soundHashMap.put("1911", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
@@ -150,9 +156,14 @@ public class HUBGGame implements Screen {
         } catch (Exception e) {
             e.printStackTrace();
             this.player = new Player(world, this, new long[] {1000000, 1000000, 0, 0, 100});
+            Item test = new Item(1000, 1000, -1001, world);
+            displayItems.add(test);
+            displayItems.add(new Item(1000, 1000, -1001, world));
             gameStart = true;
             connecting = false;
-            gameHUD = new HUD(main.batch, staticPort, player, latoFont);
+            gameHUD = new HUD(main.batch, staticPort, player, this, latoFont);
+            Gdx.input.setInputProcessor(new customInputProcessor(gameHUD));
+            world.setContactListener(new collisionListener(gameHUD));
         }
     }
 
@@ -305,6 +316,21 @@ public class HUBGGame implements Screen {
         return (float) Math.sqrt(Math.pow((x1 - x2), 2) +  Math.pow((y1 - y2), 2));
     }
 
+    public void pickupItem (Fixture f) {
+        Body it = f.getBody();
+
+        displayItems.remove((Item) it.getUserData());
+
+        world.destroyBody(it);
+
+        System.out.println(f.getUserData());
+        // ADD ITEM TO INV
+
+        // ADD SERVER COMMAND TO CHECK SHEIT
+
+
+    }
+
     private void handleNetworking(float dt){
         if (networkConnected && gameStart) {
 
@@ -343,8 +369,9 @@ public class HUBGGame implements Screen {
                                     gamecam.position.y = player.b2body.getPosition().y;
                                     gamecam.rotate(p[2] * MathUtils.radiansToDegrees);
 
-                                    gameHUD = new HUD(main.batch, staticPort, player, latoFont);
-
+                                    gameHUD = new HUD(main.batch, staticPort, player, this, latoFont);
+                                    world.setContactListener(new collisionListener(gameHUD));
+                                    Gdx.input.setInputProcessor(new customInputProcessor(gameHUD));
                                     connecting = false;
                                 }
 
@@ -397,7 +424,7 @@ public class HUBGGame implements Screen {
         raycastID = -1;
 
         RayCastCallback callback = (fixture, point, normal, fraction) -> {
-            if ( fraction < closestFraction && (int) fixture.getUserData() != -1) {
+            if ( fraction < closestFraction && (int) fixture.getUserData() != -1 && (int) fixture.getUserData() > -1000) {
                 closestFraction = fraction;
                 raycastPoint.set(point);
                 raycastID = (Integer) fixture.getUserData();
@@ -560,6 +587,10 @@ public class HUBGGame implements Screen {
 
             for (Enemy e : EnemyList) {
                 e.draw(main.batch);
+            }
+
+            for (Item i : displayItems) {
+                i.draw(main.batch);
             }
 
             main.batch.end();
