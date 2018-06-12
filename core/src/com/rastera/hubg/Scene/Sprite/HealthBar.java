@@ -31,18 +31,20 @@ public class HealthBar extends Sprite {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        sr.setColor(200, 200, 200, 0.9f);
-        sr.setColor(Color.WHITE);
-        sr.begin(ShapeRenderer.ShapeType.Line);
-        sr.rect(getX(), getY(), width, 15);
-        sr.end();
-
         if (player.getHealth() < 50) {
             sr.setColor(200, 0, 0, 0.9f);
+        } else {
+            sr.setColor(200, 200, 200, 0.9f);
         }
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
-        sr.rect(getX(), getY(), width * player.getHealth() / 100, 14);
+        sr.rect(getX(), (int) getY(), width * player.getHealth() / 100, 14);
+        sr.end();
+
+        sr.setColor(200, 200, 200, 0.9f);
+        sr.setColor(Color.WHITE);
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.rect(getX(), (int) getY(), width, 14);
         sr.end();
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
