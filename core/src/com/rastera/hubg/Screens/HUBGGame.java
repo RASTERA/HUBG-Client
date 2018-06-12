@@ -151,8 +151,8 @@ public class HUBGGame implements Screen {
 
             System.out.println(address);
 
-            //conn = new Communicator(address.getString("address"), address.getInt("port"), this);
-            conn = new Communicator("35.203.71.15", 25565, this);
+            conn = new Communicator(address.getString("address"), address.getInt("port"), this);
+            //conn = new Communicator("thiccgoose.rastera.xyz", 8080, this);
             networkConnected = true;
 
             System.out.println("Socks are cool");
@@ -480,11 +480,11 @@ public class HUBGGame implements Screen {
             r = 0;
 
             if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-                r -= 90 * dt;
+                r -= 70 * dt;
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-                r += 90 * dt;
+                r += 70 * dt;
             }
         }
 
@@ -613,17 +613,17 @@ public class HUBGGame implements Screen {
             main.batch.begin();
 
             latoFont.getData().setScale(0.2f);
-            latoFont.draw(main.batch, String.format("X: %d | Y: %d | R: %d | Alive: %d", (int) player.b2body.getPosition().x, (int) player.b2body.getPosition().y, (int) normalizeAngle((player.b2body.getAngle() * 360 / (2 * Math.PI))), alive), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
+            latoFont.draw(main.batch, String.format("X: %d | Y: %d | R: %d | Alive: %d", (int) player.b2body.getPosition().x, (int) player.b2body.getPosition().y, (int) normalizeAngle((player.b2body.getAngle() * -360 / (2 * Math.PI)) + 90), alive), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
 
-            int compassTicks = staticPort.getScreenWidth() / 100;
-            int angle = (int) normalizeAngle(player.b2body.getAngle() * 360 / (2 * Math.PI));
+            int compassTicks = staticPort.getScreenWidth() / 200;
+            int angle = (int) normalizeAngle((player.b2body.getAngle() * -360 / (2 * Math.PI)) + 90);
 
             if (compassTicks % 2 == 0) {
                 compassTicks ++;
             }
 
             for (int compassX = compassTicks / -2; compassX <= compassTicks / 2; compassX ++) {
-                centerText(main.batch, latoFont, 0.2f, "" + (angle + compassX * 10),angle + compassX * 100, staticPort.getScreenHeight() / 2 - 20);
+                centerText(main.batch, latoFont, 0.2f, formatAngle((int) normalizeAngle(angle - angle % 5 + compassX * 5)),compassX * 100 + angle % 5 * -20, staticPort.getScreenHeight() / 2 - 20);
             }
 
             for (int i = 0; i < actions.size(); i++) {
@@ -711,6 +711,23 @@ public class HUBGGame implements Screen {
 
             main.batch.end();
         }
+    }
+
+    public String formatAngle(int angle) {
+
+        switch (angle) {
+            case 0:
+                return "N";
+            case 90:
+                return "E";
+            case 180:
+                return "S";
+            case 270:
+                return "W";
+            default:
+                return "" + angle;
+        }
+
     }
 
     public void centerText(Batch batch, BitmapFont font, float size, String text, int x, int y) {
