@@ -182,7 +182,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
                 // Refresh token
                 Session tempSession = Communicator.login(tempAuth);
 
-                if (tempSession != null) {
+                if (tempSession.getUsername() != null) {
                     Main.session = tempSession;
                     this.removeKeyListener(this);
                     this.parent.startPage(Main.Pages.MENU);
