@@ -30,6 +30,9 @@ public class Communicator {
     public Communicator(String ip, int port, final HUBGGame client) throws Exception {
         this.client = client;
 
+        System.out.println("Connecting...");
+
+        //this.serverSock.setSoTimeout(1000);
         this.serverSock = new Socket(InetAddress.getByName(ip), port);
 
         this.out = new ObjectOutputStream(serverSock.getOutputStream());

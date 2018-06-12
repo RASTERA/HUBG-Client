@@ -151,8 +151,11 @@ public class HUBGGame implements Screen {
 
             System.out.println(address);
 
-            conn = new Communicator(address.getString("address"), address.getInt("port"), this);
+            //conn = new Communicator(address.getString("address"), address.getInt("port"), this);
+            conn = new Communicator("35.203.71.15", 25565, this);
             networkConnected = true;
+
+            System.out.println("Socks are cool");
         } catch (Exception e) {
             e.printStackTrace();
             this.player = new Player(world, this, new long[] {1000000, 1000000, 0, 0, 100});

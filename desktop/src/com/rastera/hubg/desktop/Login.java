@@ -140,7 +140,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
             @Override
             public void mouseClicked(MouseEvent e) {
 
-                JOptionPane.showMessageDialog(Rah.checkParent(Login.this.parent), "PROJECT HUBG | RASTERA | rastera.xyz\nLicenced under WTFPL\n\nDeveloped by:\nHenry Tu (github.com/henrytwo, henrytu.me)\nRyan Zhang (github.com/ryanz34)\nSyed Safwaan (github.com/syed-safwaan)\n\nICS4U Final Project - 2017/2018\n\nAll copyrighted works are property of their respective owner.", "RASTERA | PROJECT HUBG", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(Rah.checkParent(Login.this.parent), "PROJECT HUBG | RASTERA | rastera.xyz\nLicenced under WTFPL\n\nDeveloped by:\nHenry Tu (github.com/henrytwo, henrytu.me)\nRyan Zhang (github.com/ryanz34)\nSyed Safwaan (github.com/syed-safwaan)\n\nICS4U Final Project - 2017/2018\n\nAll copyrighted works are property of their respective owner.\nIcons courtesy of icons8.com.", "RASTERA | PROJECT HUBG", JOptionPane.INFORMATION_MESSAGE);
 
                 //Rah.webbrowserOpen("https://rastera.xyz");
             }
@@ -371,32 +371,32 @@ what do you do?
 
         } else {
 
-            this.emailOrUserLabel.setBounds(Main.w - 230, 140, 210, 20);
-            this.emailOrUserField.setBounds(Main.w - 230, 160, 210, 30);
+            this.emailOrUserLabel.setBounds(getWidth() - 230, 140, 210, 20);
+            this.emailOrUserField.setBounds(getWidth() - 230, 160, 210, 30);
 
-            this.passwordLabel.setBounds(Main.w - 230, 200, 210, 20);
-            this.passwordField.setBounds(Main.w - 230, 220, 210, 30);
+            this.passwordLabel.setBounds(getWidth() - 230, 200, 210, 20);
+            this.passwordField.setBounds(getWidth() - 230, 220, 210, 30);
 
 
-            this.loginButton.setBounds(Main.w - 230, Main.h - 200, 210, 30);
+            this.loginButton.setBounds(getWidth() - 230, getHeight() - 200, 210, 30);
 
-            this.forgetPasswordLabel.setBounds(Main.w - 230, Main.h - 70, 210, 20);
-            this.createAccountLabel.setBounds(Main.w - 230, Main.h - 90, 210, 20);
-            this.creditsLabel.setBounds(Main.w - 230, Main.h - 110, 210, 20);
+            this.forgetPasswordLabel.setBounds(getWidth() - 230, getHeight() - 70, 210, 20);
+            this.createAccountLabel.setBounds(getWidth() - 230, getHeight() - 90, 210, 20);
+            this.creditsLabel.setBounds(getWidth() - 230, getHeight() - 110, 210, 20);
 
             g.setColor(Color.WHITE);
-            g.fillRect(0, 0, Main.w, Main.h);
+            g.fillRect(0, 0, getWidth(), getHeight());
 
-            int size = Math.max(Main.w - 250, Main.h);
+            int size = Math.max(getWidth() - 250, getHeight());
 
-            g.drawImage(this.backgroundFrames.get(this.frame), 0, Main.h - size, size, size, this);
+            g.drawImage(this.backgroundFrames.get(this.frame), 0, getHeight() - size, size, size, this);
             g.drawImage(this.rasteraLogo, 30, this.getHeight() - 55, 150, 25, this);
 
 
             g.setColor(new Color(1, 10, 19));
-            g.fillRect(Main.w - 250, 0, 250, Main.h);
+            g.fillRect(getWidth() - 250, 0, 250, getHeight());
 
-            g.drawImage(this.hubgLogo, Main.w - 230, 40, 210, 66, this);
+            g.drawImage(this.hubgLogo, getWidth() - 230, 40, 210, 66, this);
 
             if (this.frame == this.frameCap) {
                 this.frame = 0;
