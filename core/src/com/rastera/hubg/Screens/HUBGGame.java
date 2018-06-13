@@ -36,9 +36,8 @@ import com.rastera.hubg.desktop.Main;
 import org.json.JSONObject;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class HUBGGame implements Screen {
@@ -104,6 +103,8 @@ public class HUBGGame implements Screen {
     private int miniMapTextureSize = 6000;
     private TextureRegion miniMapDisplay;
     private LinkedList<Item> displayItems;
+    private LinkedBlockingQueue<Item> itemQueue;
+
 
     //HUD
 
@@ -312,6 +313,12 @@ public class HUBGGame implements Screen {
 
                 break;
 
+            case 19:
+                GLProcess.add(ServerMessage);
+                break;
+            case 20:
+                GLProcess.add(ServerMessage);
+
         }
     }
 
@@ -321,12 +328,11 @@ public class HUBGGame implements Screen {
 
     public void pickupItem (Fixture f) {
         Body it = f.getBody();
+        Item pickup = (Item) it.getUserData();
 
-        displayItems.remove((Item) it.getUserData());
+        conn.write(20, new long[] {(long) (it.getPosition().x * 1000), (long) (it.getPosition().y * 1000), pickup.getItemType()});
 
-        world.destroyBody(it);
-
-        System.out.println(f.getUserData());
+        itemQueue.add(pickup);
         // ADD ITEM TO INV
 
         // ADD SERVER COMMAND TO CHECK SHEIT
@@ -402,6 +408,57 @@ public class HUBGGame implements Screen {
                         }
 
                         break;
+
+                    case 19:
+                       ConcurrentHashMap<Long, ArrayList<long[]>> itemHashmap = (ConcurrentHashMap<Long, ArrayList<long[]>>) pMessage.message;
+                        System.out.println(itemHashmap);
+                        for (Map.Entry<Long, ArrayList<long[]>> entry: itemHashmap.entrySet()) {
+                            for (long[] position : entry.getValue()) {
+                                System.out.println((float) position[0]/1000 + " " +  (float) position[1]/1000 + " " + entry.getKey().intValue());
+
+                                displayItems.add(new Item((float) position[0]/1000,  (float) position[1]/1000, entry.getKey().intValue(), world));
+                            }
+                    }
+
+                    case 20:
+                        boolean response = (boolean) pMessage.message;
+
+                        if (itemQueue.size() != 0) {
+                            Item processingItem = itemQueue.take();
+                            displayItems.remove(processingItem);
+
+                            if (response) {
+                                // Put the fudging weapon in the inventory
+                            }
+                        }
+
+                        break;
+
+                    case 21:
+                        float[] target = (float[]) pMessage.message;
+                        Item finder;
+                        for (int i = 0; i < displayItems.size(); i++) {
+                            finder = displayItems.get(i);
+
+                            if ((long) (finder.body.getPosition().x * 1000) == target[0] && (long) (finder.body.getPosition().y * 1000) == target[1] && finder.getItemType() == target[2]) {
+                                displayItems.remove(i);
+                                break;
+                            }
+                        }
+
+                        Iterator<Item> iterate = itemQueue.iterator();
+
+                        while (iterate.hasNext()) {
+                            finder = iterate.next();
+
+                            if ((long) (finder.body.getPosition().x * 1000) == target[0] && (long) (finder.body.getPosition().y * 1000) == target[1] && finder.getItemType() == target[2]) {
+                                itemQueue.remove(finder);
+                                break;
+                            }
+                        }
+                        break;
+
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();

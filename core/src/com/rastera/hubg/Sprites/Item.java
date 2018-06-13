@@ -7,7 +7,7 @@ import com.rastera.hubg.Util.ItemLoader;
 
 public class Item extends Sprite {
 
-    private Body body;
+    public Body body;
     private int itemType;
 
     public Item(float x, float y, int itemType, World world) {
@@ -39,5 +39,9 @@ public class Item extends Sprite {
         }
 
         body.setUserData(this);
+    }
+
+    public int getItemType() {
+        return itemType;
     }
 }
