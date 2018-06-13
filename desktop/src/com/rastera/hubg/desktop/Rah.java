@@ -14,6 +14,10 @@ import Decoder.BASE64Decoder;
 
 public class Rah {
 
+    public static ImageIcon getScaledIcon(String name) {
+        return new ImageIcon(new ImageIcon(name).getImage().getScaledInstance(25, 25,  java.awt.Image.SCALE_SMOOTH));
+    }
+
     // ToDo: Figure out why exception is thrown
     public static Component checkParent(Component parent) {
         try {

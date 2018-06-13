@@ -223,9 +223,18 @@ class GeiButton extends JButton {
     public GeiButton(ImageIcon icon) {
         super(icon);
 
+        init();
+    }
+
+    public GeiButton(String text) {
+        super(text);
+
+        init();
+    }
+
+    public void init() {
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        /*
         this.setForeground(new Color(200, 200, 200));
         this.setBackground(new Color(30, 35, 40));
         this.setFocusPainted(false);
@@ -238,27 +247,7 @@ class GeiButton extends JButton {
             } else {
                 this.setBackground(new Color(30, 35, 40));
             }
-        }); */
-    }
-
-    public GeiButton(String text) {
-        super(text);
-
-        this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-		this.setForeground(new Color(200, 200, 200));
-		this.setBackground(new Color(30, 35, 40));
-		this.setFocusPainted(false);
-
-		this.addChangeListener(evt -> {
-			if (this.getModel().isPressed()) {
-				this.setBackground(new Color(30, 35, 40));
-			} else if (GeiButton.this.getModel().isRollover()) {
-				this.setBackground(new Color(30, 35, 40));
-			} else {
-				this.setBackground(new Color(30, 35, 40));
-			}
-		});
+        });
     }
 }
 
@@ -442,7 +431,6 @@ class GeiChatPanel extends GeiPanel {
         }
 
         this.setPreferredSize(new Dimension(this.width, 20 + this.chatArrayList.size() * (GeiChatItem.height + 20)));
-
 
     }
 
