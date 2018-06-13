@@ -186,7 +186,9 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             JSONObject newMessages = Communicator.sendMessage(message);
             GeiChatPanel.updateMessages(newMessages);
             this.chatPanel.update(Main.session.messages);
-            this.chatPanel.repaint();
+            this.chatScrollPane.revalidate();
+            this.chatScrollPane.repaint();
+
         }
     }
 
@@ -451,21 +453,22 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             // Recent Actions panel
             switch (this.currentPanel) {
                 case SHOP:
-                    this.shopScrollPane.setBounds(getWidth() - this.shopPanelWidth, 60, this.shopPanelWidth, getHeight() - 100);
+                    this.shopScrollPane.setBounds(getWidth() - this.shopPanelWidth, 60, this.shopPanelWidth + 1, getHeight() - 100);
                     this.shopScrollPane.revalidate();
                     this.shopScrollPane.repaint();
                     break;
 
                 case ACTIVITY:
-                    this.activityScrollPane.setBounds(getWidth() - this.activityPanelWidth, 60, this.activityPanelWidth, getHeight() - 100);
+                    this.activityScrollPane.setBounds(getWidth() - this.activityPanelWidth, 60, this.activityPanelWidth + 1, getHeight() - 100);
                     this.activityScrollPane.revalidate();
                     this.activityScrollPane.repaint();
                     break;
 
                 case CHAT:
-                    this.chatScrollPane.setBounds(getWidth() - this.chatPanelWidth, 60, this.chatPanelWidth, getHeight() - 130);
+                    this.chatScrollPane.setBounds(getWidth() - this.chatPanelWidth, 60, this.chatPanelWidth + 1, getHeight() - 130);
                     this.chatScrollPane.revalidate();
                     this.chatScrollPane.repaint();
+
                     this.chatTextField.setBounds(getWidth() - this.chatPanelWidth, getHeight() - 70, this.chatPanelWidth, 30);
 
                     break;   

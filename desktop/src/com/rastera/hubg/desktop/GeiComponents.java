@@ -364,9 +364,6 @@ class GeiChatItem {
 
         g.setFont(Main.getFont("Lato-Light", 15));
 
-
-
-
         g.setColor(Color.WHITE);
 
         for (int i = 0; i < lines.size(); i++) {
@@ -425,7 +422,6 @@ class GeiChatPanel extends GeiPanel {
                 Main.errorQuit(newMessages.getString("error"));
             }
 
-
         } catch (Exception e) {
             Main.errorQuit(e);
         }
@@ -439,10 +435,15 @@ class GeiChatPanel extends GeiPanel {
         try {
             for (int i = chatArray.length() - 1; i > -1; i--) {
                 this.chatArrayList.add(new GeiChatItem(chatArray.getJSONObject(i).getString("message"), Rah.getTimestamp(chatArray.getJSONObject(i).getLong("time"))));
+
             }
         } catch (Exception e) {
             Main.errorQuit(e);
         }
+
+        this.setPreferredSize(new Dimension(this.width, 20 + this.chatArrayList.size() * (GeiChatItem.height + 20)));
+
+
     }
 
     public void setParent(GeiScrollPane parent) {
@@ -459,8 +460,6 @@ class GeiChatPanel extends GeiPanel {
 
         g.setColor(new Color(1, 10, 19));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
-
-        this.setPreferredSize(new Dimension(this.width, 20 + this.chatArrayList.size() * (GeiChatItem.height + 20)));
 
         int yPos = 20;
 
@@ -599,7 +598,7 @@ class GeiScrollPane extends JScrollPane {
         this.setBorder(null);
         this.getVerticalScrollBar().setUnitIncrement(16);
         this.setHorizontalScrollBarPolicy(GeiScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        this.getVerticalScrollBar().setPreferredSize(new Dimension(0, Integer.MAX_VALUE));
+        this.getVerticalScrollBar().setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
     }
 
     public void setParent(Menu parent) {
