@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.*;
 import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Sprites.Brick;
-import com.rastera.hubg.Sprites.Coin;
 
 public class B2WorldCreator {
 
@@ -16,46 +15,19 @@ public class B2WorldCreator {
         BodyDef bdef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         FixtureDef fdef = new FixtureDef();
-        Body body;
 
-        for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+        for (MapObject object : map.getLayers().get(1).getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
-            bdef.type= BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2) / HUBGMain.PPM, (rect.getY() + rect.getHeight() / 2) / HUBGMain.PPM);
+            rect.x = rect.x * (5 / HUBGMain.PPM);
+            rect.y = rect.y * (5 / HUBGMain.PPM);
+            rect.width = rect.width * (5 /HUBGMain.TILESIZE);
+            rect.height = rect.height * (5 / HUBGMain.TILESIZE);
 
-            body = world.createBody(bdef);
-
-            shape.setAsBox(rect.getWidth() / 2 / HUBGMain.PPM, rect.getHeight() / 2 / HUBGMain.PPM);
-            fdef.shape = shape;
-
-            body.createFixture(fdef);
-        }
-
-        for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
-            bdef.type= BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2) / HUBGMain.PPM, (rect.getY() + rect.getHeight() / 2) / HUBGMain.PPM);
-
-            body = world.createBody(bdef);
-
-            shape.setAsBox(rect.getWidth() / 2 / HUBGMain.PPM, rect.getHeight() / 2 / HUBGMain.PPM);
-            fdef.shape = shape;
-
-            body.createFixture(fdef);
-        }
-
-        for (MapObject object : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
+            System.out.println(rect.toString());
 
             new Brick(world, map, rect);
         }
 
-        for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
-            new Coin(world, map, rect);
-        }
     }
 }

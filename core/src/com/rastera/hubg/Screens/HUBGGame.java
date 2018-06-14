@@ -30,6 +30,7 @@ import com.rastera.hubg.Sprites.Brick;
 import com.rastera.hubg.Sprites.Enemy;
 import com.rastera.hubg.Sprites.Item;
 import com.rastera.hubg.Sprites.Player;
+import com.rastera.hubg.Tools.B2WorldCreator;
 import com.rastera.hubg.Util.ItemLoader;
 
 import com.rastera.hubg.collisionListener;
@@ -112,18 +113,18 @@ public class HUBGGame implements Screen {
     private LinkedList<Item> displayItems;
     private LinkedBlockingQueue<Item> itemQueue;
 
-
+    private B2WorldCreator creator;
     //HUD
 
     private HUD gameHUD;
 
     public HUBGGame(HUBGMain main, com.rastera.hubg.desktop.Game parentGame) {
+
         this.main = main;
         this.parentGame = parentGame;
         ItemLoader.load();
         displayItems = new LinkedList<>();
         itemQueue = new LinkedBlockingQueue<>();
-
         /////
         b2dr = new Box2DDebugRenderer();
         world = new World(new Vector2(0, 0), true);
@@ -136,6 +137,8 @@ public class HUBGGame implements Screen {
         map = mapLoader.load("hubg.tmx");
         renderer = new OrthogonalTiledMapRenderer(map, 5 / HUBGMain.PPM);
         displayLayer = (TiledMapTileLayer) map.getLayers().get(0);
+
+        creator = new B2WorldCreator(world, map);
 
         //////////////////TESTING
         Brick b = new Brick(world, map, new Rectangle(10, 10, 100 / HUBGMain.PPM, HUBGMain.PPM));
@@ -587,7 +590,7 @@ public class HUBGGame implements Screen {
                 gamecam.zoom += 0.01;
             } else {
 
-                if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() / HUBGMain.PPM + defaultZoom) {
+                if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() + 1000000 / HUBGMain.PPM + defaultZoom) {
                     gamecam.zoom += 0.01;
                 } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
                     gamecam.zoom -= 0.01;
