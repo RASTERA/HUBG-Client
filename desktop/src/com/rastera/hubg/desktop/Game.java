@@ -17,6 +17,7 @@ import com.rastera.hubg.HUBGMain;
 public class Game extends GeiPanel {
 
 	private BufferedImage background;
+	private boolean minimized = false;
 
 	public Game(com.rastera.hubg.desktop.Main parent) {
 		this.parent = parent;
@@ -33,19 +34,11 @@ public class Game extends GeiPanel {
 
 		com.rastera.hubg.desktop.Main.stopMusic();
 
-
-		startGame();
-
+		new LwjglApplication(new HUBGMain(this), this.parent.config);
 	}
 
-	public void startGame() {
-
-		System.out.println("STARTING GAME");
-
+	public void minimize() {
 		this.parent.setState(Frame.ICONIFIED);
-
-		new LwjglApplication(new HUBGMain(this), this.parent.config);
-
 	}
 
 	public void exitGame() {
@@ -79,6 +72,10 @@ public class Game extends GeiPanel {
 		FontMetrics metrics = g.getFontMetrics(com.rastera.hubg.desktop.Main.getFont("Lato-Light", 30));
 		g.drawString(loadingMessage, this.getWidth() / 2 - metrics.stringWidth(loadingMessage) / 2, this.getHeight() / 2 - metrics.getHeight() / 2);
 
+		if (!minimized) {
+			minimized = true;
+			minimize();
+		}
 	}
 
 }
