@@ -3,15 +3,10 @@ package com.rastera.hubg.desktop;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.concurrent.TimeUnit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.rastera.hubg.HUBGMain;
 
 public class Game extends GeiPanel {
@@ -72,9 +67,9 @@ public class Game extends GeiPanel {
 		FontMetrics metrics = g.getFontMetrics(com.rastera.hubg.desktop.Main.getFont("Lato-Light", 30));
 		g.drawString(loadingMessage, this.getWidth() / 2 - metrics.stringWidth(loadingMessage) / 2, this.getHeight() / 2 - metrics.getHeight() / 2);
 
-		if (!minimized) {
-			minimized = true;
-			minimize();
+		if (!this.minimized) {
+			this.minimized = true;
+			this.minimize();
 		}
 	}
 

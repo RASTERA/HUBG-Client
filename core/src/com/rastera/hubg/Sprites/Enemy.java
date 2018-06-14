@@ -27,89 +27,89 @@ public class Enemy extends Sprite {
         this.name = name;
         this.id = (int) info[3];
 
-        setBounds(0, 0, 100 / HUBGMain.PPM, 100 / HUBGMain.PPM);
+        this.setBounds(0, 0, 100 / HUBGMain.PPM, 100 / HUBGMain.PPM);
 
-        defineEnemy(info);
-        updateLocation(info);
+        this.defineEnemy(info);
+        this.updateLocation(info);
 
-        updateSprite();
+        this.updateSprite();
     }
 
     public void updateLocation(long[] newLocation) {
-        travelx = (float) newLocation[0] / 1000f - b2body.getPosition().x;
-        travely = (float) newLocation[1] / 1000f - b2body.getPosition().y;
-        travelr = Math.min((float) newLocation[2] / 1000f - b2body.getAngle(), (float) newLocation[2] / 1000f + b2body.getAngle());
+        this.travelx = (float) newLocation[0] / 1000f - this.b2body.getPosition().x;
+        this.travely = (float) newLocation[1] / 1000f - this.b2body.getPosition().y;
+        this.travelr = Math.min((float) newLocation[2] / 1000f - this.b2body.getAngle(), (float) newLocation[2] / 1000f + this.b2body.getAngle());
 
-        distx = (float) newLocation[0] / 1000f;
-        disty = (float) newLocation[1] / 1000f;
-        distr = (float) newLocation[2] / 1000f;
+        this.distx = (float) newLocation[0] / 1000f;
+        this.disty = (float) newLocation[1] / 1000f;
+        this.distr = (float) newLocation[2] / 1000f;
     }
 
     public void step (float dt) {
-        if (travelx == 0 && travely == 0 && travelr == 0) {
+        if (this.travelx == 0 && this.travely == 0 && this.travelr == 0) {
             return;
         }
-        float xstep = travelx / HUBGMain.SYNC_INTERVAL * dt;
-        float ystep = travely / HUBGMain.SYNC_INTERVAL * dt;
-        float rstep = travelr / HUBGMain.SYNC_INTERVAL * dt;
+        float xstep = this.travelx / HUBGMain.SYNC_INTERVAL * dt;
+        float ystep = this.travely / HUBGMain.SYNC_INTERVAL * dt;
+        float rstep = this.travelr / HUBGMain.SYNC_INTERVAL * dt;
 
-        if (xstep > 0 && b2body.getPosition().x + xstep < distx) {
-            xstep = b2body.getPosition().x + xstep;
-        } else if (xstep < 0 && b2body.getPosition().x + xstep > distx) {
-            xstep = b2body.getPosition().x + xstep;
+        if (xstep > 0 && this.b2body.getPosition().x + xstep < this.distx) {
+            xstep = this.b2body.getPosition().x + xstep;
+        } else if (xstep < 0 && this.b2body.getPosition().x + xstep > this.distx) {
+            xstep = this.b2body.getPosition().x + xstep;
         } else {
-            travelx = 0;
-            xstep = distx;
+            this.travelx = 0;
+            xstep = this.distx;
         }
 
-        if (ystep > 0 && b2body.getPosition().y + ystep < disty) {
-            ystep = b2body.getPosition().y + ystep;
-        } else if (ystep < 0 && b2body.getPosition().y + ystep > disty) {
-            ystep = b2body.getPosition().y + ystep;
+        if (ystep > 0 && this.b2body.getPosition().y + ystep < this.disty) {
+            ystep = this.b2body.getPosition().y + ystep;
+        } else if (ystep < 0 && this.b2body.getPosition().y + ystep > this.disty) {
+            ystep = this.b2body.getPosition().y + ystep;
         } else {
-            travely = 0;
-            ystep = disty;
+            this.travely = 0;
+            ystep = this.disty;
         }
 
-        if (rstep > 0 && b2body.getAngle() + rstep < distr) {
-            rstep = b2body.getAngle() + rstep;
-        } else if (rstep < 0 && b2body.getAngle() + rstep > distr) {
-            rstep = b2body.getAngle() + rstep;
+        if (rstep > 0 && this.b2body.getAngle() + rstep < this.distr) {
+            rstep = this.b2body.getAngle() + rstep;
+        } else if (rstep < 0 && this.b2body.getAngle() + rstep > this.distr) {
+            rstep = this.b2body.getAngle() + rstep;
         } else {
-            travelr = 0;
-            rstep = distr;
+            this.travelr = 0;
+            rstep = this.distr;
         }
 
-        b2body.setTransform(xstep, ystep, rstep);
-        updateSprite();
+        this.b2body.setTransform(xstep, ystep, rstep);
+        this.updateSprite();
     }
 
     public void updateSprite() {
-        setOrigin(getWidth() / 2, getHeight() / 2);
-        setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
-        setRotation(MathUtils.radiansToDegrees * b2body.getAngle());
+        this.setOrigin(this.getWidth() / 2, this.getHeight() / 2);
+        this.setPosition(this.b2body.getPosition().x - this.getWidth() / 2, this.b2body.getPosition().y - this.getHeight() / 2);
+        this.setRotation(MathUtils.radiansToDegrees * this.b2body.getAngle());
     }
 
     public void defineEnemy(long[] location) {
         BodyDef bdef = new BodyDef();
         bdef.type = BodyDef.BodyType.StaticBody;
-        b2body = world.createBody(bdef);
+        this.b2body = this.world.createBody(bdef);
 
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(getWidth() / 2);
+        shape.setRadius(this.getWidth() / 2);
 
         fdef.shape = shape;
 
-        b2body.createFixture(fdef);
-        for (Fixture e : b2body.getFixtureList()) {
+        this.b2body.createFixture(fdef);
+        for (Fixture e : this.b2body.getFixtureList()) {
             e.setUserData(this.id);
         }
 
-        b2body.setTransform((float) location[0] / 1000f, (float) location[1] / 1000f, (float) location[2] / 1000f);
+        this.b2body.setTransform((float) location[0] / 1000f, (float) location[1] / 1000f, (float) location[2] / 1000f);
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 }

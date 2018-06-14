@@ -97,29 +97,29 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		if (borderless) {
 			// https://java-demos.blogspot.com/2013/11/how-to-move-undecorated-jframe.html
 
-			addMouseListener(new MouseAdapter() {
+			this.addMouseListener(new MouseAdapter() {
 				public void mousePressed(MouseEvent e) {
 					// Get x,y and store them
-					prevX = e.getX();
-					prevY = e.getY();
+					Main.this.prevX = e.getX();
+					Main.this.prevY = e.getY();
 				}
 			});
 
-			addMouseMotionListener(new MouseAdapter() {
+			this.addMouseMotionListener(new MouseAdapter() {
 				public void mouseDragged(MouseEvent e) {
 					// Set the location
 					// get the current location x-co-ordinate and then get
 					// the current drag x co-ordinate, add them and subtract most recent
 					// mouse pressed x co-ordinate
 					// do same for y co-ordinate
-					setLocation(getLocation().x + e.getX() - prevX, getLocation().y + e.getY() - prevY);
+					Main.this.setLocation(Main.this.getLocation().x + e.getX() - Main.this.prevX, Main.this.getLocation().y + e.getY() - Main.this.prevY);
 				}
 			});
 		}
 	}
 
 	public void minimize() {
-		setState(Frame.ICONIFIED);
+		this.setState(Frame.ICONIFIED);
 	}
 
 	public void close() {
@@ -178,7 +178,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	}
 
 	private void startGraphics() {
-		if (panel == null || panel.getClass().getName().toUpperCase().indexOf(page.toString()) == -1) {
+		if (panel == null || !panel.getClass().getName().toUpperCase().contains(page.toString())) {
 
 			if (masterTimer != null) {
 				masterTimer.stop();

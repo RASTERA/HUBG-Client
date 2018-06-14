@@ -14,11 +14,9 @@ public class WeaponBox extends Sprite {
     private int weaponID = 0;
     private int boxID;
     public int offseth = 79;
+    public HashMap<Integer, Texture> weaponLibrary = new HashMap<>();
 
     private int width = 170;
-
-    private HashMap<Integer, Texture> weaponLibrary;
-
     private ShapeRenderer sr;
 
     public WeaponBox (HashMap<Integer, Texture> weapons, int ID, ShapeRenderer sr) {
@@ -28,23 +26,23 @@ public class WeaponBox extends Sprite {
     }
 
     public void updateLocation (int screenHeight) {
-        setPosition(-this.width + (this.width+2) * boxID, screenHeight / -2 + offseth);
+        this.setPosition(-this.width + (this.width+2) * this.boxID, screenHeight / -2 + this.offseth);
     }
 
     public void draw (Batch sb) {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        sr.setColor(255, 255, 255, 0.3f);
-        sr.begin(ShapeRenderer.ShapeType.Filled);
-        sr.rect(getX(), getY(), width - 2, 50);
-        sr.end();
+        this.sr.setColor(255, 255, 255, 0.3f);
+        this.sr.begin(ShapeRenderer.ShapeType.Filled);
+        this.sr.rect(this.getX(), this.getY(), this.width - 2, 50);
+        this.sr.end();
 
-        sr.setColor(255, 255, 255, 0.7f);
-        sr.setColor(Color.WHITE);
-        sr.begin(ShapeRenderer.ShapeType.Line);
-        sr.rect(getX(), getY(), width - 2, 50);
-        sr.end();
+        this.sr.setColor(255, 255, 255, 0.7f);
+        this.sr.setColor(Color.WHITE);
+        this.sr.begin(ShapeRenderer.ShapeType.Line);
+        this.sr.rect(this.getX(), this.getY(), this.width - 2, 50);
+        this.sr.end();
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }

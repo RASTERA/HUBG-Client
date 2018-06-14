@@ -189,11 +189,11 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
                 } else {
 
                     Session.destroySession();
-                    startLoginUI();
+                    this.startLoginUI();
 
                 }
             } else {
-                startLoginUI();
+                this.startLoginUI();
             }
         });
 
@@ -201,9 +201,9 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
     }
 
     public void startLoginUI() {
-        remove(Login.this.loadingBar);
-        tokenLogin = false;
-        repaint();
+        this.remove(Login.this.loadingBar);
+        this.tokenLogin = false;
+        this.repaint();
 
 
         this.add(this.emailOrUserLabel);
@@ -346,8 +346,8 @@ what do you do?
 
         Graphics2D g = (Graphics2D) graphics;
 
-        this.minimizeButton.setBounds(getWidth() - 40, 0, 20, 20);
-        this.closeButton.setBounds(getWidth() - 20, 0, 20, 20);
+        this.minimizeButton.setBounds(this.getWidth() - 40, 0, 20, 20);
+        this.closeButton.setBounds(this.getWidth() - 20, 0, 20, 20);
 
         this.parent.updateFrameRate();
 
@@ -359,7 +359,7 @@ what do you do?
 
             String loadingMessage = "Authenticating";
 
-            int size = Math.max(getWidth(), getHeight());
+            int size = Math.max(this.getWidth(), this.getHeight());
 
             g.drawImage(this.background, 0, 0, size, size, this);
 
@@ -371,32 +371,32 @@ what do you do?
 
         } else {
 
-            this.emailOrUserLabel.setBounds(getWidth() - 230, 140, 210, 20);
-            this.emailOrUserField.setBounds(getWidth() - 230, 160, 210, 30);
+            this.emailOrUserLabel.setBounds(this.getWidth() - 230, 140, 210, 20);
+            this.emailOrUserField.setBounds(this.getWidth() - 230, 160, 210, 30);
 
-            this.passwordLabel.setBounds(getWidth() - 230, 200, 210, 20);
-            this.passwordField.setBounds(getWidth() - 230, 220, 210, 30);
+            this.passwordLabel.setBounds(this.getWidth() - 230, 200, 210, 20);
+            this.passwordField.setBounds(this.getWidth() - 230, 220, 210, 30);
 
 
-            this.loginButton.setBounds(getWidth() - 230, getHeight() - 200, 210, 30);
+            this.loginButton.setBounds(this.getWidth() - 230, this.getHeight() - 200, 210, 30);
 
-            this.forgetPasswordLabel.setBounds(getWidth() - 230, getHeight() - 70, 210, 20);
-            this.createAccountLabel.setBounds(getWidth() - 230, getHeight() - 90, 210, 20);
-            this.creditsLabel.setBounds(getWidth() - 230, getHeight() - 110, 210, 20);
+            this.forgetPasswordLabel.setBounds(this.getWidth() - 230, this.getHeight() - 70, 210, 20);
+            this.createAccountLabel.setBounds(this.getWidth() - 230, this.getHeight() - 90, 210, 20);
+            this.creditsLabel.setBounds(this.getWidth() - 230, this.getHeight() - 110, 210, 20);
 
             g.setColor(Color.WHITE);
-            g.fillRect(0, 0, getWidth(), getHeight());
+            g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-            int size = Math.max(getWidth() - 250, getHeight());
+            int size = Math.max(this.getWidth() - 250, this.getHeight());
 
-            g.drawImage(this.backgroundFrames.get(this.frame), 0, getHeight() - size, size, size, this);
+            g.drawImage(this.backgroundFrames.get(this.frame), 0, this.getHeight() - size, size, size, this);
             g.drawImage(this.rasteraLogo, 30, this.getHeight() - 55, 150, 25, this);
 
 
             g.setColor(new Color(1, 10, 19));
-            g.fillRect(getWidth() - 250, 0, 250, getHeight());
+            g.fillRect(this.getWidth() - 250, 0, 250, this.getHeight());
 
-            g.drawImage(this.hubgLogo, getWidth() - 230, 40, 210, 66, this);
+            g.drawImage(this.hubgLogo, this.getWidth() - 230, 40, 210, 66, this);
 
             if (this.frame == this.frameCap) {
                 this.frame = 0;

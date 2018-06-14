@@ -12,10 +12,10 @@ public class Item extends Sprite {
 
     public Item(float x, float y, int itemType, World world) {
         super(ItemLoader.itemGraphics.get(itemType));
-        setBounds(x, y, 60 / HUBGMain.PPM, 60 / HUBGMain.PPM);
+        this.setBounds(x, y, 60 / HUBGMain.PPM, 60 / HUBGMain.PPM);
         this.itemType = itemType;
 
-        defineBody(x, y, world);
+        this.defineBody(x, y, world);
     }
 
     public void defineBody(float x, float y, World world) {
@@ -27,21 +27,21 @@ public class Item extends Sprite {
         bdef.type = BodyDef.BodyType.StaticBody;
         bdef.position.set(x, y);
 
-        body = world.createBody(bdef);
+        this.body = world.createBody(bdef);
 
         fdef.shape = shape;
         fdef.isSensor = true;
 
-        body.createFixture(fdef);
+        this.body.createFixture(fdef);
 
-        for (Fixture f : body.getFixtureList()) {
-            f.setUserData(itemType);
+        for (Fixture f : this.body.getFixtureList()) {
+            f.setUserData(this.itemType);
         }
 
-        body.setUserData(this);
+        this.body.setUserData(this);
     }
 
     public int getItemType() {
-        return itemType;
+        return this.itemType;
     }
 }

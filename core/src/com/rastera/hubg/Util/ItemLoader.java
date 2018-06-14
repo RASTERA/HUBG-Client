@@ -1,13 +1,10 @@
 package com.rastera.hubg.Util;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.logging.FileHandler;
 
 public class ItemLoader {
     public static HashMap<Integer, Texture> itemGraphics = new HashMap<>();
