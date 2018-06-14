@@ -115,6 +115,7 @@ public class HUBGGame implements Screen {
         this.parentGame = parentGame;
         ItemLoader.load();
         displayItems = new LinkedList<>();
+        itemQueue = new LinkedBlockingQueue<>();
 
         // Import audio
         this.soundHashMap.put("1911", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
@@ -310,14 +311,13 @@ public class HUBGGame implements Screen {
 
             case 15: // Remove player
                 GLProcess.add(ServerMessage);
-
                 break;
-
             case 19:
                 GLProcess.add(ServerMessage);
                 break;
             case 20:
                 GLProcess.add(ServerMessage);
+                break;
 
         }
     }
@@ -332,7 +332,7 @@ public class HUBGGame implements Screen {
 
         conn.write(20, new long[] {(long) (it.getPosition().x * 1000), (long) (it.getPosition().y * 1000), pickup.getItemType()});
 
-        itemQueue.add(pickup);
+        itemQueue.add((Item) it.getUserData());
         // ADD ITEM TO INV
 
         // ADD SERVER COMMAND TO CHECK SHEIT
@@ -410,7 +410,7 @@ public class HUBGGame implements Screen {
                         break;
 
                     case 19:
-                       ConcurrentHashMap<Long, ArrayList<long[]>> itemHashmap = (ConcurrentHashMap<Long, ArrayList<long[]>>) pMessage.message;
+                        ConcurrentHashMap<Long, ArrayList<long[]>> itemHashmap = (ConcurrentHashMap<Long, ArrayList<long[]>>) pMessage.message;
                         System.out.println(itemHashmap);
                         for (Map.Entry<Long, ArrayList<long[]>> entry: itemHashmap.entrySet()) {
                             for (long[] position : entry.getValue()) {
@@ -418,16 +418,19 @@ public class HUBGGame implements Screen {
 
                                 displayItems.add(new Item((float) position[0]/1000,  (float) position[1]/1000, entry.getKey().intValue(), world));
                             }
-                    }
+                        }
+                        break;
 
                     case 20:
-                        boolean response = (boolean) pMessage.message;
+                        System.out.println(pMessage.type);
+                        Boolean res = (Boolean) pMessage.message;
 
                         if (itemQueue.size() != 0) {
                             Item processingItem = itemQueue.take();
                             displayItems.remove(processingItem);
+                            world.destroyBody(processingItem.body);
 
-                            if (response) {
+                            if (res) {
                                 // Put the fudging weapon in the inventory
                             }
                         }
