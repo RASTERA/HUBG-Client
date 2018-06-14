@@ -33,7 +33,7 @@ public class Communicator {
         System.out.println("Connecting...");
 
         //this.serverSock.setSoTimeout(1000);
-        this.serverSock = new Socket(InetAddress.getByAddress(new byte[] {127,0,0,1}), 8080);
+        this.serverSock = new Socket(InetAddress.getByName(ip), 8080);
 
         this.out = new ObjectOutputStream(serverSock.getOutputStream());
         this.in = new ObjectInputStream(serverSock.getInputStream());
