@@ -318,6 +318,9 @@ public class HUBGGame implements Screen {
             case 20:
                 GLProcess.add(ServerMessage);
                 break;
+            case 21:
+                GLProcess.add(ServerMessage);
+                break;
 
         }
     }
@@ -438,13 +441,16 @@ public class HUBGGame implements Screen {
                         break;
 
                     case 21:
-                        float[] target = (float[]) pMessage.message;
+                        long[] target = (long[]) pMessage.message;
                         Item finder;
+
+                        System.out.println("asdasdasd " + Arrays.toString(target));
                         for (int i = 0; i < displayItems.size(); i++) {
                             finder = displayItems.get(i);
 
                             if ((long) (finder.body.getPosition().x * 1000) == target[0] && (long) (finder.body.getPosition().y * 1000) == target[1] && finder.getItemType() == target[2]) {
                                 displayItems.remove(i);
+                                world.destroyBody(finder.body);
                                 break;
                             }
                         }
@@ -456,6 +462,7 @@ public class HUBGGame implements Screen {
 
                             if ((long) (finder.body.getPosition().x * 1000) == target[0] && (long) (finder.body.getPosition().y * 1000) == target[1] && finder.getItemType() == target[2]) {
                                 itemQueue.remove(finder);
+                                world.destroyBody(finder.body);
                                 break;
                             }
                         }
