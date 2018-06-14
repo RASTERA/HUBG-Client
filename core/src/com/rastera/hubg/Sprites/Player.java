@@ -31,6 +31,7 @@ public class Player extends Sprite {
     public World world;
     public Body b2body;
     private float health;
+    private float energy = 100;
     private TextureRegion marioStand;
     private Texture playerImage;
     public Weapon weapon;
@@ -54,6 +55,14 @@ public class Player extends Sprite {
 
     public void setHealth(float health) {
         this.health = health;
+    }
+
+    public void decEnergy(float amount) {
+        this.energy = this.energy - amount < 0 ? 0 : this.energy - amount;
+    }
+
+    public void setEnergy(float energy) {
+        this.energy = energy;
     }
 
     public void update(float dt) {
@@ -108,5 +117,9 @@ public class Player extends Sprite {
 
     public float getHealth() {
         return health;
+    }
+
+    public float getEnergy() {
+        return energy;
     }
 }

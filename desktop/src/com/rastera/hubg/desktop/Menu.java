@@ -37,7 +37,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
     private GeiActionPanel recentActionsPanel;
     private GeiShopPanel shopPanel;
     private GeiChatPanel chatPanel;
-    private final int activityPanelWidth = 250;
+    private final int activityPanelWidth = 252;
     private final int shopPanelWidth = 500;
     private final int chatPanelWidth = 500;
     private int currentPanelWidth = activityPanelWidth;
@@ -238,21 +238,28 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         remove(activityScrollPane);
         remove(chatTextField);
 
-        this.shopButton.setEnabled(true);
-        this.activityButton.setEnabled(true);
-        this.chatButton.setEnabled(true);
+        this.shopButton.selected = false;
+        this.activityButton.selected = false;
+        this.chatButton.selected = false;
+
+        //this.shopButton.setEnabled(true);
+        //this.activityButton.setEnabled(true);
+        //this.chatButton.setEnabled(true);
     }
 
     public void resetButtons() {
         switch (this.currentPanel) {
             case ACTIVITY:
-                this.activityButton.setEnabled(false);
+                this.activityButton.selected = true;
+                //this.activityButton.setEnabled(false);
                 break;
             case SHOP:
-                this.shopButton.setEnabled(false);
+                this.shopButton.selected = true;
+                //this.shopButton.setEnabled(false);
                 break;
             case CHAT:
-                this.chatButton.setEnabled(false);
+                this.chatButton.selected = true;
+                //this.chatButton.setEnabled(false);
                 break;
         }
     }

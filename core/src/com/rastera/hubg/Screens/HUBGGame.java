@@ -41,6 +41,7 @@ import org.json.JSONObject;
 import javax.swing.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class HUBGGame implements Screen {
@@ -576,12 +577,12 @@ public class HUBGGame implements Screen {
             }
         }
 
-        if (sprint) {
+        if (sprint && player.getEnergy() > 0) {
+            player.decEnergy(0.1f);
             if (gamecam.zoom > 0.6 * defaultZoom) {
                 gamecam.zoom -= 0.01;
             }
         } else {
-
             if (gamecam.zoom < defaultZoom) {
                 gamecam.zoom += 0.01;
             } else {
@@ -597,7 +598,7 @@ public class HUBGGame implements Screen {
 
 
 
-        sprint = !paused && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
+        sprint = player.getEnergy() > 0 && !paused && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
 
         if (sprint) {
             if (!runningMusic.isPlaying()) {

@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.rastera.hubg.Scene.Sprite.EnergyBar;
 import com.rastera.hubg.Scene.Sprite.HealthBar;
 import com.rastera.hubg.Scene.Sprite.ItemPickUp;
 import com.rastera.hubg.Scene.Sprite.WeaponBox;
@@ -30,6 +31,7 @@ public class HUD implements Disposable{
     private WeaponBox a;
     private WeaponBox b;
     private HealthBar healthUI;
+    private EnergyBar energyUI;
     private HashMap<Integer, Texture> weaponGraphics;
     private BitmapFont font;
     private ArrayList<Fixture> itemArray;
@@ -52,6 +54,7 @@ public class HUD implements Disposable{
         a = new WeaponBox(weaponGraphics, 0, sr);
         b = new WeaponBox(weaponGraphics, 1, sr);
         healthUI = new HealthBar(sr, player);
+        energyUI = new EnergyBar(sr, player);
     }
 
     public void draw(Batch sb, OrthographicCamera staticCam) {
@@ -60,6 +63,7 @@ public class HUD implements Disposable{
         a.draw(sb);
         b.draw(sb);
         healthUI.draw(sb);
+        energyUI.draw(sb);
         itempickup.draw(sb);
     }
 
@@ -75,6 +79,7 @@ public class HUD implements Disposable{
     public void update(Viewport staticView) {
         a.updateLocation(staticView.getScreenHeight());
         b.updateLocation(staticView.getScreenHeight());
+        energyUI.updateLocation(staticView.getScreenHeight());
         healthUI.updateLocation(staticView.getScreenHeight());
         itempickup.updateLocation(staticView.getScreenHeight(), staticView.getScreenWidth());
     }

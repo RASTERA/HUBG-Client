@@ -220,6 +220,8 @@ class GeiEdgeButton extends JButton {
 
 class GeiButton extends JButton {
 
+    public boolean selected = false;
+
     public GeiButton(ImageIcon icon) {
         super(icon);
 
@@ -233,12 +235,16 @@ class GeiButton extends JButton {
     }
 
     public void init() {
+        super.setContentAreaFilled(false);
+
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         this.setForeground(new Color(200, 200, 200));
         this.setBackground(new Color(30, 35, 40));
         this.setFocusPainted(false);
 
+        this.setBorderPainted(false);
+        /*
         this.addChangeListener(evt -> {
             if (this.getModel().isPressed()) {
                 this.setBackground(new Color(30, 35, 40));
@@ -247,7 +253,21 @@ class GeiButton extends JButton {
             } else {
                 this.setBackground(new Color(30, 35, 40));
             }
-        });
+        }); */
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        if (getModel().isPressed() || selected) {
+            g.setColor(new Color(20, 25, 30));
+        } else if (getModel().isRollover()) {
+            g.setColor(new Color(40, 45, 50));
+        } else {
+            g.setColor(new Color(30, 35, 40));
+        }
+
+        g.fillRect(0, 0, getWidth(), getHeight());
+        super.paintComponent(g);
     }
 }
 
