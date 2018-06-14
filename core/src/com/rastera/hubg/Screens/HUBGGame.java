@@ -23,7 +23,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.rastera.hubg.HUBGMain;
-import com.rastera.Networking.Communicator;
+import com.rastera.hubg.desktop.Communicator;
 import com.rastera.Networking.Message;
 import com.rastera.hubg.Scene.HUD;
 import com.rastera.hubg.Sprites.Brick;
@@ -174,7 +174,7 @@ public class HUBGGame implements Screen {
                 if (!com.rastera.hubg.desktop.Communicator.developmentMode) {
                     conn = new Communicator(address.getString("address"), address.getInt("port"), this);
                 } else {
-                    conn = new Communicator("thiccgoose.rastera.xyz", 8080, this);
+                    conn = new Communicator("localhost", 8080, this);
                 }
 
                 networkConnected = true;
@@ -337,6 +337,12 @@ public class HUBGGame implements Screen {
             case 15: // Remove player
                 GLProcess.add(ServerMessage);
                 break;
+
+            case 16: // Set energy
+                this.player.setEnergy((float) ServerMessage.message);
+
+                break;
+
             case 19:
                 GLProcess.add(ServerMessage);
                 break;
@@ -402,6 +408,7 @@ public class HUBGGame implements Screen {
                                 if (this.player == null) {
                                     this.player = new Player(world, this, p);
                                     this.conn.write(14, null);
+                                    this.conn.write(16, null);
                                     gamecam.position.x = player.b2body.getPosition().x;
                                     gamecam.position.y = player.b2body.getPosition().y;
                                     gamecam.rotate(p[2] * MathUtils.radiansToDegrees);
@@ -582,6 +589,9 @@ public class HUBGGame implements Screen {
 
         if (sprint && player.getEnergy() > 0) {
             player.decEnergy(0.1f);
+
+            conn.write(16, player.getEnergy());
+
             if (gamecam.zoom > 0.6 * defaultZoom) {
                 gamecam.zoom -= 0.01;
             }
@@ -641,7 +651,7 @@ public class HUBGGame implements Screen {
             canShoot = true;
             fireDelay -= 0.3;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.P) && canShoot) {
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && canShoot) {
             this.soundHashMap.get(this.player.weapon.getCurrentWeapon()).play();
 
             int enemyID = calculateBullet(400);

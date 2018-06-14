@@ -17,6 +17,7 @@ import com.rastera.hubg.desktop.Rah;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;

@@ -17,7 +17,10 @@ import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import com.rastera.Networking.Message;
+import com.rastera.hubg.Screens.HUBGGame;
 import org.json.JSONObject;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -26,7 +29,17 @@ import javax.swing.border.Border;
 
 public class Communicator {
 
-    public static final boolean developmentMode = !true;
+    private Socket serverSock;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+    private LinkedBlockingQueue<Message> message;
+    private HUBGGame client;
+    private String serverName;
+    private boolean listening = true;
+
+    private Thread receiver;
+
+    public static final boolean developmentMode = true;
 
     private static final HashMap<RequestDestination, String> baseProductionHashMap = new HashMap<>() {
         {
@@ -46,6 +59,64 @@ public class Communicator {
 
     public enum RequestType {POST, GET}
     public enum RequestDestination {URL, API, AUTH}
+
+    public Communicator(String ip, int port, final HUBGGame client) throws Exception {
+        this.client = client;
+
+        System.out.println("Connecting...");
+
+        //this.serverSock.setSoTimeout(1000);
+        this.serverSock = new Socket(InetAddress.getByName(ip), port);
+
+        this.out = new ObjectOutputStream(serverSock.getOutputStream());
+        this.in = new ObjectInputStream(serverSock.getInputStream());
+
+        System.out.println("Connected to server: " + ip + ":" + port);
+
+        receiver = new Thread(){
+            public void run() {
+                while (listening) {
+                    try {
+                        Message msg = (Message) in.readObject();
+
+                        client.CommandProcessor(msg);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        break;
+                        //Main.errorQuit("Disconnected from server");
+                    }
+                }
+            }
+        };
+
+        receiver.setDaemon(true);
+        receiver.start();
+
+        // Request server name
+        this.write(-1, null);
+
+    }
+
+    public boolean isEmpty() {
+        return message.isEmpty();
+    }
+
+    public Message read() {
+        try {
+            return message.take();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void write(int type, Object Message) {
+        try {
+            this.out.writeObject(Rah.messageBuilder(type, Message));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Main.errorQuit("Disconnected from server");
+        }
+    }
 
     public static String getURL(RequestDestination destination) {
         if (Communicator.developmentMode) {
