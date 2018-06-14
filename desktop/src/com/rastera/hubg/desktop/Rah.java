@@ -11,11 +11,39 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import Decoder.BASE64Decoder;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.rastera.Networking.Message;
 
 public class Rah {
 
+    public static Message messageBuilder(int type, Object message) {
+        Message nMessage = new Message();
+
+        nMessage.type = type;
+        nMessage.message = message;
+
+        return nMessage;
+    }
+
+    public static String stringMultiply(int times, String item){
+
+        return new String(new char[times]).replace("\0", item);  // Creates a String using a string array and replace the blanks
+    }
+
+    public static void centerText(Batch batch, BitmapFont font, float size, String text, int x, int y) {
+
+        font.getData().setScale(size);
+
+        GlyphLayout layout = new GlyphLayout(font, text);
+
+        font.draw(batch, text, x - layout.width / 2, y + layout.height / 2);
+
+    }
+
     public static ImageIcon getScaledIcon(String name) {
-        return new ImageIcon(new ImageIcon(name).getImage().getScaledInstance(25, 25,  java.awt.Image.SCALE_SMOOTH));
+        return new ImageIcon(new ImageIcon(name).getImage().getScaledInstance(20, 20,  java.awt.Image.SCALE_SMOOTH));
     }
 
     // ToDo: Figure out why exception is thrown

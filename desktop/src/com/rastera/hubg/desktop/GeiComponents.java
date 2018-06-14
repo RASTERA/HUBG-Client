@@ -387,7 +387,8 @@ class GeiChatPanel extends GeiPanel {
 
                 boolean located;
                 JSONObject existingMsg, newMsg;
-                for (int i = messages.length() - 1; i > -1; i--) {
+                //for (int i = messages.length() - 1; i > -1; i--) {
+                for (int i = 0; i < messages.length(); i++) {
 
                     located = false;
 
@@ -402,9 +403,11 @@ class GeiChatPanel extends GeiPanel {
 
                     if (!located) {
                         Main.session.messages.put(messages.getJSONObject(i));
-                    } else {
-                        break;
                     }
+                    /*
+                    else {
+                        break;
+                    }*/
                 }
 
             } else {
@@ -422,7 +425,10 @@ class GeiChatPanel extends GeiPanel {
         this.chatArrayList = new ArrayList<>();
 
         try {
+            // Order messages are displayed
+
             for (int i = chatArray.length() - 1; i > -1; i--) {
+            //for (int i = 0; i < chatArray.length(); i++) {
                 this.chatArrayList.add(new GeiChatItem(chatArray.getJSONObject(i).getString("message"), Rah.getTimestamp(chatArray.getJSONObject(i).getLong("time"))));
 
             }
@@ -430,8 +436,9 @@ class GeiChatPanel extends GeiPanel {
             Main.errorQuit(e);
         }
 
-        this.setPreferredSize(new Dimension(this.width, 20 + this.chatArrayList.size() * (GeiChatItem.height + 20)));
-
+        this.setPreferredSize(new Dimension(this.width, 20 + this.chatArrayList.size() * (GeiChatItem.height + 10)));
+        this.parent.revalidate();
+        //this.parent.getVerticalScrollBar().setValue( this.parent.getVerticalScrollBar().getMaximum() );
     }
 
     public void setParent(GeiScrollPane parent) {

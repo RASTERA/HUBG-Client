@@ -15,6 +15,7 @@ public class Weapon extends Sprite {
     private float playerSize;
     private boolean active = false;
     private String name;
+    private int scopeSize = 5;
 
     public Weapon(HUBGGame game, float playerSize){
         super(game.getWeaponAtlas().findRegion("AK47"));
@@ -40,5 +41,9 @@ public class Weapon extends Sprite {
         setPosition(x, y - getHeight() / 2);
         setRotation(MathUtils.radiansToDegrees * r);
 
+    }
+
+    public int getScopeSize() {
+        return this.scopeSize;
     }
 }

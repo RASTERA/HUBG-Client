@@ -2,7 +2,7 @@ package com.rastera.Networking;
 
 import com.badlogic.gdx.Gdx;
 import com.rastera.hubg.Screens.HUBGGame;
-import com.rastera.hubg.Util.Rah;
+import com.rastera.hubg.desktop.Rah;
 
 import com.rastera.Networking.Message;
 import com.rastera.hubg.desktop.Main;

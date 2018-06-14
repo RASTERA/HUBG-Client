@@ -3,6 +3,8 @@ package com.rastera.hubg.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -29,10 +31,11 @@ import com.rastera.hubg.Sprites.Enemy;
 import com.rastera.hubg.Sprites.Item;
 import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Util.ItemLoader;
-import com.rastera.hubg.Util.Rah;
+
 import com.rastera.hubg.collisionListener;
 import com.rastera.hubg.customInputProcessor;
 import com.rastera.hubg.desktop.Main;
+import com.rastera.hubg.desktop.Rah;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -56,6 +59,7 @@ public class HUBGGame implements Screen {
     private OrthogonalTiledMapRenderer renderer;
     private TiledMapTileLayer displayLayer;
     private HashMap<String, Sound> soundHashMap = new HashMap<>();
+    private Music runningMusic;
     private Box2DDebugRenderer b2dr;
     private World world;
     private Player player;
@@ -78,6 +82,8 @@ public class HUBGGame implements Screen {
     private float oy = -1;
     private float or = -1;
     private boolean inWater = false;
+    private boolean sprint = false;
+    private float rageTint = 0f;
 
     private float closestFraction;
     private int raycastID;
@@ -117,14 +123,32 @@ public class HUBGGame implements Screen {
         displayItems = new LinkedList<>();
         itemQueue = new LinkedBlockingQueue<>();
 
+        /////
+        b2dr = new Box2DDebugRenderer();
+        world = new World(new Vector2(0, 0), true);
+
+        miniMap = new Texture(Gdx.files.internal("minimap.png"));
+
+        weaponAtlas = new TextureAtlas(Gdx.files.internal("Weapons.atlas"));
+
+        mapLoader = new TmxMapLoader();
+        map = mapLoader.load("hubg.tmx");
+        renderer = new OrthogonalTiledMapRenderer(map, 5 / HUBGMain.PPM);
+        displayLayer = (TiledMapTileLayer) map.getLayers().get(0);
+
+        //////////////////TESTING
+        Brick b = new Brick(world, map, new Rectangle(10, 10, 100 / HUBGMain.PPM, HUBGMain.PPM));
+        //////////////////////////
+
+        /////
+
         // Import audio
         this.soundHashMap.put("1911", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
         this.soundHashMap.put("AK47", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
 
-        latoFont = new BitmapFont(Gdx.files.internal("fnt/Lato-Regular-64.fnt"), Gdx.files.internal("fnt/lato.png"), false);
-        weaponAtlas = new TextureAtlas(Gdx.files.internal("Weapons.atlas"));
-        miniMap = new Texture(Gdx.files.internal("minimap.png"));
+        runningMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/running.wav"));
 
+        latoFont = new BitmapFont(Gdx.files.internal("fnt/Lato-Regular-64.fnt"), Gdx.files.internal("fnt/lato.png"), false);
         loadingBG = new Texture(Gdx.files.internal("images/menu-background-2.png"));
 
         gamecam = new OrthographicCamera();
@@ -132,44 +156,41 @@ public class HUBGGame implements Screen {
         gamePort = new ScreenViewport(gamecam);
         staticPort = new ScreenViewport(staticcam);
 
-        mapLoader = new TmxMapLoader();
-        map = mapLoader.load("hubg.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map, 5 / HUBGMain.PPM);
-        displayLayer = (TiledMapTileLayer) map.getLayers().get(0);
-
-        b2dr = new Box2DDebugRenderer();
-        world = new World(new Vector2(0, 0), true);
-
-        //////////////////TESTING
-        Brick b = new Brick(world, map, new Rectangle(10, 10, 100 / HUBGMain.PPM, HUBGMain.PPM));
-        //////////////////////////
-
         gamecam.rotate(90);
         gamecam.update();
 
         //Server Loading
-        try {
-            JSONObject address = com.rastera.hubg.desktop.Communicator.request(com.rastera.hubg.desktop.Communicator.RequestType.GET, null, com.rastera.hubg.desktop.Communicator.getURL(com.rastera.hubg.desktop.Communicator.RequestDestination.API) + "gameAddress");
+        Thread connect = new Thread(() -> {
 
-            System.out.println(address);
+            try {
+                JSONObject address = com.rastera.hubg.desktop.Communicator.request(com.rastera.hubg.desktop.Communicator.RequestType.GET, null, com.rastera.hubg.desktop.Communicator.getURL(com.rastera.hubg.desktop.Communicator.RequestDestination.API) + "gameAddress");
 
-            conn = new Communicator(address.getString("address"), address.getInt("port"), this);
-            //conn = new Communicator("thiccgoose.rastera.xyz", 8080, this);
-            networkConnected = true;
+                System.out.println(address);
 
-            System.out.println("Socks are cool");
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.player = new Player(world, this, new long[] {1000000, 1000000, 0, 0, 100});
-            Item test = new Item(1000, 1000, -1001, world);
-            displayItems.add(test);
-            displayItems.add(new Item(1000, 1000, -1001, world));
-            gameStart = true;
-            connecting = false;
-            gameHUD = new HUD(main.batch, staticPort, player, this, latoFont);
-            Gdx.input.setInputProcessor(new customInputProcessor(gameHUD));
-            world.setContactListener(new collisionListener(gameHUD));
-        }
+                if (!com.rastera.hubg.desktop.Communicator.developmentMode) {
+                    conn = new Communicator(address.getString("address"), address.getInt("port"), this);
+                } else {
+                    conn = new Communicator("thiccgoose.rastera.xyz", 8080, this);
+                }
+
+                networkConnected = true;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                this.player = new Player(world, this, new long[] {1000000, 1000000, 0, 0, 100});
+                Item test = new Item(1000, 1000, -1001, world);
+                displayItems.add(test);
+                displayItems.add(new Item(1000, 1000, -1001, world));
+                gameStart = true;
+                connecting = false;
+                gameHUD = new HUD(main.batch, staticPort, player, this, latoFont);
+                Gdx.input.setInputProcessor(new customInputProcessor(gameHUD));
+                world.setContactListener(new collisionListener(gameHUD));
+            }
+        });
+
+        connect.start();
+
     }
 
     @Override
@@ -190,7 +211,7 @@ public class HUBGGame implements Screen {
                 }
 
                 Thread msg = new Thread(() -> {
-                    JOptionPane.showMessageDialog(((String) ServerMessage.message).contains("killed by") ? com.rastera.hubg.desktop.Rah.checkParent(this.parentGame.getParent()) : null, (String) ServerMessage.message, "Message from server", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(((String) ServerMessage.message).contains("killed by") ? Rah.checkParent(this.parentGame.getParent()) : null, (String) ServerMessage.message, "Message from server", JOptionPane.INFORMATION_MESSAGE);
 
                 });
 
@@ -523,11 +544,11 @@ public class HUBGGame implements Screen {
             r = getCameraRotation();
 
             if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                impulse.add(new Vector2(-200 * player.b2body.getMass() * MathUtils.cos(r), -200 * player.b2body.getMass() * MathUtils.sin(r)));
+                impulse.add(new Vector2((sprint ? 2 : 1) * -60 * player.b2body.getMass() * MathUtils.cos(r), (sprint ? 2 : 1) * -60 * player.b2body.getMass() * MathUtils.sin(r)));
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                impulse.add(new Vector2(200 * player.b2body.getMass() * MathUtils.cos(r), 200 * player.b2body.getMass() * MathUtils.sin(r)));
+                impulse.add(new Vector2((sprint ? 2 : 1) * 60 * player.b2body.getMass() * MathUtils.cos(r), (sprint ? 2 : 1) * 60 * player.b2body.getMass() * MathUtils.sin(r)));
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.A)) {
@@ -547,18 +568,52 @@ public class HUBGGame implements Screen {
             r = 0;
 
             if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-                r -= 70 * dt;
+                r -= 90 * dt;
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-                r += 70 * dt;
+                r += 90 * dt;
             }
         }
 
-        if (!paused && Gdx.input.isKeyPressed(Input.Keys.SPACE) && gamecam.zoom < 2000 / HUBGMain.PPM + defaultZoom) {
-            gamecam.zoom += 0.02;
-        } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
-            gamecam.zoom -= 0.02;
+        if (sprint) {
+            if (gamecam.zoom > 0.6 * defaultZoom) {
+                gamecam.zoom -= 0.01;
+            }
+        } else {
+
+            if (gamecam.zoom < defaultZoom) {
+                gamecam.zoom += 0.01;
+            } else {
+
+                if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() / HUBGMain.PPM + defaultZoom) {
+                    gamecam.zoom += 0.01;
+                } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
+                    gamecam.zoom -= 0.01;
+                }
+
+            }
+        }
+
+
+
+        sprint = !paused && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
+
+        if (sprint) {
+            if (!runningMusic.isPlaying()) {
+                System.out.println("Playing super dank music");
+                runningMusic.play();
+            }
+
+            if (rageTint < 0.3) {
+                rageTint += 0.01;
+            }
+        } else {
+            if (rageTint > 0) {
+                rageTint -= 0.01;
+            }
+
+            runningMusic.stop();
         }
 
         gamecam.position.x = movement.x;
@@ -623,10 +678,12 @@ public class HUBGGame implements Screen {
 
         }
 
-        //System.out.println(player.b2body.getPosition().x + " " +player.b2body.getPosition().y);
-        world.step(1/60f, 6, 2);
 
         if (gameStart) {
+
+            //System.out.println(player.b2body.getPosition().x + " " +player.b2body.getPosition().y);
+            world.step(1/60f, 6, 2);
+
             handleInput(dt);
             player.update(dt);
             for (Enemy e : EnemyList) {
@@ -634,10 +691,12 @@ public class HUBGGame implements Screen {
             }
 
             gameHUD.update(staticPort);
+
+            gamecam.update();
+            renderer.setView(gamecam);
         }
 
-        gamecam.update();
-        renderer.setView(gamecam);
+
     }
 
     @Override
@@ -647,9 +706,9 @@ public class HUBGGame implements Screen {
         Gdx.gl.glClearColor(0, 0 ,1 ,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        renderer.render();
-
         if (gameStart) {
+
+            renderer.render();
 
             main.batch.setProjectionMatrix(gamecam.combined);
             main.batch.begin();
@@ -666,11 +725,30 @@ public class HUBGGame implements Screen {
             main.batch.end();
 
             main.batch.setProjectionMatrix(staticcam.combined);
+
+
+            // Rage
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+            ShapeRenderer sr = new ShapeRenderer();
+            sr.setColor(Color.WHITE);
+            sr.setProjectionMatrix(staticcam.combined);
+
+            sr.begin(ShapeRenderer.ShapeType.Filled);
+            sr.setColor(new Color(255, 0, 0, rageTint));
+
+            sr.rect(staticPort.getScreenWidth() / -2, staticPort.getScreenHeight() / -2, staticPort.getScreenWidth(), staticPort.getScreenHeight());
+            sr.end();
+
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+
+
             main.batch.begin();
             main.batch.draw(miniMap, staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize, miniMapSize, miniMapSize);
             main.batch.end();
 
-            ShapeRenderer sr = new ShapeRenderer();
+            //sr = new ShapeRenderer();
             sr.setProjectionMatrix(staticcam.combined);
             sr.setColor(Color.RED);
             sr.begin(ShapeRenderer.ShapeType.Filled);
@@ -680,7 +758,11 @@ public class HUBGGame implements Screen {
             main.batch.begin();
 
             latoFont.getData().setScale(0.2f);
-            latoFont.draw(main.batch, String.format("X: %d | Y: %d | R: %d | Alive: %d", (int) player.b2body.getPosition().x, (int) player.b2body.getPosition().y, (int) normalizeAngle((player.b2body.getAngle() * -360 / (2 * Math.PI)) + 90), alive), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
+            latoFont.draw(main.batch, String.format("X: %d | Y: %d | R: %d | Alive: %d", (int) player.b2body.getPosition().x - 5000, (int) player.b2body.getPosition().y - 5000, (int) normalizeAngle((player.b2body.getAngle() * -360 / (2 * Math.PI)) + 90), alive), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
+
+            for (int i = 0; i < actions.size(); i++) {
+                latoFont.draw(main.batch, actions.get(i), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize - 10 - 15 * i);
+            }
 
             int compassTicks = staticPort.getScreenWidth() / 200;
             int angle = (int) normalizeAngle((player.b2body.getAngle() * -360 / (2 * Math.PI)) + 90);
@@ -690,11 +772,7 @@ public class HUBGGame implements Screen {
             }
 
             for (int compassX = compassTicks / -2; compassX <= compassTicks / 2; compassX ++) {
-                centerText(main.batch, latoFont, 0.2f, formatAngle((int) normalizeAngle(angle - angle % 5 + compassX * 5)),compassX * 100 + angle % 5 * -20, staticPort.getScreenHeight() / 2 - 20);
-            }
-
-            for (int i = 0; i < actions.size(); i++) {
-                latoFont.draw(main.batch, actions.get(i), staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize - 10 - 15 * i);
+                Rah.centerText(main.batch, latoFont, 0.3f, formatAngle((int) normalizeAngle(angle - angle % 5 + compassX * 5)),compassX * 100 + angle % 5 * -20, staticPort.getScreenHeight() / 2 - 20);
             }
 
             purgeCounter = (purgeCounter + 1) % 1000;
@@ -714,9 +792,11 @@ public class HUBGGame implements Screen {
             }
 
             gameHUD.draw(main.batch, staticcam);
+
+            b2dr.render(world, gamecam.combined);
         }
 
-        b2dr.render(world, gamecam.combined);
+
 
         if (paused) {
 
@@ -737,7 +817,7 @@ public class HUBGGame implements Screen {
 
             main.batch.begin();
 
-            centerText(main.batch, latoFont, 0.5f, "PAUSED", 0, 0);
+            Rah.centerText(main.batch, latoFont, 0.5f, "PAUSED", 0, 0);
 
             main.batch.end();
         }
@@ -772,7 +852,7 @@ public class HUBGGame implements Screen {
 
             latoFont.setColor(Color.BLACK); */
 
-            centerText(main.batch, latoFont, 0.5f, "CONNECTING TO SERVER", staticPort.getScreenWidth() / 2, staticPort.getScreenHeight() / 2);
+            Rah.centerText(main.batch, latoFont, 0.5f, "CONNECTING TO SERVER", staticPort.getScreenWidth() / 2, staticPort.getScreenHeight() / 2);
 
             //latoFont.setColor(Color.WHITE);
 
@@ -794,16 +874,6 @@ public class HUBGGame implements Screen {
             default:
                 return "" + angle;
         }
-
-    }
-
-    public void centerText(Batch batch, BitmapFont font, float size, String text, int x, int y) {
-
-        font.getData().setScale(size);
-
-        GlyphLayout layout = new GlyphLayout(font, text);
-
-        font.draw(batch, text, x - layout.width / 2, y + layout.height / 2);
 
     }
 
