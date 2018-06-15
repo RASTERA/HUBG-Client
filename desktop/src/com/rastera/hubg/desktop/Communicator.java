@@ -13,7 +13,6 @@ package com.rastera.hubg.desktop;
 // total_hours_wasted_here > 9000
 //
 
-import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
@@ -25,35 +24,30 @@ import org.json.JSONObject;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.*;
-import javax.swing.border.Border;
 
 public class Communicator {
 
-    private Socket serverSock;
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private LinkedBlockingQueue<Message> message;
-    private HUBGGame client;
     private String serverName;
     private boolean listening = true;
-
-    private Thread receiver;
 
     public static final boolean developmentMode = true;
 
     private static final HashMap<RequestDestination, String> baseProductionHashMap = new HashMap<>() {
         {
-            put(RequestDestination.URL, "https://rastera.xyz/");
-            put(RequestDestination.API, "https://api.rastera.xyz/");
-            put(RequestDestination.AUTH, "https://authentication.rastera.xyz/");
+            this.put(RequestDestination.URL, "https://rastera.xyz/");
+            this.put(RequestDestination.API, "https://api.rastera.xyz/");
+            this.put(RequestDestination.AUTH, "https://authentication.rastera.xyz/");
         }
     };
 
     private static final HashMap<RequestDestination, String> baseDevelopmentHashMap = new HashMap<>() {
         {
-            put(RequestDestination.URL, "http://localhost:3005/");
-            put(RequestDestination.API, "http://localhost:3005/api/");
-            put(RequestDestination.AUTH, "http://localhost:3005/auth/");
+            this.put(RequestDestination.URL, "http://localhost:3005/");
+            this.put(RequestDestination.API, "http://localhost:3005/api/");
+            this.put(RequestDestination.AUTH, "http://localhost:3005/auth/");
         }
     };
 
@@ -61,33 +55,31 @@ public class Communicator {
     public enum RequestDestination {URL, API, AUTH}
 
     public Communicator(String ip, int port, final HUBGGame client) throws Exception {
-        this.client = client;
+        HUBGGame client1 = client;
 
         System.out.println("Connecting...");
 
         //this.serverSock.setSoTimeout(1000);
-        this.serverSock = new Socket(InetAddress.getByName(ip), port);
+        Socket serverSock = new Socket(InetAddress.getByName(ip), port);
 
         this.out = new ObjectOutputStream(serverSock.getOutputStream());
         this.in = new ObjectInputStream(serverSock.getInputStream());
 
         System.out.println("Connected to server: " + ip + ":" + port);
 
-        receiver = new Thread(){
-            public void run() {
-                while (listening) {
-                    try {
-                        Message msg = (Message) in.readObject();
+        Thread receiver = new Thread(() -> {
+            while (this.listening) {
+                try {
+                    Message msg = (Message) this.in.readObject();
 
-                        client.CommandProcessor(msg);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        break;
-                        //Main.errorQuit("Disconnected from server");
-                    }
+                    client.CommandProcessor(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    break;
+                    //Main.errorQuit("Disconnected from server");
                 }
             }
-        };
+        });
 
         receiver.setDaemon(true);
         receiver.start();
@@ -98,12 +90,12 @@ public class Communicator {
     }
 
     public boolean isEmpty() {
-        return message.isEmpty();
+        return this.message.isEmpty();
     }
 
     public Message read() {
         try {
-            return message.take();
+            return this.message.take();
         } catch (Exception e) {
             return null;
         }
@@ -140,8 +132,8 @@ public class Communicator {
         try {
             JSONObject data = new JSONObject() {
                 {
-                    put("token", Main.session.getToken());
-                    put("message", message);
+                    this.put("token", Main.session.getToken());
+                    this.put("message", message);
                 }
             };
 
@@ -185,14 +177,14 @@ public class Communicator {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            String rawData = "";
+            StringBuilder rawData = new StringBuilder();
             String line;
 
             while ((line = reader.readLine()) != null) {
-                rawData += line;
+                rawData.append(line);
             }
 
-            return new JSONObject(rawData);
+            return new JSONObject(rawData.toString());
 
         } catch (Exception e) {
             e.printStackTrace();

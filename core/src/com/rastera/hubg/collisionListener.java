@@ -11,8 +11,8 @@ public class collisionListener implements ContactListener {
     public HUD gameHUD;
 
     public collisionListener (HUD gameHUD) {
-        objectsInRange = new ArrayList<>();
-        gameHUD.setItemArray(objectsInRange);
+        this.objectsInRange = new ArrayList<>();
+        gameHUD.setItemArray(this.objectsInRange);
     }
 
     @Override
@@ -21,11 +21,11 @@ public class collisionListener implements ContactListener {
         Fixture b = contact.getFixtureB();
         if (a.getUserData() != null && (Integer) a.getUserData() == -1000){
             if (b.getUserData() != null && (Integer) b.getUserData() < -1000){
-                objectsInRange.add(b);
+                this.objectsInRange.add(b);
             }
         } else if (b.getUserData() != null && (Integer) b.getUserData() == -1000){
             if (a.getUserData() != null && (Integer) a.getUserData() < -1000){
-                objectsInRange.add(a);
+                this.objectsInRange.add(a);
             }
         }
     }
@@ -36,11 +36,11 @@ public class collisionListener implements ContactListener {
         Fixture b = contact.getFixtureB();
         if (a.getUserData() != null && (Integer) a.getUserData() == -1000){
             if (b.getUserData() != null && (Integer) b.getUserData() < -1000){
-                objectsInRange.remove(b);
+                this.objectsInRange.remove(b);
             }
         } else if (b.getUserData() != null && (Integer) b.getUserData() == -1000){
             if (a.getUserData() != null && (Integer) a.getUserData() < -1000){
-                objectsInRange.remove(a);
+                this.objectsInRange.remove(a);
             }
         }
     }

@@ -15,7 +15,6 @@ public class WeaponBox extends Sprite {
     private int weaponID = 0;
     private int boxID;
     public int offseth = 79;
-
     private int width = 170;
 
     private ShapeRenderer sr;
@@ -37,7 +36,7 @@ public class WeaponBox extends Sprite {
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
 
-        setPosition(-this.width + (this.width+2) * boxID, screenHeight / -2 + offseth);
+        this.setPosition(-this.width + (this.width+2) * boxID, screenHeight / -2 + offseth);
     }
 
     public void updateClick(int mx, int my) {

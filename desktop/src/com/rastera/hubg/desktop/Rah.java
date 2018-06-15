@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
 import java.awt.*;
-import java.awt.Component;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +16,10 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.rastera.Networking.Message;
 
 public class Rah {
+
+    public static BitmapFont cloneFont(BitmapFont font) {
+        return new BitmapFont(font.getData(), font.getRegion(), font.usesIntegerPositions());
+    }
 
     public static Message messageBuilder(int type, Object message) {
         Message nMessage = new Message();
@@ -61,7 +64,7 @@ public class Rah {
     public static ArrayList<String> wrapText(int width, String text, FontMetrics metrics) {
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<String> words = new ArrayList<>(Arrays.asList(text.split(" ")));
-        String currentLine = "";
+        StringBuilder currentLine = new StringBuilder();
         int lineWidth = (int) (width * 0.9);
 
         while (true) {
@@ -71,11 +74,11 @@ public class Rah {
             }
 
             if (words.size() > 0 && metrics.stringWidth(currentLine + " " + words.get(0)) <= lineWidth) {
-                currentLine += " " + words.get(0);
+                currentLine.append(" ").append(words.get(0));
                 words.remove(0);
             } else {
-                lines.add(currentLine.trim());
-                currentLine = "";
+                lines.add(currentLine.toString().trim());
+                currentLine = new StringBuilder();
 
                 if (words.size() == 0) {
                     break;

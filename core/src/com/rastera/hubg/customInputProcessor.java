@@ -1,7 +1,6 @@
 package com.rastera.hubg;
 
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputProcessor;
 import com.rastera.hubg.Scene.HUD;
 
 public class customInputProcessor extends InputAdapter {
@@ -13,7 +12,7 @@ public class customInputProcessor extends InputAdapter {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        gameHUD.processKeyDown(screenX, screenY, button);
+        this.gameHUD.processKeyDown(screenX, screenY, button);
         return true;
     }
 

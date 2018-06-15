@@ -117,7 +117,7 @@ class GeiActionEvent {
         }
 
         public Color getColor() {
-            return color;
+            return this.color;
         }
     }
 
@@ -175,12 +175,12 @@ class GeiEdgeButton extends JButton {
 
     public GeiEdgeButton(ImageIcon icon) {
         super(icon);
-        init();
+        this.init();
     }
 
     public GeiEdgeButton(String text) {
         super(text);
-        init();
+        this.init();
     }
 
     public void init() {
@@ -194,21 +194,21 @@ class GeiEdgeButton extends JButton {
 
         this.addChangeListener(evt -> {
             if (this.getModel().isPressed()) {
-                this.setBackground(currentBackground);
+                this.setBackground(this.currentBackground);
             } else if (GeiEdgeButton.this.getModel().isRollover()) {
-                this.setBackground(currentBackground);
+                this.setBackground(this.currentBackground);
             } else {
-                this.setBackground(currentBackground);
+                this.setBackground(this.currentBackground);
             }
         });
     }
 
     public void setBackgroundDark() {
-        this.setColor(backgroundDark, foregroundDark);
+        this.setColor(this.backgroundDark, this.foregroundDark);
     }
 
     public void setBackgroundLight() {
-        this.setColor(backgroundLight, foregroundLight);
+        this.setColor(this.backgroundLight, this.foregroundLight);
     }
 
     public void setColor(Color backgroundColor, Color textColor) {
@@ -225,13 +225,13 @@ class GeiButton extends JButton {
     public GeiButton(ImageIcon icon) {
         super(icon);
 
-        init();
+        this.init();
     }
 
     public GeiButton(String text) {
         super(text);
 
-        init();
+        this.init();
     }
 
     public void init() {
@@ -258,15 +258,15 @@ class GeiButton extends JButton {
 
     @Override
     protected void paintComponent(Graphics g) {
-        if (getModel().isPressed() || selected) {
+        if (this.getModel().isPressed() || this.selected) {
             g.setColor(new Color(20, 25, 30));
-        } else if (getModel().isRollover()) {
+        } else if (this.getModel().isRollover()) {
             g.setColor(new Color(40, 45, 50));
         } else {
             g.setColor(new Color(30, 35, 40));
         }
 
-        g.fillRect(0, 0, getWidth(), getHeight());
+        g.fillRect(0, 0, this.getWidth(), this.getHeight());
         super.paintComponent(g);
     }
 }
@@ -282,8 +282,6 @@ class GeiActionPanel extends GeiPanel {
 
     private ArrayList<GeiActionEvent> eventArrayList = new ArrayList<>();
     private final int width;
-    private GeiScrollPane parent;
-    private long currentTime;
 
     public GeiActionPanel(int width, JSONArray actionArray) {
         this.width = width;
@@ -293,7 +291,7 @@ class GeiActionPanel extends GeiPanel {
 
     public void update(JSONArray actionArray) {
 
-        this.currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
         this.eventArrayList = new ArrayList<>();
 
         try {
@@ -305,7 +303,7 @@ class GeiActionPanel extends GeiPanel {
             }
 
             if (actionArray.length() == 0) {
-                this.eventArrayList.add(new GeiActionEvent(GeiActionEvent.Type.INFO, "Nothing to see here :)", Rah.getTimestamp(this.currentTime)));
+                this.eventArrayList.add(new GeiActionEvent(GeiActionEvent.Type.INFO, "Nothing to see here :)", Rah.getTimestamp(currentTime)));
             }
         } catch (Exception e) {
             Main.errorQuit(e);
@@ -317,7 +315,7 @@ class GeiActionPanel extends GeiPanel {
     }
 
     public void setParent(GeiScrollPane parent) {
-        this.parent = parent;
+        GeiScrollPane parent1 = parent;
     }
 
     @Override
@@ -364,7 +362,7 @@ class GeiChatItem {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 15));
-        ArrayList<String> lines = Rah.wrapText(GeiChatItem.width, text, metrics);
+        ArrayList<String> lines = Rah.wrapText(GeiChatItem.width, this.text, metrics);
 
         height = 50 + 10 * lines.size();
 
@@ -390,12 +388,10 @@ class GeiChatPanel extends GeiPanel {
     private ArrayList<GeiChatItem> chatArrayList = new ArrayList<>();
     private final int width;
     private GeiScrollPane parent;
-    private long currentTime;
-    private JSONArray chatArray;
 
     public GeiChatPanel(int width, JSONArray chatArray) {
         this.width = width;
-        this.chatArray = chatArray;
+        JSONArray chatArray1 = chatArray;
     }
 
     public static void updateMessages(JSONObject newMessages) {
@@ -441,7 +437,7 @@ class GeiChatPanel extends GeiPanel {
 
     public void update(JSONArray chatArray) {
 
-        this.currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
         this.chatArrayList = new ArrayList<>();
 
         try {
@@ -479,8 +475,8 @@ class GeiChatPanel extends GeiPanel {
         int yPos = 20;
 
         // Updates chat items
-        for (int i = 0; i < chatArrayList.size(); i++) {
-            chatArrayList.get(i).update(g, 20, yPos);
+        for (GeiChatItem aChatArrayList : this.chatArrayList) {
+            aChatArrayList.update(g, 20, yPos);
 
             yPos += GeiChatItem.height + 10;
         }
@@ -503,7 +499,7 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
 
         String[] eventSource = e.getActionCommand().split("-");
 
-        for (GeiShopItem item : itemArrayList) {
+        for (GeiShopItem item : this.itemArrayList) {
             if (eventSource[1].equals(item.name)) {
 
                 if (eventSource[0].equals("buy")) {
@@ -519,7 +515,7 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
                     item.useButton.setText("Loading");
                 }
 
-                String response = Communicator.shopRequest(parent.getParent().parent, eventSource[0], eventSource[1]);
+                String response = Communicator.shopRequest(this.parent.getParent().parent, eventSource[0], eventSource[1]);
 
                 System.out.println(response);
 
@@ -548,7 +544,7 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
         try {
             while (keys.hasNext()) {
                 key = keys.next().toString();
-                itemArrayList.add(new GeiShopItem(this, key, Main.shopData.getJSONObject(key)));
+                this.itemArrayList.add(new GeiShopItem(this, key, Main.shopData.getJSONObject(key)));
             }
         } catch (Exception e) {
             Main.errorQuit(e);
@@ -561,7 +557,7 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
     public void update(JSONArray purchasedSkins) {
 
         try {
-            for (GeiShopItem item : itemArrayList) {
+            for (GeiShopItem item : this.itemArrayList) {
                 item.unlocked = false;
                 item.updateButtonState();
 
@@ -596,8 +592,8 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
         g.setColor(new Color(1, 10, 19));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        for (int i = 0; i < itemArrayList.size(); i++) {
-            itemArrayList.get(i).update(g, 20, 20 + 160 * i);
+        for (int i = 0; i < this.itemArrayList.size(); i++) {
+            this.itemArrayList.get(i).update(g, 20, 20 + 160 * i);
         }
 
     }

@@ -43,10 +43,10 @@ public class Session {
             this.updateJSON();
 
             try {
-                messages.put(new JSONObject() {
+                this.messages.put(new JSONObject() {
                     {
-                        put("message", "[System] Welcome to HUBG Chat!");
-                        put("time", Instant.now().toEpochMilli());
+                        this.put("message", "[System] Welcome to HUBG Chat!");
+                        this.put("time", Instant.now().toEpochMilli());
                     }
                 });
             } catch (Exception e) {
