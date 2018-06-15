@@ -14,8 +14,27 @@ public class WeaponList {
     public static HashMap<Integer, Integer> damage = new HashMap<>();
     public static HashMap<Integer, Integer> scope = new HashMap<>();
     public static HashMap<Integer, Texture> graphics = new HashMap<>();
+    public static HashMap<Integer, Integer> ammoHashMap = new HashMap<>();
+
     public static Texture blank;
 
+    public static void reload(int id, int amount) {
+        ammoHashMap.put(id, ammoHashMap.get(id) + amount);
+    }
+
+    public static boolean fire(int id) {
+        if (ammoHashMap.get(id) - 1 >= 0) {
+            ammoHashMap.put(id, ammoHashMap.get(id) - 1);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static int getAmmo(int id) {
+        System.out.println(id);
+        return ammoHashMap.get(id);
+    }
 
     public static void load() {
         blank = new Texture(Gdx.files.internal("blank.png"));
@@ -36,6 +55,7 @@ public class WeaponList {
             damage.put(id, Integer.parseInt(data[5]));
             scope.put(id, Integer.parseInt(data[6]));
             graphics.put(id, new Texture(Gdx.files.internal(data[7])));
+            ammoHashMap.put(id, 0);
         }
     }
 }

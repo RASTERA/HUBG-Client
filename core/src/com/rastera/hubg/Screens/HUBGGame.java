@@ -73,6 +73,8 @@ public class HUBGGame implements Screen {
     private boolean networkConnected = false;
     private ArrayList<Enemy> EnemyList = new ArrayList<>();
     private LinkedBlockingQueue<Message> GLProcess = new LinkedBlockingQueue<>();
+    private HashMap<Integer, String> playerLookup;
+    private HashMap<String, JSONObject> playerData;
 
     private float ox = -1;
     private float oy = -1;
@@ -246,8 +248,6 @@ public class HUBGGame implements Screen {
                 }
                 long[] cords = (long[]) ServerMessage.message;
 
-                //System.out.println(cords[0] + " " + cords[1] + " " + (int) cords[3]);
-
                 if (this.ID == cords[3]) {
                     break;
                 }
@@ -305,19 +305,15 @@ public class HUBGGame implements Screen {
 
             case 12: // Action log
                 this.actions.add((String) ServerMessage.message);
-
                 System.out.println(this.actions);
-
                 break;
 
             case 13: // Players alive
                 this.alive = (int) ServerMessage.message;
-
                 break;
 
             case 14: // Set health
                 this.player.setHealth((float) ServerMessage.message);
-
                 break;
 
             case 15: // Remove player
@@ -326,8 +322,26 @@ public class HUBGGame implements Screen {
 
             case 16: // Set energy
                 this.player.setEnergy((float) ServerMessage.message);
-
                 break;
+
+                /*
+            case 17: // Player names
+                System.out.println("trying to update player names");
+
+                this.playerLookup = new HashMap<>();
+
+                for (String name : (String[]) ServerMessage.message) {
+                    System.out.println("Adding " + name);
+                    playerLookup.put(name.hashCode(), name);
+                }
+
+                for (Enemy enemy : EnemyList) {
+                    System.out.println("lol " + enemy.getId());
+                    if (enemy.name == null && this.playerLookup.containsKey(enemy.getId())) {
+                        enemy.name = this.playerLookup.get(enemy.getId());
+                        enemy.updateData();
+                    }
+                }*/
 
             case 19:
                 this.GLProcess.add(ServerMessage);
@@ -427,7 +441,7 @@ public class HUBGGame implements Screen {
                                 }
 
                             } else if (!this.hasEnemy((int) p[3])) {
-                                this.EnemyList.add(new Enemy(this.world, this, "Karl", p));
+                                this.EnemyList.add(new Enemy(this.world, this, playerLookup.get(p[3]), p));
                             }
                         }
 
@@ -471,12 +485,16 @@ public class HUBGGame implements Screen {
                             Item processingItem = this.itemQueue.take();
 
                             if (res) {
-                                if (player.playerWeapons[0] == 0 || gameHUD.a.active) {
-                                    player.playerWeapons[0] = processingItem.getItemType();
-                                } else if (player.playerWeapons[1] == 0 || gameHUD.b.active) {
-                                    player.playerWeapons[1] = processingItem.getItemType();
+                                if (processingItem.getItemType() == -1004) {
+                                    // some bs stuff goes in here
                                 } else {
-                                    player.playerWeapons[0] = processingItem.getItemType();
+                                    if (player.playerWeapons[0] == 0 || gameHUD.a.active) {
+                                        player.playerWeapons[0] = processingItem.getItemType();
+                                    } else if (player.playerWeapons[1] == 0 || gameHUD.b.active) {
+                                        player.playerWeapons[1] = processingItem.getItemType();
+                                    } else {
+                                        player.playerWeapons[0] = processingItem.getItemType();
+                                    }
                                 }
 
                                 conn.write(30, player.playerWeapons);
@@ -589,9 +607,8 @@ public class HUBGGame implements Screen {
         }
 
         if (this.sprint && this.player.getEnergy() > 0) {
-            this.player.decEnergy(0.1f);
-
-            this.conn.write(16, this.player.getEnergy());
+            //this.player.decEnergy(0.1f);
+            //this.conn.write(16, this.player.getEnergy());
 
             if (this.gamecam.zoom > 0.6 * this.defaultZoom) {
                 this.gamecam.zoom -= 0.01;

@@ -9,6 +9,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.*;
 import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Screens.HUBGGame;
+import com.rastera.hubg.desktop.Communicator;
+import com.rastera.hubg.desktop.Main;
+import org.json.JSONObject;
+
+import static com.badlogic.gdx.math.MathUtils.lerp;
 
 public class Enemy extends Sprite {
     public String name;
@@ -16,6 +21,8 @@ public class Enemy extends Sprite {
 
     public World world;
     public Body b2body;
+    private JSONObject profile;
+    private String skinName;
     private TextureRegion playerStand;
     private Texture playerImage;
     private float travelx, travely, travelr, distx, disty, distr;
@@ -24,6 +31,11 @@ public class Enemy extends Sprite {
     public Enemy(World world, HUBGGame screen, String name, long[] info){
         super(new Texture(Gdx.files.internal("penguin.png")));
         this.weapon = new Weapon(screen);
+
+        if (name != null) {
+            this.updateData();
+        }
+
         this.world = world;
 
         this.name = name;
@@ -35,6 +47,22 @@ public class Enemy extends Sprite {
         this.updateLocation(info);
 
         this.updateSprite();
+    }
+
+    public void updateData() {
+
+        try {
+            this.profile = Communicator.request(Communicator.RequestType.GET, null, Communicator.getURL(Communicator.RequestDestination.API) + "data/" + this.name);
+
+            this.skinName = this.profile.getString("skin");
+
+            super.setTexture(HUBGMain.getSkin(this.skinName));
+
+        } catch (Exception e) {
+            Main.errorQuit(e);
+        }
+
+
     }
 
     public void updateLocation(long[] newLocation) {
@@ -51,6 +79,24 @@ public class Enemy extends Sprite {
         if (this.travelx == 0 && this.travely == 0 && this.travelr == 0) {
             return;
         }
+
+        /*
+        float xstep = lerp(this.travelx, this.travelx + HUBGMain.SYNC_INTERVAL * dt, dt);
+        float ystep = lerp(this.travely, this.travely + HUBGMain.SYNC_INTERVAL * dt, dt);
+        float rstep = this.travelr / HUBGMain.SYNC_INTERVAL * dt;
+
+        if (rstep > 0 && this.b2body.getAngle() + rstep < this.distr) {
+            rstep = this.b2body.getAngle() + rstep;
+        } else if (rstep < 0 && this.b2body.getAngle() + rstep > this.distr) {
+            rstep = this.b2body.getAngle() + rstep;
+        } else {
+            this.travelr = 0;
+            rstep = this.distr;
+        }
+
+        this.b2body.setTransform(xstep, ystep, rstep);
+        this.updateSprite(); */
+
         float xstep = this.travelx / HUBGMain.SYNC_INTERVAL * dt;
         float ystep = this.travely / HUBGMain.SYNC_INTERVAL * dt;
         float rstep = this.travelr / HUBGMain.SYNC_INTERVAL * dt;
@@ -84,6 +130,7 @@ public class Enemy extends Sprite {
 
         this.b2body.setTransform(xstep, ystep, rstep);
         this.updateSprite();
+
     }
 
     public void updateSprite() {
