@@ -464,13 +464,11 @@ public class HUBGGame implements Screen {
                         break;
 
                     case 20:
-                        System.out.println(pMessage.type);
                         Boolean res = (Boolean) pMessage.message;
 
                         if (this.itemQueue.size() != 0) {
+                            System.out.println(pMessage.type + " " + (Boolean) pMessage.message);
                             Item processingItem = this.itemQueue.take();
-                            this.displayItems.remove(processingItem);
-                            this.world.destroyBody(processingItem.body);
 
                             if (res) {
                                 if (player.playerWeapons[0] == 0 || gameHUD.a.active) {
@@ -497,16 +495,6 @@ public class HUBGGame implements Screen {
 
                             if ((long) (finder.body.getPosition().x * 1000) == target[0] && (long) (finder.body.getPosition().y * 1000) == target[1] && finder.getItemType() == target[2]) {
                                 this.displayItems.remove(i);
-                                this.world.destroyBody(finder.body);
-                                break;
-                            }
-                        }
-
-                        for (Item anItemQueue : this.itemQueue) {
-                            finder = anItemQueue;
-
-                            if ((long) (finder.body.getPosition().x * 1000) == target[0] && (long) (finder.body.getPosition().y * 1000) == target[1] && finder.getItemType() == target[2]) {
-                                this.itemQueue.remove(finder);
                                 this.world.destroyBody(finder.body);
                                 break;
                             }

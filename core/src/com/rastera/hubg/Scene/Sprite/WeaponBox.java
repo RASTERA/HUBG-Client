@@ -78,13 +78,14 @@ public class WeaponBox extends Sprite {
         sr.begin(ShapeRenderer.ShapeType.Line);
         sr.rect(getX(), getY(), width - 2, 50);
         sr.end();
-
-        if (player.playerWeapons[boxID] != 0) {
-            Texture gun = ItemList.itemGraphics.get(player.playerWeapons[boxID]);
-            float scale = Math.max(gun.getWidth()  / (width - 10), gun.getHeight() / (50-4));
-            sb.begin();
-            sb.draw(gun, getX() + ((width - 2) - gun.getWidth() / scale) / 2, getY() +  ((50 - 2) - gun.getHeight() / scale) / 2, gun.getWidth() / scale, gun.getHeight() / scale);
-            sb.end();
+        if (player.playerWeapons != null) {
+            if (player.playerWeapons[boxID] != 0) {
+                Texture gun = ItemList.itemGraphics.get(player.playerWeapons[boxID]);
+                float scale = Math.max(gun.getWidth() / (width - 10), gun.getHeight() / (50 - 4));
+                sb.begin();
+                sb.draw(gun, getX() + ((width - 2) - gun.getWidth() / scale) / 2, getY() + ((50 - 2) - gun.getHeight() / scale) / 2, gun.getWidth() / scale, gun.getHeight() / scale);
+                sb.end();
+            }
         }
 
         Gdx.gl.glDisable(GL20.GL_BLEND);

@@ -12,7 +12,7 @@ public class Item extends Sprite {
 
     public Item(float x, float y, int itemType, World world) {
         super(ItemList.itemGraphics.get(itemType));
-        this.setBounds(x, y, 60 / HUBGMain.PPM, 60 / HUBGMain.PPM);
+        this.setBounds(x, y, 80 / HUBGMain.PPM, 80 / HUBGMain.PPM);
         this.itemType = itemType;
 
         this.defineBody(x, y, world);
@@ -22,7 +22,7 @@ public class Item extends Sprite {
         BodyDef bdef = new BodyDef();
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(100 / HUBGMain.PPM);
+        shape.setRadius(50 / HUBGMain.PPM);
 
         bdef.type = BodyDef.BodyType.StaticBody;
         bdef.position.set(x, y);
