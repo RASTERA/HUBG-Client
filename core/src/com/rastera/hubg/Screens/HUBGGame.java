@@ -97,7 +97,7 @@ public class HUBGGame implements Screen {
     //MiniMap
 
     private Texture miniMap;
-    private int miniMapTextureSize = 6000;
+    private int miniMapTextureSize = 5760;
     private TextureRegion miniMapDisplay;
     private LinkedList<Item> displayItems;
     private LinkedBlockingQueue<Item> itemQueue;
