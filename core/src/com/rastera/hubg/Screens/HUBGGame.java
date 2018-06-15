@@ -372,6 +372,13 @@ public class HUBGGame implements Screen {
                     }
                 }
                 break;
+            case 32:
+                int[] dat = (int[]) ServerMessage.message;
+
+                player.ammo = dat[0];
+                player.gunAmmo[0] = dat[1];
+                player.gunAmmo[1] = dat[2];
+                break;
         }
     }
 
@@ -489,6 +496,7 @@ public class HUBGGame implements Screen {
                             if (res) {
                                 if (processingItem.getItemType() == -1004) {
                                     player.ammo += 30;
+                                    conn.write(32, new int[] {player.ammo, player.gunAmmo[0], player.gunAmmo[1]});
                                 } else {
                                     if (player.playerWeapons[0] == 0 || gameHUD.a.active) {
                                         player.playerWeapons[0] = processingItem.getItemType();
@@ -675,13 +683,17 @@ public class HUBGGame implements Screen {
 
             if (reloadtime >= WeaponList.reloadTime.get(player.playerWeapons[gameHUD.getBoxSelected()])) {
                 int currentammo = player.ammo;
-                player.ammo = Math.max(0, WeaponList.getAmmo(player.playerWeapons[gameHUD.getBoxSelected()]) - player.gunAmmo[gameHUD.getBoxSelected()]);
-
-                System.out.println(currentammo + " " + player.gunAmmo[gameHUD.getBoxSelected()]);
-                player.gunAmmo[gameHUD.getBoxSelected()] = Math.min(currentammo, WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]));
+                player.ammo = Math.max(0, player.ammo - WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]) + player.gunAmmo[gameHUD.getBoxSelected()]);
+                if (player.ammo == 0) {
+                    player.gunAmmo[gameHUD.getBoxSelected()] = Math.min(currentammo, WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]));
+                } else {
+                    player.gunAmmo[gameHUD.getBoxSelected()] = WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]);
+                }
 
                 reloading = false;
                 reloadtime = 0;
+
+                conn.write(32, new int[] {player.ammo, player.gunAmmo[0], player.gunAmmo[1]});
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.R) && player.gunAmmo[gameHUD.getBoxSelected()] < WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()])) {
@@ -694,6 +706,9 @@ public class HUBGGame implements Screen {
             if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && this.canShoot && player.gunAmmo[gameHUD.getBoxSelected()] > 0) {
                 this.fireDelay = 0;
                 player.gunAmmo[gameHUD.getBoxSelected()] -= 1;
+
+                conn.write(32, new int[] {player.ammo, player.gunAmmo[0], player.gunAmmo[1]});
+
                 this.soundHashMap.get(this.player.weapon.getCurrentWeapon()).play();
 
                 int enemyID = this.calculateBullet(400);
@@ -849,7 +864,7 @@ public class HUBGGame implements Screen {
 
             this.gameHUD.draw(this.main.batch, this.staticcam);
 
-            this.b2dr.render(this.world, this.gamecam.combined);
+            //this.b2dr.render(this.world, this.gamecam.combined);
         }
 
 
