@@ -15,7 +15,7 @@ public class HUDBar extends Sprite {
     private int width = 344;
     public int hoffset;
 
-    private String caption;
+    private String caption; // The Text overlay for the bar
     private ShapeRenderer sr;
     private Player player;
 
@@ -26,6 +26,7 @@ public class HUDBar extends Sprite {
         this.caption = caption;
     }
 
+    // Updates the location of the player
     public void updateLocation (int screenHeight) {
         this.setPosition(-this.width / 2, screenHeight / -2 + this.hoffset);
     }
@@ -34,7 +35,7 @@ public class HUDBar extends Sprite {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        BitmapFont font = Util.cloneFont(HUBGGame.latoFont);
+        BitmapFont font = Util.cloneFont(HUBGGame.latoFont);  // Creates a duplicate of the font to rescale
 
         if (level < 50) {
             this.sr.setColor(200, 0, 0, 0.9f);
@@ -54,7 +55,7 @@ public class HUDBar extends Sprite {
         this.sr.rect(this.getX(), (int) this.getY(), this.width, 15);
         this.sr.end();
 
-        sb.begin();
+        sb.begin(); // Drawing the text on to the bar
         Util.centerText(sb, font, 0.2f, this.caption + " [ " + (int) level+ "% ]", (int) this.getX() + this.width / 2, (int) this.getY() + 8);
         sb.end();
 

@@ -853,7 +853,7 @@ public class HUBGGame implements Screen {
 
         if (this.gameStart && this.player != null) {
 
-            this.renderer.render();
+            this.renderer.render(new int[] {0});
 
             this.main.batch.setProjectionMatrix(this.gamecam.combined);
             this.main.batch.begin();
@@ -936,7 +936,9 @@ public class HUBGGame implements Screen {
 
             this.gameHUD.draw(this.main.batch, this.staticcam);
 
-            //this.b2dr.render(this.world, this.gamecam.combined);
+            this.renderer.render(new int[] {2});
+
+            this.b2dr.render(this.world, this.gamecam.combined);
         }
 
 
