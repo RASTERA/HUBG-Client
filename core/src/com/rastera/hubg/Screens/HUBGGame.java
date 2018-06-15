@@ -880,11 +880,7 @@ public class HUBGGame implements Screen {
             this.main.batch.end();
 
             if (this.shoot) {
-                sr.setColor(Color.WHITE);
-                sr.setProjectionMatrix(this.gamecam.combined);
-                sr.begin(ShapeRenderer.ShapeType.Line);
-                sr.line(this.player.getLocation().x, this.player.getLocation().y, this.raycastPoint.x, this.raycastPoint.y);
-                sr.end();
+                drawScopeLine(sr, Color.WHITE);
             }
 
             this.gameHUD.draw(this.main.batch, this.staticcam);
@@ -954,6 +950,14 @@ public class HUBGGame implements Screen {
 
             this.main.batch.end();
         }
+    }
+
+    public void drawScopeLine(ShapeRenderer sr, Color color) {
+        sr.setColor(color);
+        sr.setProjectionMatrix(this.gamecam.combined);
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.line(this.player.getLocation().x, this.player.getLocation().y, this.raycastPoint.x, this.raycastPoint.y);
+        sr.end();
     }
 
     public String formatAngle(int angle) {
