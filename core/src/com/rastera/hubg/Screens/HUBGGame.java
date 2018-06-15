@@ -426,8 +426,6 @@ public class HUBGGame implements Screen {
 
                             user = new JSONObject(p);
 
-                            System.out.println(p);
-
                             positionJSON = user.getJSONObject("position");
                             position = new long[] {positionJSON.getLong("x"), positionJSON.getLong("y"), positionJSON.getLong("r"), positionJSON.getLong("id")};
 
@@ -653,6 +651,7 @@ public class HUBGGame implements Screen {
 
                 if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() / HUBGMain.PPM + defaultZoom) {
                     gamecam.zoom += 0.01;
+                    //drawScopeLine(null, Color.RED);
                 } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
                     gamecam.zoom -= 0.01;
                 }
