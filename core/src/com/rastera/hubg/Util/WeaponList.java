@@ -1,15 +1,12 @@
 package com.rastera.hubg.Util;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.logging.FileHandler;
 
-public class ItemLoader {
+public class WeaponList {
     public static HashMap<Integer, Texture> itemGraphics = new HashMap<>();
     public static HashMap<Integer, String> itemName = new HashMap<>();
     public static HashMap<Integer, String> itemDescription = new HashMap<>();
@@ -19,6 +16,8 @@ public class ItemLoader {
     public static void load() {
         Scanner loader = new Scanner(Gdx.files.internal("itemData.txt").read());
         String[] data;
+
+        loader.nextLine();
 
         while (loader.hasNext()){
             data = loader.nextLine().replaceAll("\n","").split(",");

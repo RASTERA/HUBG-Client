@@ -32,7 +32,6 @@ public class HUD implements Disposable{
     private WeaponBox b;
     private HealthBar healthUI;
     private EnergyBar energyUI;
-    private HashMap<Integer, Texture> weaponGraphics;
     private BitmapFont font;
     private ArrayList<Fixture> itemArray;
     private ItemPickUp itempickup;
@@ -45,14 +44,13 @@ public class HUD implements Disposable{
         sr.setProjectionMatrix(staticView.getCamera().combined);
 
         itempickup = new ItemPickUp(new ArrayList<Fixture>(), font, game, sr) ;
-        weaponGraphics = new HashMap<Integer, Texture>();
 
         Table table = new Table();
         table.top();
         table.setFillParent(true);
 
-        a = new WeaponBox(weaponGraphics, 0, sr);
-        b = new WeaponBox(weaponGraphics, 1, sr);
+        a = new WeaponBox(this, player, 0, sr);
+        b = new WeaponBox(this, player, 1, sr);
         healthUI = new HealthBar(sr, player);
         energyUI = new EnergyBar(sr, player);
     }
@@ -69,6 +67,9 @@ public class HUD implements Disposable{
 
     public void processKeyDown(int x, int y, int mb) {
         itempickup.processKeyDown(x, y, mb);
+        a.updateClick(x, y);
+        b.updateClick(x, y);
+
     }
 
     public void setItemArray(ArrayList<Fixture> items) {
@@ -77,8 +78,8 @@ public class HUD implements Disposable{
     }
 
     public void update(Viewport staticView) {
-        a.updateLocation(staticView.getScreenHeight());
-        b.updateLocation(staticView.getScreenHeight());
+        a.updateLocation(staticView.getScreenWidth(), staticView.getScreenHeight());
+        b.updateLocation(staticView.getScreenWidth(), staticView.getScreenHeight());
         energyUI.updateLocation(staticView.getScreenHeight());
         healthUI.updateLocation(staticView.getScreenHeight());
         itempickup.updateLocation(staticView.getScreenHeight(), staticView.getScreenWidth());

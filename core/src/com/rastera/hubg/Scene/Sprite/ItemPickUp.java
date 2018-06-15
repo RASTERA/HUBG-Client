@@ -1,21 +1,16 @@
 package com.rastera.hubg.Scene.Sprite;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.World;
 import com.rastera.hubg.Screens.HUBGGame;
-import com.rastera.hubg.Sprites.Item;
-import com.rastera.hubg.Util.ItemLoader;
+import com.rastera.hubg.Util.ItemList;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ItemPickUp extends Sprite {
     private int weaponID = 0;
@@ -78,7 +73,7 @@ public class ItemPickUp extends Sprite {
         sb.begin();
 
         for (int i = 0; i < items.size(); i++) {
-            sb.draw(ItemLoader.itemGraphics.get((int)(items.get(i).getUserData())), getX() + 2 ,getY() + 2 - (itemHeight + 4)*(i+1), itemHeight, itemHeight);
+            sb.draw(ItemList.itemGraphics.get((int)(items.get(i).getUserData())), getX() + 2 ,getY() + 2 - (itemHeight + 4)*(i+1), itemHeight, itemHeight);
         }
 
         sb.end();

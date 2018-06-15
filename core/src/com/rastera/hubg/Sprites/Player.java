@@ -35,7 +35,7 @@ public class Player extends Sprite {
     private TextureRegion marioStand;
     private Texture playerImage;
     public Weapon weapon;
-    public int[] playerWeapons = new int[2];
+    public int[] playerWeapons = {-1001, 0};
 
 
     public Player(World world, HUBGGame screen, long[] location){

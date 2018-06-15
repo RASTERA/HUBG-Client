@@ -3,7 +3,6 @@ package com.rastera.hubg.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -23,6 +22,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.rastera.hubg.HUBGMain;
+import com.rastera.hubg.Util.ItemList;
 import com.rastera.hubg.desktop.Communicator;
 import com.rastera.Networking.Message;
 import com.rastera.hubg.Scene.HUD;
@@ -31,7 +31,6 @@ import com.rastera.hubg.Sprites.Enemy;
 import com.rastera.hubg.Sprites.Item;
 import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Tools.B2WorldCreator;
-import com.rastera.hubg.Util.ItemLoader;
 
 import com.rastera.hubg.collisionListener;
 import com.rastera.hubg.customInputProcessor;
@@ -41,7 +40,6 @@ import org.json.JSONObject;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -122,7 +120,7 @@ public class HUBGGame implements Screen {
 
         this.main = main;
         this.parentGame = parentGame;
-        ItemLoader.load();
+        ItemList.load();
         displayItems = new LinkedList<>();
         itemQueue = new LinkedBlockingQueue<>();
         /////
@@ -364,7 +362,10 @@ public class HUBGGame implements Screen {
         Body it = f.getBody();
         Item pickup = (Item) it.getUserData();
 
-        conn.write(20, new long[] {(long) (it.getPosition().x * 1000), (long) (it.getPosition().y * 1000), pickup.getItemType()});
+//        if (ItemList.itemType(pickup.getItemType()) == "weapon") {
+//            if
+//        }
+            conn.write(20, new long[] {(long) (it.getPosition().x * 1000), (long) (it.getPosition().y * 1000), pickup.getItemType()});
 
         itemQueue.add((Item) it.getUserData());
         // ADD ITEM TO INV
@@ -466,7 +467,7 @@ public class HUBGGame implements Screen {
                             world.destroyBody(processingItem.body);
 
                             if (res) {
-                                // Put the fudging weapon in the inventory
+
                             }
                         }
 
@@ -600,7 +601,7 @@ public class HUBGGame implements Screen {
                 gamecam.zoom += 0.01;
             } else {
 
-                if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() + 1000000 / HUBGMain.PPM + defaultZoom) {
+                if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() / HUBGMain.PPM + defaultZoom) {
                     gamecam.zoom += 0.01;
                 } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
                     gamecam.zoom -= 0.01;
