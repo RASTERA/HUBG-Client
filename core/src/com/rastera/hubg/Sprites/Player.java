@@ -46,6 +46,14 @@ public class Player extends Sprite {
         this.energy = this.energy - amount < 0 ? 0 : this.energy - amount;
     }
 
+    public void incEnergy(float amount) {
+        this.energy = this.energy + amount > 100 ? 100 : this.energy + amount;
+    }
+    
+    public void incHealth(float amount) {
+        this.health = this.health + amount > 100 ? 100 : this.health + amount;
+    }
+
     public void setEnergy(float energy) {
         this.energy = energy;
     }

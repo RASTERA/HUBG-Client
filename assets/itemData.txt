@@ -3,3 +3,5 @@
 -1002,Sniper,Huge Damage,items/SideView/-1002.png,weapon
 -1003,SMG,Classic SMG,items/SideView/-1003.png,weapon
 -1004,AMMO,30 Rounds of bullets,images/hubg-logo.png,ammo
+-1005,Health Pack,+30HP,images/hubg-logo.png,consumable
+-1006,Soylent,+20 Energy,images/soylent.png,consumable

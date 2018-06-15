@@ -18,7 +18,7 @@ public class ItemPickUp extends Sprite {
     private int weaponID = 0;
 
     private int width = 200;
-    private int itemHeight = 50;
+    private int itemHeight = 60;
 
     public ArrayList<Fixture> items;
 
@@ -84,14 +84,14 @@ public class ItemPickUp extends Sprite {
 
         for (int i = 0; i < this.items.size(); i++) {
             g = ItemList.itemGraphics.get(this.items.get(i).getUserData());
-            scale = Math.max(g.getWidth() / (this.itemHeight), g.getHeight() / (this.itemHeight));
+            scale = Math.max(g.getWidth() / (this.itemHeight - 10), g.getHeight() / (this.itemHeight - 10));
             sb.draw(g, this.getX() + 4 + (this.itemHeight - g.getWidth() / scale) / 2 , this.getY() + 2 - (this.itemHeight + 4)*(i+1) - (-this.itemHeight + g.getHeight() / scale) / 2, g.getWidth() / scale, g.getHeight() / scale);
 
             it = (Item) this.items.get(i).getBody().getUserData();
             font.draw(sb, ItemList.itemName.get(it.getItemType()), this.getX() + 4 + itemHeight, this.getY() - 10 - (this.itemHeight + 4)*(i));
             font.draw(sb, ItemList.itemDescription.get(it.getItemType()), this.getX() + 4 + itemHeight, this.getY() - 35 - (this.itemHeight + 4)*(i));
-
         }
+
         sb.end();
 
         Gdx.gl.glDisable(GL20.GL_BLEND);

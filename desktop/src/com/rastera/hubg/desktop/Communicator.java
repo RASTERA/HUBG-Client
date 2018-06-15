@@ -67,6 +67,9 @@ public class Communicator {
     // Game object
     public HUBGGame client;
 
+    private Thread writer;
+    private LinkedBlockingQueue<Message> writeQueue = new LinkedBlockingQueue<>();
+
     // Communicator object for in game networking
     public Communicator(String ip, int port, final HUBGGame client) throws Exception {
 
@@ -103,15 +106,36 @@ public class Communicator {
         receiver.setDaemon(true);
         receiver.start();
 
+        messageWriter();
+
         // Request server name
         this.write(-1, null);
+
+    }
+
+    public void messageWriter () {
+        writer = new Thread(() -> {
+            while (true) {
+                try {
+                    Message mainMessage = writeQueue.take();
+
+                    this.out.writeObject(mainMessage);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //this.terminate();
+                }
+            }
+        });
+
+        writer.setDaemon(true);
+        writer.start();
 
     }
 
     // Write to server
     public void write(int type, Object Message) {
         try {
-            this.out.writeObject(Util.messageBuilder(type, Message));
+            writeQueue.put(Util.messageBuilder(type, Message));
         } catch (Exception e) {
             e.printStackTrace();
             Main.errorQuit("Disconnected from server");

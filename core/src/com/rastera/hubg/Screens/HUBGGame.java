@@ -87,6 +87,7 @@ public class HUBGGame implements Screen {
     private Vector2 raycastPoint;
     private boolean shoot = false;
     private boolean canShoot = true;
+    private boolean scope = false;
     private float fireDelay = 0;
 
     public int[] weaponData;
@@ -159,9 +160,10 @@ public class HUBGGame implements Screen {
         this.gamecam.update();
 
         // Garbage collector
+        /*
         Thread collector = new Thread(() -> {
            try {
-               while (true) {
+               while () {
                    System.out.println("Ran GC");
                    GLProcess.add(Util.messageBuilder(-9000, null));
                    Thread.sleep(30000);
@@ -172,7 +174,7 @@ public class HUBGGame implements Screen {
         });
 
         collector.setDaemon(true);
-        collector.start();
+        collector.start(); */
 
         //Server Loading
         Thread connect = new Thread(() -> {
@@ -527,27 +529,38 @@ public class HUBGGame implements Screen {
                             Item processingItem = this.itemQueue.take();
 
                             if (res) {
-                                if (processingItem.getItemType() == -1004) {
-                                    player.ammo += 30;
-                                } else {
-                                    if (player.playerWeapons[0] == 0) {
-                                        player.playerWeapons[0] = processingItem.getItemType();
-                                    } else if (player.playerWeapons[1] == 0) {
-                                        player.playerWeapons[1] = processingItem.getItemType();
-                                    } else if (gameHUD.getBoxSelected() != 2) {
-                                        player.ammo += player.gunAmmo[gameHUD.getBoxSelected()];
-                                        player.gunAmmo[gameHUD.getBoxSelected()] = 0;
-                                        conn.write(22, new long[] {player.playerWeapons[gameHUD.getBoxSelected()], (long) (player.b2body.getPosition().x * 1000), (long) (player.b2body.getPosition().y * 1000)});
+                                switch (processingItem.getItemType()) {
+                                    case -1004: // Ammo
+                                        player.ammo += 30;
+                                        break;
+                                    case -1005: // Health
+                                        player.incHealth(30);
+                                        this.conn.write(14, this.player.getHealth());
+                                        break;
+                                    case -1006: // Energy
+                                        player.incEnergy(20);
+                                        this.conn.write(16, this.player.getEnergy());
+                                        break;
+                                    default:
+                                        if (player.playerWeapons[0] == 0) {
+                                            player.playerWeapons[0] = processingItem.getItemType();
+                                        } else if (player.playerWeapons[1] == 0) {
+                                            player.playerWeapons[1] = processingItem.getItemType();
+                                        } else if (gameHUD.getBoxSelected() != 2) {
+                                            player.ammo += player.gunAmmo[gameHUD.getBoxSelected()];
+                                            player.gunAmmo[gameHUD.getBoxSelected()] = 0;
+                                            conn.write(22, new long[] {player.playerWeapons[gameHUD.getBoxSelected()], (long) (player.b2body.getPosition().x * 1000), (long) (player.b2body.getPosition().y * 1000)});
 
-                                        player.playerWeapons[gameHUD.getBoxSelected()] = processingItem.getItemType();
-                                    } else {
-                                        player.ammo += player.gunAmmo[0];
-                                        player.gunAmmo[0] = 0;
-                                        conn.write(22, new long[] {player.playerWeapons[0], (long) (player.b2body.getPosition().x * 1000), (long) (player.b2body.getPosition().y * 1000)});
+                                            player.playerWeapons[gameHUD.getBoxSelected()] = processingItem.getItemType();
+                                        } else {
+                                            player.ammo += player.gunAmmo[0];
+                                            player.gunAmmo[0] = 0;
+                                            conn.write(22, new long[] {player.playerWeapons[0], (long) (player.b2body.getPosition().x * 1000), (long) (player.b2body.getPosition().y * 1000)});
 
-                                        player.playerWeapons[0] = processingItem.getItemType();
-                                    }
+                                            player.playerWeapons[0] = processingItem.getItemType();
+                                        }
                                 }
+
                                 conn.write(30, player.playerWeapons);
                                 conn.write(32, new int[] {player.ammo, player.gunAmmo[0], player.gunAmmo[1]});
                             }
@@ -682,9 +695,10 @@ public class HUBGGame implements Screen {
                 this.gamecam.zoom += 0.01;
             } else {
 
+                scope = gamecam.zoom > defaultZoom;
+
                 if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() / HUBGMain.PPM + defaultZoom) {
                     gamecam.zoom += 0.01;
-                    //drawScopeLine(null, Color.RED);
                 } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
                     gamecam.zoom -= 0.01;
                 }
@@ -857,6 +871,7 @@ public class HUBGGame implements Screen {
 
             this.main.batch.setProjectionMatrix(this.gamecam.combined);
             this.main.batch.begin();
+
             this.player.draw(this.main.batch);
 
             for (Enemy e : this.EnemyList) {
@@ -877,6 +892,7 @@ public class HUBGGame implements Screen {
             Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
             ShapeRenderer sr = new ShapeRenderer();
+
             sr.setColor(Color.WHITE);
             sr.setProjectionMatrix(this.staticcam.combined);
 
@@ -900,6 +916,7 @@ public class HUBGGame implements Screen {
             sr.setColor(Color.RED);
             sr.begin(ShapeRenderer.ShapeType.Filled);
             sr.rect(this.staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + this.player.b2body.getPosition().x / 10000 * miniMapSize, this.staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + this.player.b2body.getPosition().y / 10000 * miniMapSize, 5/2, 5/2, 5, 5, 1f, 1f, MathUtils.radiansToDegrees * this.player.getAngle());
+            sr.line(this.staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + this.player.b2body.getPosition().x / 10000 * miniMapSize + 1, this.staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + this.player.b2body.getPosition().y / 10000 * miniMapSize + 1, this.staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + this.player.b2body.getPosition().x / 10000 * miniMapSize + 10 * (float) Math.cos(this.player.b2body.getAngle()) + 1, this.staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + this.player.b2body.getPosition().y / 10000 * miniMapSize + 10 * (float) Math.sin(this.player.b2body.getAngle()) + 1);
             sr.end();
 
             this.main.batch.begin();
@@ -934,6 +951,11 @@ public class HUBGGame implements Screen {
                 drawScopeLine(sr, Color.WHITE);
             }
 
+            if (this.scope && this.player != null && this.player.weapon.getCurrentWeapon() != 0) {
+                this.calculateBullet(400);
+                drawScopeLine(sr, Color.RED);
+            }
+
             this.gameHUD.draw(this.main.batch, this.staticcam);
 
             //this.b2dr.render(this.world, this.gamecam.combined);
@@ -957,6 +979,7 @@ public class HUBGGame implements Screen {
             sr.end();
 
             Gdx.gl.glDisable(GL20.GL_BLEND);
+
 
             this.main.batch.begin();
 
