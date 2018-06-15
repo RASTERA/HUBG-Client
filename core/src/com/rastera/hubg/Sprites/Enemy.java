@@ -34,14 +34,13 @@ public class Enemy extends Sprite {
         super(new Texture(Gdx.files.internal("penguin.png")));
         this.weapon = new Weapon(screen);
 
-        if (name != null) {
-            this.updateData();
-        }
-
-        this.world = world;
 
         this.name = name;
         this.id = (int) info[3];
+        this.updateData();
+
+
+        this.world = world;
 
         this.setBounds(0, 0, 100 / HUBGMain.PPM, 100 / HUBGMain.PPM);
 
@@ -54,6 +53,8 @@ public class Enemy extends Sprite {
     public void updateData() {
 
         try {
+            System.out.println("Getting data for: " + this.name);
+
             this.profile = Communicator.request(Communicator.RequestType.GET, null, Communicator.getURL(Communicator.RequestDestination.API) + "data/" + this.name);
 
             this.skinName = this.profile.getString("skin");

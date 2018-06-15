@@ -83,7 +83,7 @@ public class WeaponBox extends Sprite {
         if (player.playerWeapons != null) {
             if (player.playerWeapons[boxID] != 0) {
                 Texture gun = ItemList.itemGraphics.get(player.playerWeapons[boxID]);
-                float scale = Math.max(gun.getWidth() / (width - 10), gun.getHeight() / (50 - 4));
+                float scale = Math.max(gun.getWidth() / (width - 20), gun.getHeight() / (50 - 10));
                 sb.begin();
                 sb.draw(gun, getX() + ((width - 2) - gun.getWidth() / scale) / 2, getY() + ((50 - 2) - gun.getHeight() / scale) / 2, gun.getWidth() / scale, gun.getHeight() / scale);
                 sb.end();
@@ -94,7 +94,7 @@ public class WeaponBox extends Sprite {
 
         if (player.playerWeapons != null && player.playerWeapons[boxID] < 0) {
             sb.begin();
-            Util.centerText(sb, HUBGGame.latoFont, 0.2f, player.gunAmmo[boxID] + "/" + player.ammo, (int) getX(), (int) getY());
+            Util.centerText(sb, HUBGGame.latoFont, 0.2f, "" + player.gunAmmo[boxID], (int) getX() + 10, (int) getY() + 10);
             sb.end();
         }
     }

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class ItemPickUp extends Sprite {
     private int weaponID = 0;
 
-    private int width = 150;
+    private int width = 200;
     private int itemHeight = 50;
 
     public ArrayList<Fixture> items;

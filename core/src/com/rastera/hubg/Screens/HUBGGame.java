@@ -73,7 +73,6 @@ public class HUBGGame implements Screen {
     private boolean networkConnected = false;
     private ArrayList<Enemy> EnemyList = new ArrayList<>();
     private LinkedBlockingQueue<Message> GLProcess = new LinkedBlockingQueue<>();
-    private HashMap<Integer, String> playerLookup;
     private HashMap<String, JSONObject> playerData;
 
     private float ox = -1;
@@ -143,6 +142,7 @@ public class HUBGGame implements Screen {
         this.soundHashMap.put(-1001, Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
         this.soundHashMap.put(-1002, Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
         this.soundHashMap.put(-1003, Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
+        this.soundHashMap.put(-3000, Gdx.audio.newSound(Gdx.files.internal("sounds/reload.wav")));
 
         this.runningMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/running.wav"));
 
@@ -175,6 +175,10 @@ public class HUBGGame implements Screen {
 
             } catch (Exception e) {
                 e.printStackTrace();
+
+                Gdx.app.exit();
+                this.parentGame.rejectConnection("Unable to connect to server");
+                /*
                 this.player = new Player(this.world, this, new long[] {1000000, 1000000, 0, 0, 100});
                 Item test = new Item(1000, 1000, -1001, this.world);
                 this.displayItems.add(test);
@@ -183,7 +187,7 @@ public class HUBGGame implements Screen {
                 this.connecting = false;
                 this.gameHUD = new HUD(main.batch, this.staticPort, this.player, this, HUBGGame.latoFont);
                 Gdx.input.setInputProcessor(new customInputProcessor(this.gameHUD));
-                this.world.setContactListener(new collisionListener(this.gameHUD));
+                this.world.setContactListener(new collisionListener(this.gameHUD)); */
             }
         });
 
@@ -327,25 +331,6 @@ public class HUBGGame implements Screen {
                 this.player.setEnergy((float) ServerMessage.message);
                 break;
 
-                /*
-            case 17: // Player names
-                System.out.println("trying to update player names");
-
-                this.playerLookup = new HashMap<>();
-
-                for (String name : (String[]) ServerMessage.message) {
-                    System.out.println("Adding " + name);
-                    playerLookup.put(name.hashCode(), name);
-                }
-
-                for (Enemy enemy : EnemyList) {
-                    System.out.println("lol " + enemy.getId());
-                    if (enemy.name == null && this.playerLookup.containsKey(enemy.getId())) {
-                        enemy.name = this.playerLookup.get(enemy.getId());
-                        enemy.updateData();
-                    }
-                }*/
-
             case 19:
                 this.GLProcess.add(ServerMessage);
                 break;
@@ -430,28 +415,42 @@ public class HUBGGame implements Screen {
                     case 1:
                         System.out.println("Start game:" + pMessage.message);
 
-                        for (long[] p : (ArrayList<long[]>) pMessage.message) {
-                            System.out.println(p[3]);
+                        JSONObject positionJSON;
+                        JSONObject user;
+                        long[] position;
 
-                            if (p[3] == this.ID) {
+                        for (String p : (ArrayList<String>) pMessage.message) {
 
-                                if (this.player == null) {
-                                    this.player = new Player(this.world, this, p);
-                                    this.conn.write(14, null);
-                                    this.conn.write(16, null);
-                                    this.gamecam.position.x = this.player.b2body.getPosition().x;
-                                    this.gamecam.position.y = this.player.b2body.getPosition().y;
-                                    this.gamecam.rotate(p[2] * MathUtils.radiansToDegrees);
+                            user = new JSONObject(p);
 
-                                    this.gameHUD = new HUD(this.main.batch, this.staticPort, this.player, this, HUBGGame.latoFont);
-                                    this.world.setContactListener(new collisionListener(this.gameHUD));
-                                    Gdx.input.setInputProcessor(new customInputProcessor(this.gameHUD));
-                                    this.connecting = false;
-                                    this.player.playerWeapons = weaponData;
+                            System.out.println(p);
+
+                            positionJSON = user.getJSONObject("position");
+                            position = new long[] {positionJSON.getLong("x"), positionJSON.getLong("y"), positionJSON.getLong("r"), positionJSON.getLong("id")};
+
+                            try {
+                                if (user.getInt("id") == this.ID) {
+
+                                    if (this.player == null) {
+                                        this.player = new Player(this.world, this, position);
+                                        this.conn.write(14, null);
+                                        this.conn.write(16, null);
+                                        this.gamecam.position.x = this.player.b2body.getPosition().x;
+                                        this.gamecam.position.y = this.player.b2body.getPosition().y;
+                                        this.gamecam.rotate(position[2] * MathUtils.radiansToDegrees);
+
+                                        this.gameHUD = new HUD(this.main.batch, this.staticPort, this.player, this, HUBGGame.latoFont);
+                                        this.world.setContactListener(new collisionListener(this.gameHUD));
+                                        Gdx.input.setInputProcessor(new customInputProcessor(this.gameHUD));
+                                        this.connecting = false;
+                                        this.player.playerWeapons = weaponData;
+                                    }
+
+                                } else if (!this.hasEnemy(user.getInt("id"))) {
+                                    this.EnemyList.add(new Enemy(this.world, this, user.getString("name"), position));
                                 }
+                            } catch (Exception e) {
 
-                            } else if (!this.hasEnemy((int) p[3])) {
-                                this.EnemyList.add(new Enemy(this.world, this, playerLookup.get(p[3]), p));
                             }
                         }
 
@@ -479,10 +478,10 @@ public class HUBGGame implements Screen {
                         ConcurrentHashMap<Long, ArrayList<long[]>> itemHashmap = (ConcurrentHashMap<Long, ArrayList<long[]>>) pMessage.message;
                         System.out.println(itemHashmap);
                         for (Map.Entry<Long, ArrayList<long[]>> entry: itemHashmap.entrySet()) {
-                            for (long[] position : entry.getValue()) {
-                                System.out.println((float) position[0]/1000 + " " +  (float) position[1]/1000 + " " + entry.getKey().intValue());
+                            for (long[] positionData : entry.getValue()) {
+                                System.out.println((float) positionData[0]/1000 + " " +  (float) positionData[1]/1000 + " " + entry.getKey().intValue());
 
-                                this.displayItems.add(new Item((float) position[0]/1000,  (float) position[1]/1000, entry.getKey().intValue(), this.world));
+                                this.displayItems.add(new Item((float) positionData[0]/1000,  (float) positionData[1]/1000, entry.getKey().intValue(), this.world));
                             }
                         }
                         break;
@@ -583,6 +582,14 @@ public class HUBGGame implements Screen {
         if (!this.paused) {
             r = this.getCameraRotation();
 
+            if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
+                selectGun(0);
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
+                selectGun(1);
+            }
+
             if (Gdx.input.isKeyPressed(Input.Keys.S)) {
                 impulse.add(new Vector2((this.sprint ? 2 : 1) * -60 * this.player.b2body.getMass() * MathUtils.cos(r), (this.sprint ? 2 : 1) * -60 * this.player.b2body.getMass() * MathUtils.sin(r)));
             }
@@ -682,6 +689,8 @@ public class HUBGGame implements Screen {
         if (player.weapon.active) {
 
             if (reloadtime >= WeaponList.reloadTime.get(player.playerWeapons[gameHUD.getBoxSelected()])) {
+
+                // Reload
                 int currentammo = player.ammo;
                 player.ammo = Math.max(0, player.ammo - WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]) + player.gunAmmo[gameHUD.getBoxSelected()]);
                 if (player.ammo == 0) {
@@ -693,10 +702,16 @@ public class HUBGGame implements Screen {
                 reloading = false;
                 reloadtime = 0;
 
+                this.soundHashMap.get(-3000).play(1);
+
                 conn.write(32, new int[] {player.ammo, player.gunAmmo[0], player.gunAmmo[1]});
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.R) && player.gunAmmo[gameHUD.getBoxSelected()] < WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()])) {
+                if (!reloading) {
+                    this.actions.add("Reloading weapon...");
+                }
+
                 reloading = true;
             }
 
@@ -735,6 +750,16 @@ public class HUBGGame implements Screen {
         } else {
             reloadtime = 0;
             reloading = false;
+        }
+    }
+
+    public void selectGun(int boxID) {
+        if (player.weapon.getCurrentWeapon() != player.playerWeapons[boxID]) {
+            player.weapon.setCurrentWeapon(player.playerWeapons[boxID]);
+            conn.write(31, new int[] {ID, player.playerWeapons[boxID]});
+
+            gameHUD.a.active = boxID == 0;
+            gameHUD.b.active = boxID == 1;
         }
     }
 
@@ -829,7 +854,7 @@ public class HUBGGame implements Screen {
             this.main.batch.begin();
 
             HUBGGame.latoFont.getData().setScale(0.2f);
-            HUBGGame.latoFont.draw(this.main.batch, String.format("X: %d | Y: %d | R: %d | Alive: %d", (int) this.player.b2body.getPosition().x - 5000, (int) this.player.b2body.getPosition().y - 5000, (int) this.normalizeAngle((this.player.b2body.getAngle() * -360 / (2 * Math.PI)) + 90), this.alive), this.staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, this.staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
+            HUBGGame.latoFont.draw(this.main.batch, String.format("X: %d | Y: %d | R: %d | Alive: %d | Ammo: %d", (int) this.player.b2body.getPosition().x - 5000, (int) this.player.b2body.getPosition().y - 5000, (int) this.normalizeAngle((this.player.b2body.getAngle() * -360 / (2 * Math.PI)) + 90), this.alive, this.player.ammo), this.staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, this.staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize + 20);
 
             for (int i = 0; i < this.actions.size(); i++) {
                 HUBGGame.latoFont.draw(this.main.batch, this.actions.get(i), this.staticPort.getScreenWidth() / 2 - minMapPadding - miniMapSize + 10, this.staticPort.getScreenHeight() / 2 - minMapPadding - miniMapSize - 10 - 15 * i);
