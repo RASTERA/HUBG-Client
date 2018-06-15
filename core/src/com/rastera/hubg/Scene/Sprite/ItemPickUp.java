@@ -15,15 +15,11 @@ import com.rastera.hubg.Util.ItemList;
 import java.util.ArrayList;
 
 public class ItemPickUp extends Sprite {
-    private int weaponID = 0;
 
-    private int width = 200;
-    private int itemHeight = 60;
-
+    private int width = 200;  // Declaring the basic bounds for the item pickup box
+    private int itemHeight = 50;
     public ArrayList<Fixture> items;
-
     private ShapeRenderer sr;
-
     private int screenHeight;
     private int screenWidth;
     private HUBGGame game;
@@ -36,6 +32,12 @@ public class ItemPickUp extends Sprite {
         this.game = game;
     }
 
+    /**
+     * Updates the location fo the UI according to the screen size
+     *
+     * @param screenHeight The height of the screen
+     * @param screenWidth The Width of the screen
+     */
     public void updateLocation (int screenHeight, int screenWidth) {
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
@@ -43,6 +45,14 @@ public class ItemPickUp extends Sprite {
         this.setPosition(screenWidth / -2 + 5, 0);
     }
 
+    /**
+     * Process mouse click
+     *
+     * @param x The x coordinate of the click
+     * @param y The y coordinate of the click
+     * @param mb The mouse button
+     * @return A boolean that describes if a item was clicked or not
+     */
     public boolean processKeyDown (int x, int y, int mb) {
         System.out.println(x + " " + y);
         x -= this.screenWidth / 2;
@@ -51,7 +61,7 @@ public class ItemPickUp extends Sprite {
         for (int i = 0; i < this.items.size(); i++) {
             if (x > this.getX() + 2 && x < this.getX() + this.width - 2  && y > this.getY() + 2 - (this.itemHeight + 4)*(i+1) && y < this.getY() + 2 - (this.itemHeight + 4)*(i+1) + this.itemHeight){
 
-                this.game.pickupItem(this.items.get(i));
+                this.game.pickupItem(this.items.get(i));  // Calling the main item pickup method to send message to server
                 return true;
             }
         }
@@ -60,9 +70,16 @@ public class ItemPickUp extends Sprite {
 
     }
 
+    /**
+     * Drawing the UI
+     * @param sb The batcher used to draw
+     */
     public void draw (Batch sb) {
+        // Enabling transparency in opengl
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        // Drawing the boxes and the different items
 
         this.sr.setColor(0.2f, 0.2f, 0.2f, 0.4f);
         this.sr.begin(ShapeRenderer.ShapeType.Filled);
@@ -82,6 +99,7 @@ public class ItemPickUp extends Sprite {
 
         font.getData().setScale(0.2f);
 
+        // Drawing the icons and the description/names
         for (int i = 0; i < this.items.size(); i++) {
             g = ItemList.itemGraphics.get(this.items.get(i).getUserData());
             scale = Math.max(g.getWidth() / (this.itemHeight - 10), g.getHeight() / (this.itemHeight - 10));
@@ -94,6 +112,7 @@ public class ItemPickUp extends Sprite {
 
         sb.end();
 
+        // Disabling to allow normal drawing
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
     }

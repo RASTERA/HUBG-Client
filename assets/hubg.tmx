@@ -153,7 +153,7 @@
   <object id="192" x="7728" y="38832" width="48" height="48"/>
   <object id="193" x="7728" y="38208" width="48" height="480"/>
   <object id="194" x="8016" y="38400" width="48" height="240"/>
-  <object id="195" x="8256" y="38688" width="384" height="48" rotation="180"/>
+  <object id="195" x="7872" y="38640" width="384" height="48"/>
   <object id="198" x="15552" y="16080" width="48" height="96"/>
   <object id="199" x="15360" y="16128" width="192" height="48"/>
   <object id="200" x="15360" y="16176" width="48" height="240"/>
