@@ -50,7 +50,9 @@ public class ItemPickUp extends Sprite {
 
         for (int i = 0; i < this.items.size(); i++) {
             if (x > this.getX() + 2 && x < this.getX() + this.width - 2  && y > this.getY() + 2 - (this.itemHeight + 4)*(i+1) && y < this.getY() + 2 - (this.itemHeight + 4)*(i+1) + this.itemHeight){
+
                 this.game.pickupItem(this.items.get(i));
+
             }
         }
 

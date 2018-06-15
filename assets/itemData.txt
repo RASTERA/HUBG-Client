@@ -2,3 +2,4 @@
 -1001,AK-47,Classic assult rifle,items/SideView/-1001.png,weapon
 -1002,Sniper,Huge Damage,items/SideView/-1002.png,weapon
 -1003,SMG,Classic SMG,items/SideView/-1003.png,weapon
+-1004,AMMO,AMMO,images/hubg-logo.png,ammo

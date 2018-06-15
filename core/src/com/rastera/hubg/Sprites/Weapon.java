@@ -6,6 +6,8 @@ import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Screens.HUBGGame;
 import com.rastera.hubg.Util.WeaponList;
 
+import java.util.HashMap;
+
 public class Weapon extends Sprite {
     private HUBGGame game;
     public boolean active = false;
@@ -21,6 +23,7 @@ public class Weapon extends Sprite {
         this.gun = weapon;
 
         if (weapon != 0) {
+
             System.out.println("switched");
             this.setTexture(WeaponList.graphics.get(weapon));
             this.setSize(this.getTexture().getWidth() / 4 / HUBGMain.PPM, this.getTexture().getHeight() / 4 / HUBGMain.PPM);

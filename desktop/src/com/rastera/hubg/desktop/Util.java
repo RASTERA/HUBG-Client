@@ -43,7 +43,7 @@ public class Util {
     // Center text in LIBGDX
     public static void centerText(Batch batch, BitmapFont font, float size, String text, int x, int y) {
 
-        font = cloneFont(font);
+        //font = cloneFont(font);
 
         font.getData().setScale(size);
 

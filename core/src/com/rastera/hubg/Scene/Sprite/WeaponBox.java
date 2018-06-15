@@ -8,10 +8,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.rastera.hubg.Scene.HUD;
+import com.rastera.hubg.Screens.HUBGGame;
 import com.rastera.hubg.Sprites.Item;
 import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Util.ItemList;
 import com.rastera.hubg.Util.WeaponList;
+import com.rastera.hubg.desktop.Util;
 
 public class WeaponBox extends Sprite {
     private int weaponID = 0;
@@ -89,5 +91,14 @@ public class WeaponBox extends Sprite {
         }
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
+
+        System.out.println("Box ID:" + boxID);
+
+        if (player.playerWeapons != null &&     player.playerWeapons[boxID] < 0) {
+            sb.begin();
+            Util.centerText(sb, HUBGGame.latoFont, 0.2f, "" + WeaponList.getAmmo(player.playerWeapons[boxID]), (int) getX(), (int) getY());
+            sb.end();
+        }
     }
+
 }
