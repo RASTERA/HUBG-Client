@@ -33,7 +33,7 @@ public class Communicator {
     private boolean listening = true;
 
     // Toggles between production and development mode
-    public static final boolean developmentMode = true;
+    public static final boolean developmentMode = !true;
 
     // Get URL based on development mode
     public static String getURL(RequestDestination destination) {

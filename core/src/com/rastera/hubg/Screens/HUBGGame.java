@@ -90,6 +90,7 @@ public class HUBGGame implements Screen {
     private float fireDelay = 0;
 
     public int[] weaponData;
+    public int[] ammoInfo = {0, 0, 0};
 
     private com.rastera.hubg.desktop.Game parentGame;
 
@@ -271,6 +272,8 @@ public class HUBGGame implements Screen {
                 }
                 long[] cords = (long[]) ServerMessage.message;
 
+                System.out.println("update from " + cords[3] + " " + this.ID);
+
                 if (this.ID == cords[3]) {
                     break;
                 }
@@ -280,7 +283,6 @@ public class HUBGGame implements Screen {
                     if (aEnemyList.getId() == cords[3]) {
                         aEnemyList.updateLocation(cords);
                         found = true;
-
                         break;
                     }
                 }
@@ -379,9 +381,17 @@ public class HUBGGame implements Screen {
             case 32:
                 int[] dat = (int[]) ServerMessage.message;
 
-                player.ammo = dat[0];
-                player.gunAmmo[0] = dat[1];
-                player.gunAmmo[1] = dat[2];
+                if (player == null) {
+                    ammoInfo[0] = dat[0];
+                    ammoInfo[1] = dat[1];
+                    ammoInfo[2] = dat[2];
+                } else {
+                    player.ammo = dat[0];
+                    player.gunAmmo[0] = dat[1];
+                    player.gunAmmo[1] = dat[2];
+                }
+
+
                 break;
         }
     }
@@ -436,8 +446,6 @@ public class HUBGGame implements Screen {
                         break;
 
                     case 1:
-                        System.out.println("Start game:" + pMessage.type);
-
                         JSONObject positionJSON;
                         JSONObject user;
                         long[] position;
@@ -467,6 +475,9 @@ public class HUBGGame implements Screen {
                                         Gdx.input.setInputProcessor(new customInputProcessor(this.gameHUD));
                                         this.connecting = false;
                                         this.player.playerWeapons = weaponData;
+                                        this.player.ammo = ammoInfo[0];
+                                        this.player.gunAmmo[0] = ammoInfo[1];
+                                        this.player.gunAmmo[1] = ammoInfo[2];
                                     }
 
                                 } else if (!this.hasEnemy(user.getInt("id"))) {
