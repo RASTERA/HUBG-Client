@@ -22,7 +22,7 @@ public abstract class InteractiveTileObject {
         PolygonShape shape = new PolygonShape();
 
         bdef.type= BodyDef.BodyType.StaticBody;
-        bdef.position.set(bounds.getX() + bounds.getWidth() / 2, bounds.getY() + bounds.getHeight() / 2);
+        bdef.position.set(bounds.getX() + bounds.getWidth(), bounds.getY() + bounds.getHeight());
 
         this.body = world.createBody(bdef);
 

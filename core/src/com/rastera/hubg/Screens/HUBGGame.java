@@ -29,6 +29,7 @@ import com.rastera.hubg.Sprites.Brick;
 import com.rastera.hubg.Sprites.Enemy;
 import com.rastera.hubg.Sprites.Item;
 import com.rastera.hubg.Sprites.Player;
+import com.rastera.hubg.Tools.B2WorldCreator;
 import com.rastera.hubg.Util.ItemLoader;
 
 import com.rastera.hubg.collisionListener;
@@ -45,14 +46,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class HUBGGame implements Screen {
 
     public static BitmapFont latoFont;
-    
+
     private OrthographicCamera gamecam;
     private OrthographicCamera staticcam;
     private float defaultZoom;
     private Viewport gamePort;
     private Viewport staticPort;
     private HUBGMain main;
-    
+
     private TextureAtlas weaponAtlas;
     private OrthogonalTiledMapRenderer renderer;
     private TiledMapTileLayer displayLayer;
@@ -102,7 +103,7 @@ public class HUBGGame implements Screen {
     private LinkedList<Item> displayItems;
     private LinkedBlockingQueue<Item> itemQueue;
 
-
+    private B2WorldCreator creator;
     //HUD
 
     private HUD gameHUD;
@@ -126,6 +127,8 @@ public class HUBGGame implements Screen {
         TiledMap map = mapLoader.load("hubg.tmx");
         this.renderer = new OrthogonalTiledMapRenderer(map, 5 / HUBGMain.PPM);
         this.displayLayer = (TiledMapTileLayer) map.getLayers().get(0);
+
+        creator = new B2WorldCreator(world, map);
 
         //////////////////TESTING
         Brick b = new Brick(this.world, map, new Rectangle(10, 10, 100 / HUBGMain.PPM, HUBGMain.PPM));
@@ -582,10 +585,10 @@ public class HUBGGame implements Screen {
                 this.gamecam.zoom += 0.01;
             } else {
 
-                if (!this.paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && this.gamecam.zoom < this.player.weapon.getScopeSize() / HUBGMain.PPM + this.defaultZoom) {
-                    this.gamecam.zoom += 0.01;
-                } else if (this.gamecam.zoom > this.defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || this.paused)) {
-                    this.gamecam.zoom -= 0.01;
+                if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() + 1000000 / HUBGMain.PPM + defaultZoom) {
+                    gamecam.zoom += 0.01;
+                } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
+                    gamecam.zoom -= 0.01;
                 }
 
             }
