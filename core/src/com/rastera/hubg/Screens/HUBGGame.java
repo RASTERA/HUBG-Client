@@ -960,7 +960,7 @@ public class HUBGGame implements Screen {
 
             this.renderer.render(new int[] {2});
 
-            this.b2dr.render(this.world, this.gamecam.combined);
+            //this.b2dr.render(this.world, this.gamecam.combined);
         }
 
 
