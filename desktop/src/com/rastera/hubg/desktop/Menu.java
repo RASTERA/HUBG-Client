@@ -1,4 +1,9 @@
-// Some game magic bs
+// PROJECT HUBG
+// Henry Tu, Ryan Zhang, Syed Safwaan
+// rastera.xyz
+// 2018 ICS4U FINAL
+//
+// Menu.java - Main menu
 
 package com.rastera.hubg.desktop;
 
@@ -16,98 +21,106 @@ import java.io.File;
 import java.util.Date;
 import java.util.Iterator;
 
-class Menu extends GeiPanel implements KeyListener, ActionListener {
+class Menu extends HUBGPanel implements KeyListener, ActionListener {
 
+    // Subpanel config
     private enum SUBPANEL { ACTIVITY, SHOP, CHAT }
     private SUBPANEL currentPanel = SUBPANEL.ACTIVITY;
-    private final GeiButton startButton;
-    private final GeiButton activityButton;
-    private final GeiButton shopButton;
-    private final GeiButton chatButton;
-    private final GeiButton logoutButton;
 
-    private final GeiEdgeButton minimizeButton;
-    private final GeiEdgeButton closeButton;
+    // Core UI elements
+    private final HUBGButton startButton;
+    private final HUBGButton activityButton;
+    private final HUBGButton shopButton;
+    private final HUBGButton chatButton;
+    private final HUBGButton logoutButton;
 
-    private final GeiScrollPane activityScrollPane;
-    private final GeiScrollPane chatScrollPane;
-    private final GeiScrollPane shopScrollPane;
+    private final HUBGEdgeButton minimizeButton;
+    private final HUBGEdgeButton closeButton;
+
+    private final HUBGScrollPane activityScrollPane;
+    private final HUBGScrollPane chatScrollPane;
+    private final HUBGScrollPane shopScrollPane;
     private final JProgressBar loadingBar;
-    private GeiTextField chatTextField;
-    private GeiActionPanel recentActionsPanel;
-    private GeiShopPanel shopPanel;
-    private GeiChatPanel chatPanel;
+    private HUBGTextField chatTextField;
+    private HUBGActionPanel recentActionsPanel;
+    private HUBGShopPanel shopPanel;
+    private HUBGChatPanel chatPanel;
     private final int activityPanelWidth = 252;
     private final int shopPanelWidth = 500;
     private final int chatPanelWidth = 500;
     private int currentPanelWidth = this.activityPanelWidth;
-    //private double currentPanelWidthPrecise = (float) currentPanelWidth;
-    //public int currentPanelVelocity = 0;
-    //private int currentPanelTarget = activityPanelWidth;
+
     private BufferedImage background;
+
+    // Dynamic data
     private String statsText = "-- Kills      |      -- Deaths      |      -- Matches      |      -- Zhekko      |      -- KTD";
     private long lastUpdated = System.currentTimeMillis();
     private volatile boolean statsLoaded = false;
 
     public Menu(Main parent) {
 
+        // Configs core settings
         this.parent = parent;
-        this.parent.setMasterTimer(10000);
+        this.parent.setMasterTimer(10000); // 10s timer to update stats
         this.constantUpdate = true;
 
+        // Load resources
         try {
             this.background = ImageIO.read(new File("images/menu-background-2.png"));
         } catch (Exception e) {
             Main.errorQuit(e);
         }
 
-        this.minimizeButton = new GeiEdgeButton("-");
+        // Configure core UI
+        this.minimizeButton = new HUBGEdgeButton("-");
         this.minimizeButton.setActionCommand("minimize");
         this.minimizeButton.addActionListener(this);
 
-        this.closeButton = new GeiEdgeButton("X");
+        this.closeButton = new HUBGEdgeButton("X");
         this.closeButton.setActionCommand("close");
         this.closeButton.addActionListener(this);
 
-        this.startButton = new GeiButton("Start");
+        this.startButton = new HUBGButton("Start");
         this.startButton.setActionCommand("start");
         this.startButton.addActionListener(this);
 
-        this.activityButton = new GeiButton(Rah.getScaledIcon("icons/log.png"));
+        this.activityButton = new HUBGButton(Util.getScaledIcon("icons/log.png"));
         this.activityButton.setActionCommand("activity");
         this.activityButton.addActionListener(this);
 
-        this.shopButton = new GeiButton(Rah.getScaledIcon("icons/shop.png"));
+        this.shopButton = new HUBGButton(Util.getScaledIcon("icons/shop.png"));
         this.shopButton.setActionCommand("shop");
         this.shopButton.addActionListener(this);
 
-        this.chatButton = new GeiButton(Rah.getScaledIcon("icons/chat.png"));
+        this.chatButton = new HUBGButton(Util.getScaledIcon("icons/chat.png"));
         this.chatButton.setActionCommand("chat");
         this.chatButton.addActionListener(this);
 
-        this.logoutButton = new GeiButton(Rah.getScaledIcon("icons/logout.png"));
+        this.logoutButton = new HUBGButton(Util.getScaledIcon("icons/logout.png"));
         this.logoutButton.setActionCommand("logout");
         this.logoutButton.addActionListener(this);
 
+        // Create subpanels
         try {
-            this.recentActionsPanel = new GeiActionPanel(this.activityPanelWidth, Main.session.user.getJSONArray("actions"));
-            this.shopPanel = new GeiShopPanel(this.shopPanelWidth);
-            this.chatPanel = new GeiChatPanel(this.chatPanelWidth, Main.session.user.getJSONArray("actions"));
+            this.recentActionsPanel = new HUBGActionPanel(this.activityPanelWidth, Main.session.user.getJSONArray("actions"));
+            this.shopPanel = new HUBGShopPanel(this.shopPanelWidth);
+            this.chatPanel = new HUBGChatPanel(this.chatPanelWidth, Main.session.user.getJSONArray("actions"));
         } catch (Exception e) {
             Main.errorQuit(e);
         }
 
+        // Core UI
         this.loadingBar = new JProgressBar();
         this.loadingBar.setIndeterminate(true);
         
-        this.chatScrollPane = new GeiScrollPane(this.chatPanel);
+        this.chatScrollPane = new HUBGScrollPane(this.chatPanel);
         this.chatScrollPane.setParent(this);
-        this.chatTextField = new GeiTextField();
+        this.chatTextField = new HUBGTextField();
 
-        this.shopScrollPane = new GeiScrollPane(this.shopPanel);
+        this.shopScrollPane = new HUBGScrollPane(this.shopPanel);
                 this.shopScrollPane.setParent(this);
 
-        this.activityScrollPane = new GeiScrollPane(this.recentActionsPanel);
+        this.activityScrollPane = new HUBGScrollPane(this.recentActionsPanel);
         this.activityScrollPane.setParent(this);
 
         this.recentActionsPanel.setParent(this.activityScrollPane);
@@ -118,17 +131,21 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.addKeyListener(this);
         this.setFocusable(true);
 
+        // Adds edge button if borderless
         if (Main.borderless) {
             this.add(Menu.this.minimizeButton);
             this.add(Menu.this.closeButton);
         }
 
+        // Submit chat message on enter
         this.chatTextField.addActionListener(e -> this.sendMessage());
 
+        // Separate thread to enable loading screen
         Thread loadResources = new Thread(() -> {
 
             System.out.println("Loading stats...");
 
+            // Downloads stop data
             try {
                 Main.shopData = Communicator.getShop();
 
@@ -137,7 +154,9 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                 String key;
                 while (keys.hasNext()){
                     key = keys.next().toString();
-                    Main.skinHashMap.put(key, Rah.decodeToImage(Main.shopData.getJSONObject(key).getString("image")));
+
+                    // Decodes skins from base64 to buffered image
+                    Main.skinHashMap.put(key, Util.decodeToImage(Main.shopData.getJSONObject(key).getString("image")));
                 }
 
             } catch (Exception e) {
@@ -154,6 +173,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             Menu.this.updateData();
 
+            // Start buttons
             Menu.this.add(Menu.this.startButton);
             Menu.this.add(Menu.this.activityButton);
             Menu.this.add(Menu.this.shopButton);
@@ -163,8 +183,6 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             this.minimizeButton.setBackgroundDark();
             this.closeButton.setBackgroundDark();
             this.resetButtons();
-
-
         });
 
         loadResources.start();
@@ -172,11 +190,9 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         if (!Main.musicPlaying()) {
             Main.startMusic();
         }
-
-        //System.out.println(Main.session.getAuthToken().getToken());
-
     }
 
+    // Send chat message
     public void sendMessage() {
         String message = this.chatTextField.getText();
         this.chatTextField.setText("");
@@ -184,7 +200,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         if (message != null && message.length() > 0) {
 
             JSONObject newMessages = Communicator.sendMessage(message);
-            GeiChatPanel.updateMessages(newMessages);
+            HUBGChatPanel.updateMessages(newMessages);
             this.chatPanel.update(Main.session.messages);
             this.chatScrollPane.revalidate();
             this.chatScrollPane.repaint();
@@ -192,22 +208,27 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         }
     }
 
-
+    // Update dynamic data
     public void updateData() {
+
+        // Separate thread to prevent slowdown
         Thread data = new Thread(() -> {
             try {
-
+                // Sends token to authenticate
                 JSONObject tempUser = Communicator.refresh(Main.session.getToken());
 
+                // Refreshes user object/session
                 Main.session.user = tempUser;
                 Main.session.updateJSON();
-                GeiChatPanel.updateMessages(Communicator.getMessages());
 
-                System.out.println(tempUser);
+                // Update messages
+                HUBGChatPanel.updateMessages(Communicator.getMessages());
 
+                // Updates UI
                 Menu.this.statsText = String.format("%s Kills      |      %s Deaths      |      %.2f KTD      |      %s Zhekko", Main.session.user.getString("kills"), Main.session.user.getString("deaths"), Main.session.user.getDouble("kills") / Math.max(1, Main.session.user.getDouble("deaths")), Main.session.user.getString("money"));
                 Menu.this.lastUpdated = System.currentTimeMillis();
 
+                // Updates subpanel
                 switch (this.currentPanel) {
                     case ACTIVITY:
                         Menu.this.recentActionsPanel.update(Main.session.user.getJSONArray("actions"));
@@ -230,6 +251,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
     }
 
+    // Clear all subpanels
     public void clearPanels() {
         this.parent.setMasterTimer(10000);
 
@@ -241,12 +263,9 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         this.shopButton.selected = false;
         this.activityButton.selected = false;
         this.chatButton.selected = false;
-
-        //this.shopButton.setEnabled(true);
-        //this.activityButton.setEnabled(true);
-        //this.chatButton.setEnabled(true);
     }
 
+    // Clear subpanel buttons
     public void resetButtons() {
         switch (this.currentPanel) {
             case ACTIVITY:
@@ -264,6 +283,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
         }
     }
 
+    // Button actions
     public void actionPerformed(ActionEvent e) {
 
         switch (e.getActionCommand()) {
@@ -298,15 +318,11 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             case "shop":
 
-                //if (this.currentPanelVelocity == 0) {
-
                 System.out.println("SWITCHED TO SHOP");
 
                 this.currentPanel = SUBPANEL.SHOP;
                 this.currentPanelWidth = this.shopPanelWidth;
-                //this.currentPanelTarget = this.shopPanelWidth;
-                //this.currentPanelVelocity = this.currentPanelTarget > this.currentPanelWidth ? 1 : -1;
-                //this.parent.setMasterTimer(500);
+
 
                 this.clearPanels();
                 this.add(this.shopScrollPane);
@@ -314,21 +330,14 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 this.repaint();
 
-                //}
-
                 break;
 
             case "activity":
-
-                //if (this.currentPanelVelocity == 0) {
 
                 System.out.println("SWITCHED TO ACTIVITY");
 
                 this.currentPanel = SUBPANEL.ACTIVITY;
                 this.currentPanelWidth = this.activityPanelWidth;
-                //this.currentPanelTarget = this.activityPanelWidth;
-                //this.currentPanelVelocity = this.currentPanelTarget > this.currentPanelWidth ? 1 : -1;
-                //this.parent.setMasterTimer(500);
 
                 this.clearPanels();
                 this.add(this.activityScrollPane);
@@ -336,13 +345,11 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
                 this.repaint();
 
-                //}
-
                 break;
 
             case "logout":
 
-                if(JOptionPane.showConfirmDialog (Rah.checkParent(this.parent), "Are you sure you want to logout?","RASTERA Authentication Service", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION){
+                if(JOptionPane.showConfirmDialog (Util.checkParent(this.parent), "Are you sure you want to logout?","RASTERA Authentication Service", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION){
                     System.out.println("SWITCH");
 
                     Session.destroySession();
@@ -350,9 +357,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                     this.parent.startPage(Main.Pages.LOGIN);
                 }
 
-
                 break;
-
 
             case "minimize":
                 this.parent.minimize();
@@ -383,12 +388,15 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
         Graphics2D g = (Graphics2D) graphics;
 
+        // Enable anti alias
         g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+        // Edge button config
         this.minimizeButton.setBounds(this.getWidth() - 40, 0, 20, 20);
         this.closeButton.setBounds(this.getWidth() - 20, 0, 20, 20);
 
+        // Loading screen
         if (!this.statsLoaded) {
             this.loadingBar.setBounds(50, this.getHeight() / 2 + 40, this.getWidth() - 100, 20);
 
@@ -398,9 +406,6 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
             g.drawImage(this.background, 0, 0, size, size, this);
 
-            //g.setColor(Color.WHITE);
-            //g.fillRect(0, 0, this.getWidth(), this.getHeight());
-
             g.setColor(Color.BLACK);
             g.setFont(Main.getFont("Lato-Light", 30));
 
@@ -409,37 +414,9 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
 
         } else {
 
-            /*
-            if (this.currentPanelVelocity != 0) {
-
-                this.shopButton.setEnabled(false);
-                this.activityButton.setEnabled(false);
-
-                double trueVel = this.currentPanelVelocity * Math.max(Math.abs(this.currentPanelWidthPrecise - (double) this.currentPanelTarget) / 5, 0.05);
-
-                System.out.println(trueVel);
-
-                this.currentPanelWidthPrecise += trueVel;
-                this.currentPanelWidth = (int) this.currentPanelWidthPrecise;
-
-                if (Math.abs(this.currentPanelWidth - this.currentPanelTarget) <= 5) {
-                    this.currentPanelWidth = this.currentPanelTarget;
-                    this.currentPanelWidthPrecise = (float) this.currentPanelTarget;
-                    this.currentPanelVelocity = 0;
-                    this.parent.setMasterTimer(10000);
-
-                    this.shopButton.setEnabled(true);
-                    this.activityButton.setEnabled(true);
-
-                    System.out.println("reset");
-                    repaint();
-                }
-            } */
-
-            //g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
-
             this.parent.updateFrameRate();
 
+            // Sets JButton positions
             this.startButton.setBounds(20, 10, 150, 40);
 
             this.activityButton.setBounds(this.getWidth() - this.currentPanelWidth, this.getHeight() - 40, this.currentPanelWidth / 4, 40);
@@ -447,17 +424,15 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             this.chatButton.setBounds(this.getWidth() - this.currentPanelWidth / 2, this.getHeight() - 40, this.currentPanelWidth / 4, 40);
             this.logoutButton.setBounds(this.getWidth() - this.currentPanelWidth / 4, this.getHeight() - 40, this.currentPanelWidth / 4, 40);
 
-            g.setColor(Color.WHITE);
-            g.fillRect(0, 0, Main.w, Main.h);
-
+            // Background image
             int size = Math.max(this.getWidth() - this.currentPanelWidth, this.getHeight() - 60);
-
             g.drawImage(this.background, 0, 60, size, size, this);
 
+            // Topbar
             g.setColor(new Color(5, 15, 24));
             g.fillRect(0, 0, Main.w, 60);
 
-            // Recent Actions panel
+            // Subpanel update
             switch (this.currentPanel) {
                 case SHOP:
                     this.shopScrollPane.setBounds(this.getWidth() - this.shopPanelWidth, 60, this.shopPanelWidth + 1, this.getHeight() - 100);
@@ -475,17 +450,12 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
                     this.chatScrollPane.setBounds(this.getWidth() - this.chatPanelWidth, 60, this.chatPanelWidth + 1, this.getHeight() - 130);
                     this.chatScrollPane.revalidate();
                     this.chatScrollPane.repaint();
-
                     this.chatTextField.setBounds(this.getWidth() - this.chatPanelWidth, this.getHeight() - 70, this.chatPanelWidth, 30);
-
                     break;   
             }
 
+            // Text data
             g.setColor(Color.WHITE);
-
-            // Username
-            //g.setFont(Main.getFont("Lato-Light", 30));
-            //g.drawString(Main.session.getUsername(), Main.w - this.activityPanelWidth + 60, 40);
 
             // Top Bar stats
             g.setFont(Main.getFont("Lato-Light", 20));
@@ -498,7 +468,7 @@ class Menu extends GeiPanel implements KeyListener, ActionListener {
             g.setFont(Main.getFont("Lato-Light", 12));
             g.drawString(updateText, 10, this.getHeight() - 10);
 
-            // Penguin preview
+            // Skin preview
             int dimension = (int) (Math.min(this.getHeight(), this.getWidth()) * 0.6);
             g.drawImage(Main.skinHashMap.get(Main.session.getSkin()), (this.getWidth() - this.currentPanelWidth) / 2 - dimension / 2, (this.getHeight() + 60) / 2 - dimension / 2, dimension, dimension, this);
         }

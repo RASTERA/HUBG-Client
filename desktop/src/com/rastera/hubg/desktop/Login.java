@@ -1,4 +1,9 @@
-// Some game magic bs
+// PROJECT HUBG
+// Henry Tu, Ryan Zhang, Syed Safwaan
+// rastera.xyz
+// 2018 ICS4U FINAL
+//
+// Login .java - Login Screen
 
 package com.rastera.hubg.desktop;
 
@@ -17,28 +22,35 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 
-class Login extends GeiPanel implements ActionListener, KeyListener, MouseListener {
+class Login extends HUBGPanel implements ActionListener, KeyListener, MouseListener {
 
-    private final GeiTextField emailOrUserField;
+    // UI Elements
+    private final HUBGTextField emailOrUserField;
     private final JPasswordField passwordField;
     private final JLabel emailOrUserLabel;
     private final JLabel passwordLabel;
     private final JLabel forgetPasswordLabel;
     private final JLabel createAccountLabel;
     private final JLabel creditsLabel;
-    private final GeiButton loginButton;
+    private final HUBGButton loginButton;
 
-    private final GeiEdgeButton minimizeButton;
-    private final GeiEdgeButton closeButton;
+    // Window buttons
+    private final HUBGEdgeButton minimizeButton;
+    private final HUBGEdgeButton closeButton;
 
+    // Splash animation
     private final ArrayList<BufferedImage> backgroundFrames = new ArrayList<>();
     private BufferedImage rasteraLogo;
     private BufferedImage hubgLogo;
 
+    // Animation config
     private int frame = 0;
     private final int frameCap = 30;
 
+    // Flag for loading screen
     private volatile boolean tokenLogin = true;
+
+    // Graphics
     private BufferedImage background;
     private JProgressBar loadingBar;
 
@@ -46,28 +58,31 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.parent = parent;
         this.parent.setMasterTimer(45);
 
-        //this.constantUpdate = false;
-
+        // Loading bar
         this.loadingBar = new JProgressBar();
         this.loadingBar.setIndeterminate(true);
 
+        // Configures environment
         this.addKeyListener(this);
         this.setFocusable(true);
         this.setLayout(null);
 
-        this.minimizeButton = new GeiEdgeButton("-");
+        // UI Setup
+        this.minimizeButton = new HUBGEdgeButton("-");
         this.minimizeButton.setActionCommand("minimize");
         this.minimizeButton.addActionListener(this);
 
-        this.closeButton = new GeiEdgeButton("X");
+        this.closeButton = new HUBGEdgeButton("X");
         this.closeButton.setActionCommand("close");
         this.closeButton.addActionListener(this);
 
+        // Adds edge button if borderless
         if (Main.borderless) {
             this.add(this.minimizeButton);
             this.add(this.closeButton);
         }
 
+        // Import resources
         try {
             this.background = ImageIO.read(new File("images/menu-background-2.png"));
 
@@ -85,7 +100,8 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
             Main.errorQuit(e);
         }
 
-        this.emailOrUserField = new GeiTextField();
+        // Config core UI
+        this.emailOrUserField = new HUBGTextField();
         this.passwordField = new JPasswordField();
 
         this.emailOrUserLabel = new JLabel("Email/Username");
@@ -97,7 +113,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.emailOrUserLabel.setForeground(Color.WHITE);
         this.passwordLabel.setForeground(Color.WHITE);
 
-        this.loginButton = new GeiButton("SIGN IN");
+        this.loginButton = new HUBGButton("SIGN IN");
         this.loginButton.setActionCommand("login");
         this.loginButton.addActionListener(this);
         this.loginButton.setEnabled(false);
@@ -134,54 +150,52 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
             }
         });
 
+        // Credits
         this.creditsLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         this.creditsLabel.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-
-                JOptionPane.showMessageDialog(Rah.checkParent(Login.this.parent), "PROJECT HUBG | RASTERA | rastera.xyz\nLicenced under WTFPL\n\nDeveloped by:\nHenry Tu (github.com/henrytwo, henrytu.me)\nRyan Zhang (github.com/ryanz34)\nSyed Safwaan (github.com/syed-safwaan)\n\nICS4U Final Project - 2017/2018\n\nAll copyrighted works are property of their respective owner.\nIcons courtesy of icons8.com.", "RASTERA | PROJECT HUBG", JOptionPane.INFORMATION_MESSAGE);
-
-                //Rah.webbrowserOpen("https://rastera.xyz");
+                JOptionPane.showMessageDialog(Util.checkParent(Login.this.parent), "PROJECT HUBG | RASTERA | rastera.xyz\nLicenced under WTFPL\n\nDeveloped by:\nHenry Tu (github.com/henrytwo, henrytu.me)\nRyan Zhang (github.com/ryanz34)\nSyed Safwaan (github.com/syed-safwaan)\n\nICS4U Final Project - 2017/2018\n\nAll copyrighted works are property of their respective owner.\nIcons courtesy of icons8.com.", "RASTERA | PROJECT HUBG", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
-
+        // Password reset
         this.forgetPasswordLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         this.forgetPasswordLabel.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-
-                JOptionPane.showMessageDialog(Rah.checkParent(Login.this.parent), "Yeah... if you forget your password you're kinda out of luck ¯\\_(ツ)_/¯", "Message from Torvalds", JOptionPane.ERROR_MESSAGE);
-
-                //Rah.webbrowserOpen("https://rastera.xyz");
+                JOptionPane.showMessageDialog(Util.checkParent(Login.this.parent), "Yeah... if you forget your password you're kinda out of luck ¯\\_(ツ)_/¯", "Message from Torvalds", JOptionPane.ERROR_MESSAGE);
             }
         });
 
+        // Account creation
         this.createAccountLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         this.createAccountLabel.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                Rah.webbrowserOpen("https://rastera.xyz");
+                Util.webbrowserOpen("https://rastera.xyz");
             }
         });
 
         this.add(Login.this.loadingBar);
 
+        // Thread for validating token
         Thread tokenRefresh = new Thread(() -> {
+
+            // Loads token from session
             AuthToken tempAuth = Session.readSession();
 
             if (tempAuth != null) {
-
-                //disableLogin();
 
                 System.out.println("Login from token");
 
                 // Refresh token
                 Session tempSession = Communicator.login(tempAuth);
 
+                // Checks if token exists
                 if (tempSession.getUsername() != null) {
                     Main.session = tempSession;
                     this.removeKeyListener(this);
@@ -200,6 +214,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         tokenRefresh.start();
     }
 
+    // Add core UI
     public void startLoginUI() {
         this.remove(Login.this.loadingBar);
         this.tokenLogin = false;
@@ -221,6 +236,8 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.closeButton.setBackgroundDark();
     }
 
+    // Validate login credentials
+    // Ensure not blank
     private void validateText() {
         if (this.emailOrUserField.getText().length() > 0 && String.valueOf(this.passwordField.getPassword()).length() > 0) {
             this.loginButton.setEnabled(true);
@@ -229,6 +246,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         }
     }
 
+    // Disable UI while loading
     private void disableLogin() {
         this.loginButton.setEnabled(false);
         this.passwordField.setEditable(false);
@@ -244,14 +262,7 @@ class Login extends GeiPanel implements ActionListener, KeyListener, MouseListen
         this.loginButton.setText("SIGN IN");
     }
 
-    /*
-    *
-    * k so let's say you had a very short amount of time to code a game (which will be interviewed and stuff) and someone had code for a portion of the program, but it was only usable for that one person (since only they can understand it); although the logic's there, it would take you a long time to understand, it's unfinished, and requires quite a bit of revision.
-you create a new system that fits the basic criteria of your assignment and propose that they implement their own code in later.
-they want to implement their complex system right away, even though you have this short time span and don't have the basics of the project done.
-what do you do?
-    * */
-
+    // Start menu after successful auth
     private void startMenu(Session session) {
         System.out.println("Login Successful");
         Main.session = session;
@@ -287,6 +298,7 @@ what do you do?
 
     }
 
+    // Button actions
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
@@ -300,6 +312,7 @@ what do you do?
 
             case "login":
 
+                // Locks UI
                 this.disableLogin();
 
                 System.out.println("Trying to login...");
@@ -307,14 +320,14 @@ what do you do?
                 // Separate thread so that UI thread is not blocked
                 Thread authentication = new Thread(() -> {
 
-                    //Session session = new Session("Hi", "Hi");
                     Session session = Communicator.login(Login.this.emailOrUserField.getText(), String.valueOf(Login.this.passwordField.getPassword()));
 
+                    // Validates token
                     if (session == null) {
-                        JOptionPane.showMessageDialog(Rah.checkParent(this.parent), "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(Util.checkParent(this.parent), "An error occurred while connecting to the authentication server. Please try again later.", "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                         Login.this.enableLogin();
                     } else if (session.user == null) {
-                        JOptionPane.showMessageDialog(Rah.checkParent(this.parent), session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(Util.checkParent(this.parent), session.getToken(), "RASTERA Authentication Service", JOptionPane.ERROR_MESSAGE);
                         Login.this.enableLogin();
                     } else {
                         Login.this.startMenu(session);
@@ -354,6 +367,7 @@ what do you do?
         g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+        // Displays loading if waiting for token to be authorized
         if (this.tokenLogin) {
             this.loadingBar.setBounds(50, this.getHeight() / 2 + 40, this.getWidth() - 100, 20);
 
@@ -389,14 +403,9 @@ what do you do?
 
             int size = Math.max(this.getWidth() - 250, this.getHeight());
 
+            // Animate splash
             g.drawImage(this.backgroundFrames.get(this.frame), 0, this.getHeight() - size, size, size, this);
             g.drawImage(this.rasteraLogo, 30, this.getHeight() - 55, 150, 25, this);
-
-
-            g.setColor(new Color(1, 10, 19));
-            g.fillRect(this.getWidth() - 250, 0, 250, this.getHeight());
-
-            g.drawImage(this.hubgLogo, this.getWidth() - 230, 40, 210, 66, this);
 
             if (this.frame == this.frameCap) {
                 this.frame = 0;
@@ -404,6 +413,10 @@ what do you do?
                 this.frame++;
             }
 
+            g.setColor(new Color(1, 10, 19));
+            g.fillRect(this.getWidth() - 250, 0, 250, this.getHeight());
+
+            g.drawImage(this.hubgLogo, this.getWidth() - 230, 40, 210, 66, this);
         }
     }
 }

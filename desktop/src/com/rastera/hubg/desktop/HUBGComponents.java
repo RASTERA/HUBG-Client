@@ -1,3 +1,10 @@
+// PROJECT HUBG
+// Henry Tu, Ryan Zhang, Syed Safwaan
+// rastera.xyz
+// 2018 ICS4U FINAL
+//
+// HUBGComponents.java - Custon UI elements
+
 package com.rastera.hubg.desktop;
 
 import org.json.JSONArray;
@@ -10,100 +17,10 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
-class GeiShopItem {
+// Events in action panel
+class HUBGActionEvent {
 
-    public String name, description;
-    public long cost;
-    public BufferedImage texture;
-    public boolean unlocked;
-    public static final int height = 150;
-    public static final int width = 460;
-    public GeiPanel parent;
-
-    public GeiButton buyButton, useButton;
-
-    public GeiShopItem(GeiPanel parent, String name, JSONObject data) {
-        this.parent = parent;
-
-        try {
-            this.description = data.getString("description");
-            this.name = name;
-            this.cost = data.getLong("cost");
-            this.texture = Rah.decodeToImage(data.getString("image"));
-        } catch (Exception e) {
-            Main.errorQuit(e);
-        }
-
-        this.buyButton = new GeiButton(String.format("Z$%d", this.cost));
-        this.buyButton.setActionCommand("buy-" + this.name);
-        this.buyButton.addActionListener((ActionListener) this.parent);
-
-        this.useButton = new GeiButton(String.format("EQUIP", this.cost));
-        this.useButton.setActionCommand("use-" + this.name);
-        this.useButton.addActionListener((ActionListener) this.parent);
-
-        this.updateButtonState();
-
-        this.parent.add(this.buyButton);
-        this.parent.add(this.useButton);
-    }
-
-    public void updateButtonState() {
-
-        if (this.unlocked) {
-            this.buyButton.setEnabled(false);
-            //this.buyButton.setText("PURCHASED");
-
-            if (Main.session.getSkin().equals(this.name)) {
-                this.useButton.setText("EQUIPPED");
-                this.useButton.setEnabled(false);
-            } else {
-                this.useButton.setText("EQUIP");
-                this.useButton.setEnabled(true);
-            }
-        } else {
-            this.useButton.setEnabled(false);
-            this.useButton.setText("\uD83D\uDD12 LOCKED");
-
-            if (Main.session.getMoney() - this.cost <= 0) {
-                this.buyButton.setEnabled(false);
-            } else {
-                this.buyButton.setEnabled(true);
-            }
-        }
-
-    }
-
-    public void update(Graphics graphics, int x, int y) {
-
-        Graphics2D g = (Graphics2D) graphics;
-
-        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-
-        this.buyButton.setBounds(x + 140, y + 85, 120, 30);
-        this.useButton.setBounds(x + 270, y + 85, 120, 30);
-
-        g.setColor(new Color(5, 15, 24));
-        g.fillRect(x, y, GeiShopItem.width, height);
-
-        g.drawImage(this.texture, x + 20, y + 25, 100, 100, null);
-
-        g.setColor(Color.WHITE);
-
-        g.setFont(Main.getFont("Lato-Light", 30));
-        g.drawString(this.name, x + 140, y + 55);
-
-        g.setFont(Main.getFont("Lato-Light", 15));
-        g.drawString(this.description, x + 141, y + 73);
-
-
-    }
-}
-
-class GeiActionEvent {
-
+    // Color based on event type
     public enum Type {
         KILL(new Color(0, 63, 255)),
         KILLED(new Color(135, 6, 0)),
@@ -128,12 +45,13 @@ class GeiActionEvent {
     private String time;
     private Type type;
 
-    public GeiActionEvent(Type type, String caption, String time) {
+    public HUBGActionEvent(Type type, String caption, String time) {
         this.caption = caption;
         this.time = time;
         this.type = type;
     }
 
+    // Update graphics
     public void update(Graphics graphics, int x, int y) {
 
         Graphics2D g = (Graphics2D) graphics;
@@ -142,14 +60,15 @@ class GeiActionEvent {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         g.setColor(new Color(5, 15, 24));
-        g.fillRect(x, y, GeiActionEvent.width, height);
+        g.fillRect(x, y, HUBGActionEvent.width, height);
 
         g.setFont(Main.getFont("Lato-Light", 15));
 
         FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 15));
-        ArrayList<String> lines = Rah.wrapText(GeiActionEvent.width, this.caption, metrics);
+        ArrayList<String> lines = Util.wrapText(HUBGActionEvent.width, this.caption, metrics);
         g.setColor(Color.WHITE);
 
+        // Multiline
         for (int i = 0; i < Math.min(lines.size(), 2); i++) {
             g.drawString(lines.get(i), x + 10, y + 20 + (metrics.getHeight() + 2) * i);
         }
@@ -158,12 +77,13 @@ class GeiActionEvent {
         g.drawString(this.time, x + 10, y + height - 8);
 
         g.setColor(this.type.getColor());
-        g.fillRect(GeiActionEvent.width - 3 + x, y, 3, height);
+        g.fillRect(HUBGActionEvent.width - 3 + x, y, 3, height);
 
     }
 }
 
-class GeiEdgeButton extends JButton {
+// Edge UI button - Borderless mode
+class HUBGEdgeButton extends JButton {
 
     private final Color backgroundDark = new Color(1, 10, 19);
     private final Color foregroundDark = new Color(200, 200, 200);
@@ -173,16 +93,17 @@ class GeiEdgeButton extends JButton {
 
     private Color currentBackground;
 
-    public GeiEdgeButton(ImageIcon icon) {
+    public HUBGEdgeButton(ImageIcon icon) {
         super(icon);
         this.init();
     }
 
-    public GeiEdgeButton(String text) {
+    public HUBGEdgeButton(String text) {
         super(text);
         this.init();
     }
 
+    // Centralized init method
     public void init() {
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -192,10 +113,11 @@ class GeiEdgeButton extends JButton {
 
         this.setBackgroundLight();
 
+        // Enforces solid background
         this.addChangeListener(evt -> {
             if (this.getModel().isPressed()) {
                 this.setBackground(this.currentBackground);
-            } else if (GeiEdgeButton.this.getModel().isRollover()) {
+            } else if (HUBGEdgeButton.this.getModel().isRollover()) {
                 this.setBackground(this.currentBackground);
             } else {
                 this.setBackground(this.currentBackground);
@@ -203,6 +125,7 @@ class GeiEdgeButton extends JButton {
         });
     }
 
+    // Change colors based on existing background
     public void setBackgroundDark() {
         this.setColor(this.backgroundDark, this.foregroundDark);
     }
@@ -218,22 +141,26 @@ class GeiEdgeButton extends JButton {
     }
 }
 
-class GeiButton extends JButton {
 
+// General button with custom skin
+class HUBGButton extends JButton {
+
+    // For menu bars
     public boolean selected = false;
 
-    public GeiButton(ImageIcon icon) {
+    public HUBGButton(ImageIcon icon) {
         super(icon);
 
         this.init();
     }
 
-    public GeiButton(String text) {
+    public HUBGButton(String text) {
         super(text);
 
         this.init();
     }
 
+    // Centralized initialization
     public void init() {
         super.setContentAreaFilled(false);
 
@@ -244,20 +171,12 @@ class GeiButton extends JButton {
         this.setFocusPainted(false);
 
         this.setBorderPainted(false);
-        /*
-        this.addChangeListener(evt -> {
-            if (this.getModel().isPressed()) {
-                this.setBackground(new Color(30, 35, 40));
-            } else if (GeiButton.this.getModel().isRollover()) {
-                this.setBackground(new Color(30, 35, 40));
-            } else {
-                this.setBackground(new Color(30, 35, 40));
-            }
-        }); */
     }
 
     @Override
     protected void paintComponent(Graphics g) {
+
+        // Enforce solid background
         if (this.getModel().isPressed() || this.selected) {
             g.setColor(new Color(20, 25, 30));
         } else if (this.getModel().isRollover()) {
@@ -271,51 +190,56 @@ class GeiButton extends JButton {
     }
 }
 
-abstract class GeiPanel extends JPanel {
-
+// JPanel with timer parameters
+abstract class HUBGPanel extends JPanel {
     Main parent;
     public boolean constantUpdate = true;
-
 }
 
-class GeiActionPanel extends GeiPanel {
+// Displays recent actions
+class HUBGActionPanel extends HUBGPanel {
 
-    private ArrayList<GeiActionEvent> eventArrayList = new ArrayList<>();
+    private ArrayList<HUBGActionEvent> eventArrayList = new ArrayList<>();
     private final int width;
 
-    public GeiActionPanel(int width, JSONArray actionArray) {
+    public HUBGActionPanel(int width, JSONArray actionArray) {
         this.width = width;
 
         this.update(actionArray);
     }
 
+    // Update recent activities from server provided JSONArray
     public void update(JSONArray actionArray) {
 
+        // Updates timestamp
         long currentTime = System.currentTimeMillis();
+
+        // ArrayList of new ActionEvents
         this.eventArrayList = new ArrayList<>();
 
         try {
             JSONObject actionObject;
+
+            // Generate objects
             for (int i = actionArray.length() - 1; i > -1; i--) {
                 actionObject = actionArray.getJSONObject(i);
 
-                this.eventArrayList.add(new GeiActionEvent(GeiActionEvent.Type.valueOf(actionObject.getString("type")), actionObject.getString("caption"), Rah.getTimestamp(actionObject.getLong("date"))));
+                this.eventArrayList.add(new HUBGActionEvent(HUBGActionEvent.Type.valueOf(actionObject.getString("type")), actionObject.getString("caption"), Util.getTimestamp(actionObject.getLong("date"))));
             }
 
             if (actionArray.length() == 0) {
-                this.eventArrayList.add(new GeiActionEvent(GeiActionEvent.Type.INFO, "Nothing to see here :)", Rah.getTimestamp(currentTime)));
+                this.eventArrayList.add(new HUBGActionEvent(HUBGActionEvent.Type.INFO, "Nothing to see here :)", Util.getTimestamp(currentTime)));
             }
         } catch (Exception e) {
             Main.errorQuit(e);
         }
 
-        this.setPreferredSize(new Dimension(this.width, 60 + this.eventArrayList.size() * (GeiActionEvent.height + 10)));
-
-
+        // Set size for parent scroll
+        this.setPreferredSize(new Dimension(this.width, 60 + this.eventArrayList.size() * (HUBGActionEvent.height + 10)));
     }
 
-    public void setParent(GeiScrollPane parent) {
-        GeiScrollPane parent1 = parent;
+    public void setParent(HUBGScrollPane parent) {
+        HUBGScrollPane parent1 = parent;
     }
 
     @Override
@@ -335,13 +259,13 @@ class GeiActionPanel extends GeiPanel {
         g.drawString("Recent Activity", 20, 30);
 
         for (int y = 0; y < this.eventArrayList.size(); y++) {
-            this.eventArrayList.get(y).update(g, 20, 40 + y * (GeiActionEvent.height + 10));
+            this.eventArrayList.get(y).update(g, 20, 40 + y * (HUBGActionEvent.height + 10));
         }
     }
 }
 
-
-class GeiChatItem {
+// Chat item
+class HUBGChatItem {
 
     public static int height = 50;
     public final static int width = 460;
@@ -349,7 +273,7 @@ class GeiChatItem {
     private String text;
     private String time;
 
-    public GeiChatItem(String text, String time) {
+    public HUBGChatItem(String text, String time) {
         this.text = text;
         this.time = time;
     }
@@ -362,12 +286,12 @@ class GeiChatItem {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         FontMetrics metrics = g.getFontMetrics(Main.getFont("Lato-Light", 15));
-        ArrayList<String> lines = Rah.wrapText(GeiChatItem.width, this.text, metrics);
+        ArrayList<String> lines = Util.wrapText(HUBGChatItem.width, this.text, metrics);
 
         height = 50 + 10 * lines.size();
 
         g.setColor(new Color(5, 15, 24));
-        g.fillRect(x, y, GeiChatItem.width, height);
+        g.fillRect(x, y, HUBGChatItem.width, height);
 
         g.setFont(Main.getFont("Lato-Light", 15));
 
@@ -383,31 +307,36 @@ class GeiChatItem {
     }
 }
 
-class GeiChatPanel extends GeiPanel {
+// Chat panel
+class HUBGChatPanel extends HUBGPanel {
 
-    private ArrayList<GeiChatItem> chatArrayList = new ArrayList<>();
+    private ArrayList<HUBGChatItem> chatArrayList = new ArrayList<>();
     private final int width;
-    private GeiScrollPane parent;
+    private HUBGScrollPane parent;
 
-    public GeiChatPanel(int width, JSONArray chatArray) {
+    public HUBGChatPanel(int width, JSONArray chatArray) {
         this.width = width;
         JSONArray chatArray1 = chatArray;
     }
 
+    // Update messages given JSONObject
+    // Updates existing messages with new ones
     public static void updateMessages(JSONObject newMessages) {
         try {
-
+            // Check if request was successful
             if (newMessages.has("messages")) {
 
                 JSONArray messages = newMessages.getJSONArray("messages");
 
                 boolean located;
                 JSONObject existingMsg, newMsg;
-                //for (int i = messages.length() - 1; i > -1; i--) {
+
+                // Iterates and adds new messages to list
                 for (int i = 0; i < messages.length(); i++) {
 
                     located = false;
 
+                    // Checks if message already exists in local storage
                     for (int m = Main.session.messages.length() - 1; m > -1; m--) {
                         existingMsg = Main.session.messages.getJSONObject(m);
                         newMsg = messages.getJSONObject(i);
@@ -420,10 +349,6 @@ class GeiChatPanel extends GeiPanel {
                     if (!located) {
                         Main.session.messages.put(messages.getJSONObject(i));
                     }
-                    /*
-                    else {
-                        break;
-                    }*/
                 }
 
             } else {
@@ -435,29 +360,26 @@ class GeiChatPanel extends GeiPanel {
         }
     }
 
+    // Generate ChatItems from currently known messages
     public void update(JSONArray chatArray) {
 
         long currentTime = System.currentTimeMillis();
         this.chatArrayList = new ArrayList<>();
 
         try {
-            // Order messages are displayed
-
+            // Display messages in reverse order
             for (int i = chatArray.length() - 1; i > -1; i--) {
-            //for (int i = 0; i < chatArray.length(); i++) {
-                this.chatArrayList.add(new GeiChatItem(chatArray.getJSONObject(i).getString("message"), Rah.getTimestamp(chatArray.getJSONObject(i).getLong("time"))));
-
+                this.chatArrayList.add(new HUBGChatItem(chatArray.getJSONObject(i).getString("message"), Util.getTimestamp(chatArray.getJSONObject(i).getLong("time"))));
             }
         } catch (Exception e) {
             Main.errorQuit(e);
         }
 
-        this.setPreferredSize(new Dimension(this.width, 20 + this.chatArrayList.size() * (GeiChatItem.height + 10)));
+        this.setPreferredSize(new Dimension(this.width, 20 + this.chatArrayList.size() * (HUBGChatItem.height + 10)));
         this.parent.revalidate();
-        //this.parent.getVerticalScrollBar().setValue( this.parent.getVerticalScrollBar().getMaximum() );
     }
 
-    public void setParent(GeiScrollPane parent) {
+    public void setParent(HUBGScrollPane parent) {
         this.parent = parent;
     }
 
@@ -475,35 +397,136 @@ class GeiChatPanel extends GeiPanel {
         int yPos = 20;
 
         // Updates chat items
-        for (GeiChatItem aChatArrayList : this.chatArrayList) {
-            aChatArrayList.update(g, 20, yPos);
+        for (HUBGChatItem item : this.chatArrayList) {
+            item.update(g, 20, yPos);
 
-            yPos += GeiChatItem.height + 10;
+            yPos += HUBGChatItem.height + 10;
         }
     }
-
 }
 
 
-class GeiShopPanel extends GeiPanel implements ActionListener {
+// Shop item
+class HUBGShopItem {
 
-    private ArrayList<GeiShopItem> itemArrayList = new ArrayList<>();
+    public String name, description;
+    public long cost;
+    public BufferedImage texture;
+    public boolean unlocked;
+    public static final int height = 150;
+    public static final int width = 460;
+    public HUBGPanel parent;
+
+    public HUBGButton buyButton, useButton;
+
+    public HUBGShopItem(HUBGPanel parent, String name, JSONObject data) {
+        this.parent = parent;
+
+        // Extracts data from JSON
+        try {
+            this.description = data.getString("description");
+            this.name = name;
+            this.cost = data.getLong("cost");
+            this.texture = Util.decodeToImage(data.getString("image"));
+        } catch (Exception e) {
+            Main.errorQuit(e);
+        }
+
+        // Core UI
+        this.buyButton = new HUBGButton(String.format("Z$%d", this.cost));
+        this.buyButton.setActionCommand("buy-" + this.name);
+        this.buyButton.addActionListener((ActionListener) this.parent);
+
+        this.useButton = new HUBGButton(String.format("EQUIP", this.cost));
+        this.useButton.setActionCommand("use-" + this.name);
+        this.useButton.addActionListener((ActionListener) this.parent);
+
+        this.updateButtonState();
+
+        this.parent.add(this.buyButton);
+        this.parent.add(this.useButton);
+    }
+
+    // Updates button upon data update
+    public void updateButtonState() {
+
+        if (this.unlocked) {
+            this.buyButton.setEnabled(false);
+
+            if (Main.session.getSkin().equals(this.name)) {
+                this.useButton.setText("EQUIPPED");
+                this.useButton.setEnabled(false);
+            } else {
+                this.useButton.setText("EQUIP");
+                this.useButton.setEnabled(true);
+            }
+        } else {
+            this.useButton.setEnabled(false);
+            this.useButton.setText("\uD83D\uDD12 LOCKED");
+
+            if (Main.session.getMoney() - this.cost <= 0) {
+                this.buyButton.setEnabled(false);
+            } else {
+                this.buyButton.setEnabled(true);
+            }
+        }
+
+    }
+
+    // Updates graphics
+    public void update(Graphics graphics, int x, int y) {
+
+        Graphics2D g = (Graphics2D) graphics;
+
+        g.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+
+        this.buyButton.setBounds(x + 140, y + 85, 120, 30);
+        this.useButton.setBounds(x + 270, y + 85, 120, 30);
+
+        g.setColor(new Color(5, 15, 24));
+        g.fillRect(x, y, HUBGShopItem.width, height);
+
+        g.drawImage(this.texture, x + 20, y + 25, 100, 100, null);
+
+        g.setColor(Color.WHITE);
+
+        g.setFont(Main.getFont("Lato-Light", 30));
+        g.drawString(this.name, x + 140, y + 55);
+
+        g.setFont(Main.getFont("Lato-Light", 15));
+        g.drawString(this.description, x + 141, y + 73);
+    }
+}
+
+// Shop panel
+class HUBGShopPanel extends HUBGPanel implements ActionListener {
+
+    // Shop items
+    private ArrayList<HUBGShopItem> itemArrayList = new ArrayList<>();
+
     private int width;
-    private GeiScrollPane parent;
+    private HUBGScrollPane parent;
 
-    public GeiShopPanel(int width) {
+    public HUBGShopPanel(int width) {
         this.width = width;
     }
 
+    // Button pressed
     public void actionPerformed(ActionEvent e) {
 
         String[] eventSource = e.getActionCommand().split("-");
 
-        for (GeiShopItem item : this.itemArrayList) {
+        // Looks for origin item
+        for (HUBGShopItem item : this.itemArrayList) {
+
+            // Determines action type
             if (eventSource[1].equals(item.name)) {
 
+                // Confirms action and requests permission from server
                 if (eventSource[0].equals("buy")) {
-                    if(JOptionPane.showConfirmDialog (Rah.checkParent(this.parent), String.format("Are you sure you want to buy %s for Z$%d?", item.name, item.cost),"HUBG Shop", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION){
+                    if(JOptionPane.showConfirmDialog (Util.checkParent(this.parent), String.format("Are you sure you want to buy %s for Z$%d?", item.name, item.cost),"HUBG Shop", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION){
                         return;
                     }
 
@@ -517,17 +540,16 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
 
                 String response = Communicator.shopRequest(this.parent.getParent().parent, eventSource[0], eventSource[1]);
 
-                System.out.println(response);
-
+                // Checks server's response
                 if (response.equals("ok")) {
                     this.parent.getParent().updateData();
                     item.updateButtonState();
 
                     if (eventSource[0].equals("buy")) {
-                        JOptionPane.showMessageDialog(Rah.checkParent(this.parent.getParent().parent), "Successfully purchased: " + eventSource[1], "HUBG Shop", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(Util.checkParent(this.parent.getParent().parent), "Successfully purchased: " + eventSource[1], "HUBG Shop", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(Rah.checkParent(this.parent.getParent().parent), response, "HUBG Shop", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(Util.checkParent(this.parent.getParent().parent), response, "HUBG Shop", JOptionPane.ERROR_MESSAGE);
                 }
 
             }
@@ -535,6 +557,7 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
 
     }
 
+    // Generate shop items from JSON
     public void updateItems() {
 
         Iterator keys = Main.shopData.keys();
@@ -544,20 +567,21 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
         try {
             while (keys.hasNext()) {
                 key = keys.next().toString();
-                this.itemArrayList.add(new GeiShopItem(this, key, Main.shopData.getJSONObject(key)));
+                this.itemArrayList.add(new HUBGShopItem(this, key, Main.shopData.getJSONObject(key)));
             }
         } catch (Exception e) {
             Main.errorQuit(e);
         }
 
-        this.setPreferredSize(new Dimension(this.width, 20 + this.itemArrayList.size() * (GeiShopItem.height + 10)));
+        this.setPreferredSize(new Dimension(this.width, 20 + this.itemArrayList.size() * (HUBGShopItem.height + 10)));
 
     }
 
+    // Update states from new JSON data
     public void update(JSONArray purchasedSkins) {
 
         try {
-            for (GeiShopItem item : this.itemArrayList) {
+            for (HUBGShopItem item : this.itemArrayList) {
                 item.unlocked = false;
                 item.updateButtonState();
 
@@ -576,7 +600,7 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
 
     }
 
-    public void setParent(GeiScrollPane parent) {
+    public void setParent(HUBGScrollPane parent) {
         this.parent = parent;
     }
 
@@ -595,20 +619,19 @@ class GeiShopPanel extends GeiPanel implements ActionListener {
         for (int i = 0; i < this.itemArrayList.size(); i++) {
             this.itemArrayList.get(i).update(g, 20, 20 + 160 * i);
         }
-
     }
-
 }
 
-class GeiScrollPane extends JScrollPane {
+// Scroll pane
+class HUBGScrollPane extends JScrollPane {
     private Menu parent;
 
-    public GeiScrollPane(GeiPanel child) {
+    public HUBGScrollPane(HUBGPanel child) {
         super(child);
 
         this.setBorder(null);
         this.getVerticalScrollBar().setUnitIncrement(16);
-        this.setHorizontalScrollBarPolicy(GeiScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.setHorizontalScrollBarPolicy(HUBGScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.getVerticalScrollBar().setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
     }
 
@@ -621,28 +644,11 @@ class GeiScrollPane extends JScrollPane {
     }
 }
 
-class GeiTextField extends JTextField {
-    public GeiTextField() {
+// Text field
+class HUBGTextField extends JTextField {
+    public HUBGTextField() {
 
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        //this.setForeground(new Color(92, 91, 87));
-        //this.setBackground(new Color(30, 35, 40));
-
-        /*
-        addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent evt) {
-                if (getModel().isPressed()) {
-                    setBackground(new Color(30, 35, 40));
-                } else if (getModel().isRollover()) {
-                    setBackground(new Color(30, 35, 40));
-                } else {
-                    setBackground(new Color(30, 35, 40));
-                }
-            }
-        }); */
-
 
     }
 }

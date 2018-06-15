@@ -1,3 +1,10 @@
+// PROJECT HUBG
+// Henry Tu, Ryan Zhang, Syed Safwaan
+// rastera.xyz
+// 2018 ICS4U FINAL
+//
+// Session.java - Handles session data
+
 package com.rastera.hubg.desktop;
 
 import org.json.JSONArray;
@@ -6,6 +13,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.time.Instant;
 
+// Serializable AuthToken for saving local session
 class AuthToken implements Serializable {
     private String token;
 
@@ -30,15 +38,11 @@ public class Session {
     public JSONObject user;
     public JSONArray messages = new JSONArray();
 
-    public Session(String token) {
-        this.authToken = new AuthToken(token);
-        this.username = "";
-    }
-
     public Session(String token, JSONObject user) {
         this.authToken = new AuthToken(token);
         this.user = user;
 
+        // Generates user data from JSON if available
         if (this.user != null) {
             this.updateJSON();
 
@@ -55,12 +59,14 @@ public class Session {
         }
     }
 
+    // Destroy session if invalid
     public static void destroySession() {
         Main.session = null;
         File file = new File("session.dat");
         file.delete();
     }
 
+    // Save session to disk
     public static void writeSession() {
         try {
             FileOutputStream fout = new FileOutputStream("session.dat");
@@ -72,6 +78,7 @@ public class Session {
         }
     }
 
+    // Pulls session from disk
     public static AuthToken readSession() {
         try {
             FileInputStream fin = new FileInputStream("session.dat");
@@ -82,18 +89,11 @@ public class Session {
         }
     }
 
-    public void setAuthToken(AuthToken authToken) {
-        this.authToken = authToken;
-    }
-
     public AuthToken getAuthToken() {
         return this.authToken;
     }
 
-    public void setToken(String token) {
-        this.authToken.setToken(token);
-    }
-
+    // Updates profile
     public void updateJSON() {
         try {
             this.username = this.user.getString("username");
@@ -103,6 +103,7 @@ public class Session {
         }
     }
 
+    // Get  core parameters
     public Long getMoney() {
         try {
             return this.user.getLong("money");

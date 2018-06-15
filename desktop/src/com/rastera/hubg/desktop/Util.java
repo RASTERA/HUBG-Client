@@ -1,3 +1,10 @@
+// PROJECT HUBG
+// Henry Tu, Ryan Zhang, Syed Safwaan
+// rastera.xyz
+// 2018 ICS4U FINAL
+//
+// Util.java - General utilities
+
 package com.rastera.hubg.desktop;
 
 import javax.imageio.ImageIO;
@@ -15,12 +22,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.rastera.Networking.Message;
 
-public class Rah {
+public class Util {
 
+    // Clones bitmap font object
     public static BitmapFont cloneFont(BitmapFont font) {
         return new BitmapFont(font.getData(), font.getRegion(), font.usesIntegerPositions());
     }
 
+    // Generates Message object for serialization
+    // Send data over socket
     public static Message messageBuilder(int type, Object message) {
         Message nMessage = new Message();
 
@@ -30,12 +40,10 @@ public class Rah {
         return nMessage;
     }
 
-    public static String stringMultiply(int times, String item){
-
-        return new String(new char[times]).replace("\0", item);  // Creates a String using a string array and replace the blanks
-    }
-
+    // Center text in LIBGDX
     public static void centerText(Batch batch, BitmapFont font, float size, String text, int x, int y) {
+
+        font = cloneFont(font);
 
         font.getData().setScale(size);
 
@@ -45,10 +53,13 @@ public class Rah {
 
     }
 
+    // Scales icon to git in JButton
     public static ImageIcon getScaledIcon(String name) {
         return new ImageIcon(new ImageIcon(name).getImage().getScaledInstance(20, 20,  java.awt.Image.SCALE_SMOOTH));
     }
 
+    // Mitigates issue where dialog claims parent is zero
+    // Checks if error will occur and injects null if parent is defective
     // ToDo: Figure out why exception is thrown
     public static Component checkParent(Component parent) {
         try {
@@ -61,6 +72,7 @@ public class Rah {
         }
     }
 
+    // Wraps text into lines to fit into width
     public static ArrayList<String> wrapText(int width, String text, FontMetrics metrics) {
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<String> words = new ArrayList<>(Arrays.asList(text.split(" ")));
@@ -69,10 +81,12 @@ public class Rah {
 
         while (true) {
 
+            // Unwrappable
             if (words.size() > 0 && metrics.stringWidth(words.get(0)) > lineWidth) {
                 words.set(0, words.get(0).substring(0, 6) + "...");
             }
 
+            // Adds to current line IF POSSIBLE
             if (words.size() > 0 && metrics.stringWidth(currentLine + " " + words.get(0)) <= lineWidth) {
                 currentLine.append(" ").append(words.get(0));
                 words.remove(0);
@@ -89,6 +103,8 @@ public class Rah {
         return lines;
     }
 
+    // Decodes base64 to bufferedimage
+    // Courtesy of https://javapointers.com/tutorial/java-convert-image-to-base64-string-and-base64-to-image/
     public static BufferedImage decodeToImage(String imageString) {
 
         BufferedImage image = null;
@@ -105,6 +121,7 @@ public class Rah {
         return image;
     }
 
+    // Gets textual timestamp from UNIX time
     public static String getTimestamp(long time) {
         long difference = (System.currentTimeMillis() - time) / 1000L;
 
@@ -129,6 +146,7 @@ public class Rah {
         }
     }
 
+    // Launcher page in webbrowser
     public static void webbrowserOpen(String url) {
         try {
             if (Desktop.isDesktopSupported()) {
@@ -137,13 +155,5 @@ public class Rah {
         } catch (Exception error) {
             error.printStackTrace();
         }
-    }
-
-    public static void drawCenteredString(Graphics g, String text, int x, int y) {
-        FontMetrics metric = g.getFontMetrics();
-
-        int xc = x - metric.stringWidth(text) / 2;
-
-        g.drawString(text, xc, y);
     }
 }

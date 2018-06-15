@@ -1,3 +1,10 @@
+// PROJECT HUBG
+// Henry Tu, Ryan Zhang, Syed Safwaan
+// rastera.xyz
+// 2018 ICS4U FINAL
+//
+// Main.java - Main Class
+
 package com.rastera.hubg.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -19,30 +26,46 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 	public enum Pages {MENU, GAME, LOGIN}
 
+	// Master panel refresh timer
 	private static Timer masterTimer;
 	public static int usersOnline = 0;
+
+	// Window params
 	public static int w = 1100;
 	public static int h = 700;
+
+	// Core session data
 	public static Session session;
 	public static JSONObject shopData;
+
+	// Resources
 	public static Clip menuMusic;
 	public static AudioInputStream audioIn;
 	public static HashMap<String, BufferedImage> skinHashMap = new HashMap<>();
 	private static final HashMap<String, Font> fontHashMap = new HashMap<>();
-    private static GeiPanel panel;
+
+	// Centralized panel
+    private static HUBGPanel panel;
     private static Pages page = Pages.LOGIN;
 
+    // Keep track of prev frame for FPS count
 	private static long prevFrame = 0;
+
 	private static boolean graphicsStarted = false;
 
+	// Borderless window tracking
 	private int prevX, prevY;
 
+	// Customizable features
 	public static final boolean borderless = !false;
 	public static final boolean showFPS = false;
 
+	// Centralized libgdx config
 	public LwjglApplicationConfiguration config;
 
 	private Main() {
+
+		// Setup JFrame
 		super("HUBG - Henning's Unknown Battle Ground");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -52,6 +75,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 		this.setUndecorated(borderless);
 
+		// Import resources
 		try {
 			File is;
 
@@ -64,6 +88,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 			Main.errorQuit(e);
 		}
 
+		// Start drawing loading screen
 		this.startGraphics();
 
 		this.getContentPane().addComponentListener(this);
@@ -73,20 +98,19 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 
+		// Enable anti aliasing
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
 
-		//LIBGDX stuff
+		//LIBGDX config
 		this.config = new LwjglApplicationConfiguration();
 		//this.config.fullscreen = true;
 		this.config.forceExit = false;
 		this.config.width = 1100;
 		this.config.height = 700;
 
+		// Load music
 		try {
-
-		    //System.out.println(this.gepptClass().getResource("music/menu.wav"));
-
 			audioIn = AudioSystem.getAudioInputStream(new File("sounds/menu.wav"));
 			startMusic();
 
@@ -94,8 +118,9 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 			errorQuit(e);
 		}
 
+		// Configure borderless window
 		if (borderless) {
-			// https://java-demos.blogspot.com/2013/11/how-to-move-undecorated-jframe.html
+			// Courtesy of https://java-demos.blogspot.com/2013/11/how-to-move-undecorated-jframe.html
 
 			this.addMouseListener(new MouseAdapter() {
 				public void mousePressed(MouseEvent e) {
@@ -118,14 +143,17 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		}
 	}
 
+	// Shortcut to minimize launcher
 	public void minimize() {
 		this.setState(Frame.ICONIFIED);
 	}
 
+	// Shortcut to terminate game
 	public void close() {
 		System.exit(0);
 	}
 
+	// Music config
 	public static void startMusic() {
 		try {
 			menuMusic = AudioSystem.getClip();
@@ -147,10 +175,12 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		return !(menuMusic != null && menuMusic.getFramePosition() == 0);
 	}
 
+	// Get font given name
 	public static Font getFont(String name, float size) {
 		return fontHashMap.get(name).deriveFont(size);
 	}
 
+	// Set timer interval
 	public void setMasterTimer(int interval) {
 		if (masterTimer != null) {
 			masterTimer.stop();
@@ -161,6 +191,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		masterTimer.start();
 	}
 
+	// Swap JPanel
 	public void startPage(Pages page) {
 		System.out.println("Starting page " + page.toString());
 		this.getContentPane().remove(panel);
@@ -169,6 +200,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		this.startGraphics();
 	}
 
+	// Keep track of FPS
 	public void updateFrameRate() {
 		if (showFPS) {
 			long currentTime = System.currentTimeMillis();
@@ -177,9 +209,11 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		}
 	}
 
+	// Core graphics update
 	private void startGraphics() {
 		if (panel == null || !panel.getClass().getName().toUpperCase().contains(page.toString())) {
 
+			// Stops timer to prevent conflict
 			if (masterTimer != null) {
 				masterTimer.stop();
 				masterTimer = null;
@@ -187,6 +221,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 			System.out.println("Switch Pages " + page.toString());
 
+			// Creates new JPanel object
 			switch (page) {
 				case LOGIN:
 					panel = new Login(this);
@@ -227,6 +262,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 
 	}
 
+	// Window resizing on bordered mode
 	@Override
 	public void componentResized(ComponentEvent ce) {
 		w = this.getWidth();
@@ -242,6 +278,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 
+		// Timer actions
 		if (graphicsStarted) {
 			this.startGraphics();
 
@@ -254,16 +291,9 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 			}
 
 		}
-
-        /*
-        long currentTime = System.currentTimeMillis();
-
-        System.out.println(1000/(currentTime - prevFrame));
-
-        prevFrame = currentTime;*/
-
 	}
 
+	// Displays dialog with traceback if error occurs
 	public static void errorQuit(String e) {
 		if (masterTimer != null) {
 			masterTimer.stop();
@@ -271,7 +301,7 @@ public class Main extends JFrame implements ActionListener, ComponentListener {
 		}
 
 		System.out.println("Something went wrong");
-		JOptionPane.showMessageDialog(Rah.checkParent(panel), "HUBG experienced an unexpected error:\n\n" + e, "HUBG Error", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(Util.checkParent(panel), "HUBG experienced an unexpected error:\n\n" + e, "HUBG Error", JOptionPane.ERROR_MESSAGE);
 
 		System.exit(0);
 	}

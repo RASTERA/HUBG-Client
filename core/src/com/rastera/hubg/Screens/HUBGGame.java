@@ -35,7 +35,7 @@ import com.rastera.hubg.Util.ItemLoader;
 import com.rastera.hubg.collisionListener;
 import com.rastera.hubg.customInputProcessor;
 import com.rastera.hubg.desktop.Main;
-import com.rastera.hubg.desktop.Rah;
+import com.rastera.hubg.desktop.Util;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -204,7 +204,7 @@ public class HUBGGame implements Screen {
                     Gdx.app.exit();
                 }
 
-                Thread msg = new Thread(() -> JOptionPane.showMessageDialog(((String) ServerMessage.message).contains("killed by") ? Rah.checkParent(this.parentGame.getParent()) : null, ServerMessage.message, "Message from server", JOptionPane.INFORMATION_MESSAGE));
+                Thread msg = new Thread(() -> JOptionPane.showMessageDialog(((String) ServerMessage.message).contains("killed by") ? Util.checkParent(this.parentGame.getParent()) : null, ServerMessage.message, "Message from server", JOptionPane.INFORMATION_MESSAGE));
 
                 msg.start();
 
@@ -266,7 +266,7 @@ public class HUBGGame implements Screen {
                 if (!found) {
                     ArrayList<long[]> a = new ArrayList<>();
                     a.add(cords);
-                    this.GLProcess.add(Rah.messageBuilder(1, a));
+                    this.GLProcess.add(Util.messageBuilder(1, a));
                 }
                 break;
 
@@ -768,7 +768,7 @@ public class HUBGGame implements Screen {
             }
 
             for (int compassX = compassTicks / -2; compassX <= compassTicks / 2; compassX ++) {
-                Rah.centerText(this.main.batch, HUBGGame.latoFont, 0.3f, this.formatAngle((int) this.normalizeAngle(angle - angle % 5 + compassX * 5)),compassX * 100 + angle % 5 * -20, this.staticPort.getScreenHeight() / 2 - 20);
+                Util.centerText(this.main.batch, HUBGGame.latoFont, 0.3f, this.formatAngle((int) this.normalizeAngle(angle - angle % 5 + compassX * 5)),compassX * 100 + angle % 5 * -20, this.staticPort.getScreenHeight() / 2 - 20);
             }
 
             this.purgeCounter = (this.purgeCounter + 1) % 1000;
@@ -813,7 +813,7 @@ public class HUBGGame implements Screen {
 
             this.main.batch.begin();
 
-            Rah.centerText(this.main.batch, HUBGGame.latoFont, 0.5f, "PAUSED", 0, 0);
+            Util.centerText(this.main.batch, HUBGGame.latoFont, 0.5f, "PAUSED", 0, 0);
 
             this.main.batch.end();
         }
@@ -848,7 +848,7 @@ public class HUBGGame implements Screen {
 
             latoFont.setColor(Color.BLACK); */
 
-            Rah.centerText(this.main.batch, HUBGGame.latoFont, 0.5f, "CONNECTING TO SERVER", this.staticPort.getScreenWidth() / 2, this.staticPort.getScreenHeight() / 2);
+            Util.centerText(this.main.batch, HUBGGame.latoFont, 0.5f, "CONNECTING TO SERVER", this.staticPort.getScreenWidth() / 2, this.staticPort.getScreenHeight() / 2);
 
             //latoFont.setColor(Color.WHITE);
 

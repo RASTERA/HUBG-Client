@@ -1,17 +1,11 @@
-package com.rastera.hubg.desktop;
+// PROJECT HUBG
+// Henry Tu, Ryan Zhang, Syed Safwaan
+// rastera.xyz
+// 2018 ICS4U FINAL
+//
+// Communicator.java - Handles core networking
 
-//
-// Dear programmer (Syed):
-// When I wrote this code, only god and
-// I knew how it worked.
-// Now, only god knows it!
-//
-// Therefore, if you are trying to optimize
-// this routine and it fails lol sucks to be you!
-// Please reconsider your career path.
-//
-// total_hours_wasted_here > 9000
-//
+package com.rastera.hubg.desktop;
 
 import java.io.*;
 import java.net.*;
@@ -27,14 +21,30 @@ import javax.swing.*;
 
 public class Communicator {
 
+    // Main game network streams
     private ObjectOutputStream out;
     private ObjectInputStream in;
+
+    // Message queue
     private LinkedBlockingQueue<Message> message;
+
+    // Information about host
     private String serverName;
     private boolean listening = true;
 
+    // Toggles between production and development mode
     public static final boolean developmentMode = true;
 
+    // Get URL based on development mode
+    public static String getURL(RequestDestination destination) {
+        if (Communicator.developmentMode) {
+            return baseDevelopmentHashMap.get(destination);
+        } else {
+            return baseProductionHashMap.get(destination);
+        }
+    }
+
+    // Dynamically changes URL based on development state
     private static final HashMap<RequestDestination, String> baseProductionHashMap = new HashMap<>() {
         {
             this.put(RequestDestination.URL, "https://rastera.xyz/");
@@ -54,22 +64,30 @@ public class Communicator {
     public enum RequestType {POST, GET}
     public enum RequestDestination {URL, API, AUTH}
 
+    // Game object
+    public HUBGGame client;
+
+    // Communicator object for in game networking
     public Communicator(String ip, int port, final HUBGGame client) throws Exception {
-        HUBGGame client1 = client;
+
+        this.client = client;
 
         System.out.println("Connecting...");
 
         //this.serverSock.setSoTimeout(1000);
         Socket serverSock = new Socket(InetAddress.getByName(ip), port);
 
+        // Network object streams
         this.out = new ObjectOutputStream(serverSock.getOutputStream());
         this.in = new ObjectInputStream(serverSock.getInputStream());
 
         System.out.println("Connected to server: " + ip + ":" + port);
 
+        // Thread listening for incoming messages
         Thread receiver = new Thread(() -> {
             while (this.listening) {
                 try {
+                    // Creates message object and queues to process
                     Message msg = (Message) this.in.readObject();
 
                     client.CommandProcessor(msg);
@@ -89,35 +107,17 @@ public class Communicator {
 
     }
 
-    public boolean isEmpty() {
-        return this.message.isEmpty();
-    }
-
-    public Message read() {
-        try {
-            return this.message.take();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
+    // Write to server
     public void write(int type, Object Message) {
         try {
-            this.out.writeObject(Rah.messageBuilder(type, Message));
+            this.out.writeObject(Util.messageBuilder(type, Message));
         } catch (Exception e) {
             e.printStackTrace();
             Main.errorQuit("Disconnected from server");
         }
     }
 
-    public static String getURL(RequestDestination destination) {
-        if (Communicator.developmentMode) {
-            return baseDevelopmentHashMap.get(destination);
-        } else {
-            return baseProductionHashMap.get(destination);
-        }
-    }
-
+    // Get chat messages
     public static JSONObject getMessages() {
         try {
             return request(RequestType.GET, null, Communicator.getURL(RequestDestination.API) + "messages/" + Main.session.getToken());
@@ -128,6 +128,7 @@ public class Communicator {
         return null;
     }
 
+    // Send chat message
     public static JSONObject sendMessage(String message) {
         try {
             JSONObject data = new JSONObject() {
@@ -145,6 +146,8 @@ public class Communicator {
         return null;
     }
 
+    // General request method
+    // Sends POST or GET request based on parameter
     public static JSONObject request(RequestType type, JSONObject data, String destination) {
         try {
             // Init connection
@@ -158,12 +161,13 @@ public class Communicator {
                 ((HttpsURLConnection) socket).setRequestMethod(type.toString());
             }
 
-            // Header stuff
+            // Config header
             socket.setConnectTimeout(5000);
             socket.setRequestProperty("User-Agent", "Mozilla/5.0");
             socket.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
             socket.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 
+            // Flushes JSON object if POST
             if (type == RequestType.POST) {
                 socket.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream());
@@ -173,8 +177,7 @@ public class Communicator {
                 writer.close();
             }
 
-            //System.out.println("Getting Response of " + socket.getResponseCode());
-
+            // Reads response
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             StringBuilder rawData = new StringBuilder();
@@ -193,6 +196,8 @@ public class Communicator {
         }
     }
 
+    // Submits request for shop
+    // Ex. Switch item or purchasing items
     public static String shopRequest(JFrame parent, String type, String item) {
 
         try {
@@ -219,10 +224,12 @@ public class Communicator {
         }
     }
 
+    // Get shop contents
     public static JSONObject getShop() {
         return Communicator.request(RequestType.GET, null, Communicator.getURL(RequestDestination.API) + "shop/");
     }
 
+    // Refresh launcher statistics
     public static JSONObject refresh(String token) {
         try {
 
@@ -243,15 +250,18 @@ public class Communicator {
         }
     }
 
+    // Handle login and authentication
     public static Session login(JSONObject credentials) {
         try {
             JSONObject dataJSON = Communicator.request(RequestType.POST, credentials, Communicator.getURL(RequestDestination.AUTH) + "login/");
 
+            // If error is returned from server, return special token
             if (dataJSON.has("error")) {
                 System.out.println(dataJSON.getString("error"));
                 return new Session(dataJSON.getString("error"), null);
             }
 
+            // Gets token if available
             return new Session(dataJSON.getString("token"), dataJSON.getJSONObject("user"));
 
         } catch (Exception e) {
@@ -260,6 +270,7 @@ public class Communicator {
         }
     }
 
+    // Login with token/session
     public static Session login(AuthToken token) {
         try {
 
@@ -277,6 +288,7 @@ public class Communicator {
         }
     }
 
+    // Login with traditional credentials
     public static Session login(String email, String password) {
         try {
 
@@ -295,6 +307,7 @@ public class Communicator {
         }
     }
 
+    // Gets auth token for server handshake
     public static String getServerAuthToken(String serverName) {
 
         try {
