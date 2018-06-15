@@ -10,6 +10,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Screens.HUBGGame;
 
+import static java.lang.Math.abs;
+
 public class Enemy extends Sprite {
     public String name;
     private int id;
@@ -40,7 +42,20 @@ public class Enemy extends Sprite {
     public void updateLocation(long[] newLocation) {
         this.travelx = (float) newLocation[0] / 1000f - this.b2body.getPosition().x;
         this.travely = (float) newLocation[1] / 1000f - this.b2body.getPosition().y;
-        this.travelr = Math.min((float) newLocation[2] / 1000f - this.b2body.getAngle(), (float) newLocation[2] / 1000f + this.b2body.getAngle());
+
+        float touchAngle = MathUtils.radiansToDegrees * (newLocation[2] / 1000f) + 180;
+        float angle = MathUtils.radiansToDegrees * this.b2body.getAngle() + 180;
+
+
+        if(angle < touchAngle) {
+            if(abs(angle - touchAngle)<180)
+                travelr = abs(angle - touchAngle);
+            else travelr = abs(angle - touchAngle) - 360;
+        } else {
+            if (abs(angle - touchAngle) < 180)
+                travelr = touchAngle - angle;
+            else travelr = abs(touchAngle - angle + 360);
+        }
 
         this.distx = (float) newLocation[0] / 1000f;
         this.disty = (float) newLocation[1] / 1000f;

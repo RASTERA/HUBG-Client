@@ -39,7 +39,7 @@ public class HUD implements Disposable{
 
         this.player = player;
 
-        itempickup = new ItemPickUp(new ArrayList<Fixture>(), font, game, sr) ;
+        itempickup = new ItemPickUp(new ArrayList<>(), font, game, sr) ;
 
         Table table = new Table();
         table.top();

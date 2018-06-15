@@ -2,12 +2,14 @@ package com.rastera.hubg.Scene.Sprite;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.rastera.hubg.Screens.HUBGGame;
+import com.rastera.hubg.Sprites.Item;
 import com.rastera.hubg.Util.ItemList;
 
 import java.util.ArrayList;
@@ -70,10 +72,22 @@ public class ItemPickUp extends Sprite {
 
         sb.begin();
 
-        for (int i = 0; i < this.items.size(); i++) {
-            sb.draw(ItemList.itemGraphics.get(this.items.get(i).getUserData()), this.getX() + 2 , this.getY() + 2 - (this.itemHeight + 4)*(i+1), this.itemHeight, this.itemHeight);
-        }
+        Texture g;
+        float scale;
+        Item it;
 
+        font.getData().setScale(0.2f);
+
+        for (int i = 0; i < this.items.size(); i++) {
+            g = ItemList.itemGraphics.get(this.items.get(i).getUserData());
+            scale = Math.max(g.getWidth() / (this.itemHeight), g.getHeight() / (this.itemHeight));
+            sb.draw(g, this.getX() + 4 + (this.itemHeight - g.getWidth() / scale) / 2 , this.getY() + 2 - (this.itemHeight + 4)*(i+1) - (-this.itemHeight + g.getHeight() / scale) / 2, g.getWidth() / scale, g.getHeight() / scale);
+
+            it = (Item) this.items.get(i).getBody().getUserData();
+            font.draw(sb, ItemList.itemName.get(it.getItemType()), this.getX() + 4 + itemHeight, this.getY() - 10 - (this.itemHeight + 4)*(i));
+            font.draw(sb, ItemList.itemDescription.get(it.getItemType()), this.getX() + 4 + itemHeight, this.getY() - 35 - (this.itemHeight + 4)*(i));
+
+        }
         sb.end();
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
