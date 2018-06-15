@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class ItemList {
+    // A class that stores everything about each item
     public static HashMap<Integer, Texture> itemGraphics = new HashMap<>();
     public static HashMap<Integer, String> itemName = new HashMap<>();
     public static HashMap<Integer, String> itemDescription = new HashMap<>();
@@ -16,6 +17,8 @@ public class ItemList {
     public static void load() {
         Scanner loader = new Scanner(Gdx.files.internal("itemData.txt").read());
         String[] data;
+
+        // Loading the data using a scanner and putting them into their hashmaps
 
         loader.nextLine();
 
