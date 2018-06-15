@@ -624,8 +624,8 @@ public class HUBGGame implements Screen {
         }
 
         if (this.sprint && this.player.getEnergy() > 0) {
-            //this.player.decEnergy(0.1f);
-            //this.conn.write(16, this.player.getEnergy());
+            this.player.decEnergy(0.1f);
+            this.conn.write(16, this.player.getEnergy());
 
             if (this.gamecam.zoom > 0.6 * this.defaultZoom) {
                 this.gamecam.zoom -= 0.01;
