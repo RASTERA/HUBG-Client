@@ -3,7 +3,7 @@ package com.rastera.hubg.Sprites;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.*;
 import com.rastera.hubg.HUBGMain;
-import com.rastera.hubg.Util.ItemLoader;
+import com.rastera.hubg.Util.ItemList;
 
 public class Item extends Sprite {
 
@@ -11,7 +11,7 @@ public class Item extends Sprite {
     private int itemType;
 
     public Item(float x, float y, int itemType, World world) {
-        super(ItemLoader.itemGraphics.get(itemType));
+        super(ItemList.itemGraphics.get(itemType));
         this.setBounds(x, y, 60 / HUBGMain.PPM, 60 / HUBGMain.PPM);
         this.itemType = itemType;
 
@@ -22,7 +22,7 @@ public class Item extends Sprite {
         BodyDef bdef = new BodyDef();
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(30 / HUBGMain.PPM);
+        shape.setRadius(100 / HUBGMain.PPM);
 
         bdef.type = BodyDef.BodyType.StaticBody;
         bdef.position.set(x, y);

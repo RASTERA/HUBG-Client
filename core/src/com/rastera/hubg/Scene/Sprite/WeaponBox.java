@@ -7,42 +7,79 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
-import java.util.HashMap;
+import com.rastera.hubg.Scene.HUD;
+import com.rastera.hubg.Sprites.Player;
+import com.rastera.hubg.Util.ItemList;
 
 public class WeaponBox extends Sprite {
     private int weaponID = 0;
     private int boxID;
     public int offseth = 79;
-    public HashMap<Integer, Texture> weaponLibrary = new HashMap<>();
-
     private int width = 170;
-    private ShapeRenderer sr;
 
-    public WeaponBox (HashMap<Integer, Texture> weapons, int ID, ShapeRenderer sr) {
+    private ShapeRenderer sr;
+    private Player player;
+    private HUD parent;
+    private boolean active = false;
+
+    private int screenHeight;
+    private int screenWidth;
+
+    public WeaponBox (HUD parent, Player player, int ID, ShapeRenderer sr) {
         this.boxID = ID;
-        weaponLibrary = weapons;
+        this.parent = parent;
         this.sr = sr;
+        this.player = player;
     }
 
-    public void updateLocation (int screenHeight) {
-        this.setPosition(-this.width + (this.width+2) * this.boxID, screenHeight / -2 + this.offseth);
+    public void updateLocation (int screenWidth, int screenHeight) {
+        this.screenHeight = screenHeight;
+        this.screenWidth = screenWidth;
+
+        this.setPosition(-this.width + (this.width+2) * boxID, screenHeight / -2 + offseth);
+    }
+
+    public void updateClick(int mx, int my) {
+        mx -= screenWidth / 2;
+        my = screenHeight / 2 - my;
+
+        if (getX() < mx && mx < getX() + width-2 && getY() < mx && my < getY() + 50) {
+            active = true;
+        } else {
+            active = false;
+        }
     }
 
     public void draw (Batch sb) {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        this.sr.setColor(255, 255, 255, 0.3f);
-        this.sr.begin(ShapeRenderer.ShapeType.Filled);
-        this.sr.rect(this.getX(), this.getY(), this.width - 2, 50);
-        this.sr.end();
+        if (active) {
+            sr.setColor(0.1f, 0.1f, 0.1f, 0.5f);
+        } else {
+            sr.setColor(0.1f, 0.1f, 0.1f, 0.3f);
+        }
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+        sr.rect(getX(), getY(), width - 2, 50);
+        sr.end();
 
-        this.sr.setColor(255, 255, 255, 0.7f);
-        this.sr.setColor(Color.WHITE);
-        this.sr.begin(ShapeRenderer.ShapeType.Line);
-        this.sr.rect(this.getX(), this.getY(), this.width - 2, 50);
-        this.sr.end();
+
+        if (active) {
+            sr.setColor(Color.WHITE);
+        } else {
+            sr.setColor(0.5f, 0.5f, 0.5f, 0.7f);
+        }
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.rect(getX(), getY(), width - 2, 50);
+        sr.end();
+
+        if (player.playerWeapons[boxID] != 0) {
+            Texture gun = ItemList.itemGraphics.get(player.playerWeapons[boxID]);
+            float scale = Math.max(gun.getWidth()  / (width - 10), gun.getHeight() / (50-4));
+            sb.begin();
+            sb.draw(gun, getX() + ((width - 2) - gun.getWidth() / scale) / 2, getY() +  ((50 - 2) - gun.getHeight() / scale) / 2, gun.getWidth() / scale, gun.getHeight() / scale);
+            sb.end();
+        }
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }

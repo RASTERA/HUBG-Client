@@ -22,6 +22,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.rastera.hubg.HUBGMain;
+import com.rastera.hubg.Util.ItemList;
 import com.rastera.hubg.desktop.Communicator;
 import com.rastera.Networking.Message;
 import com.rastera.hubg.Scene.HUD;
@@ -30,7 +31,6 @@ import com.rastera.hubg.Sprites.Enemy;
 import com.rastera.hubg.Sprites.Item;
 import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Tools.B2WorldCreator;
-import com.rastera.hubg.Util.ItemLoader;
 
 import com.rastera.hubg.collisionListener;
 import com.rastera.hubg.customInputProcessor;
@@ -111,7 +111,7 @@ public class HUBGGame implements Screen {
     public HUBGGame(HUBGMain main, com.rastera.hubg.desktop.Game parentGame) {
         this.main = main;
         this.parentGame = parentGame;
-        ItemLoader.load();
+        ItemList.load();
         this.displayItems = new LinkedList<>();
         this.itemQueue = new LinkedBlockingQueue<>();
 
@@ -352,6 +352,10 @@ public class HUBGGame implements Screen {
         Item pickup = (Item) it.getUserData();
 
         this.conn.write(20, new long[] {(long) (it.getPosition().x * 1000), (long) (it.getPosition().y * 1000), pickup.getItemType()});
+//        if (ItemList.itemType(pickup.getItemType()) == "weapon") {
+//            if
+//        }
+            conn.write(20, new long[] {(long) (it.getPosition().x * 1000), (long) (it.getPosition().y * 1000), pickup.getItemType()});
 
         this.itemQueue.add((Item) it.getUserData());
         // ADD ITEM TO INV
@@ -453,7 +457,7 @@ public class HUBGGame implements Screen {
                             this.world.destroyBody(processingItem.body);
 
                             if (res) {
-                                // Put the fudging weapon in the inventory
+
                             }
                         }
 
@@ -585,7 +589,7 @@ public class HUBGGame implements Screen {
                 this.gamecam.zoom += 0.01;
             } else {
 
-                if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() + 1000000 / HUBGMain.PPM + defaultZoom) {
+                if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() / HUBGMain.PPM + defaultZoom) {
                     gamecam.zoom += 0.01;
                 } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
                     gamecam.zoom -= 0.01;

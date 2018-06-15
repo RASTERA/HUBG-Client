@@ -1,1 +1,2 @@
+#ID, NAME, DESCRIPTION, IMAGE, TYPE
 -1001,gei item,testing item,minimap.png,weapon

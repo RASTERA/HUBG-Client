@@ -25,6 +25,8 @@ public class HUD implements Disposable{
     private WeaponBox b;
     private HUDBar healthUI;
     private HUDBar energyUI;
+    private BitmapFont font;
+    private ArrayList<Fixture> itemArray;
     private ItemPickUp itempickup;
     private Player player;
 
@@ -36,15 +38,14 @@ public class HUD implements Disposable{
 
         this.player = player;
 
-        this.itempickup = new ItemPickUp(new ArrayList<>(), font, game, this.sr) ;
-        HashMap<Integer, Texture> weaponGraphics = new HashMap<>();
+        itempickup = new ItemPickUp(new ArrayList<Fixture>(), font, game, sr) ;
 
         Table table = new Table();
         table.top();
         table.setFillParent(true);
 
-        this.a = new WeaponBox(weaponGraphics, 0, this.sr);
-        this.b = new WeaponBox(weaponGraphics, 1, this.sr);
+        this.a = new WeaponBox(this, player, 0, this.sr);
+        this.b = new WeaponBox(this, player, 1, this.sr);
         this.healthUI = new HUDBar(this.sr, player, 24, "Health");
         this.energyUI = new HUDBar(this.sr, player, 48, "Energy");
     }
@@ -61,7 +62,10 @@ public class HUD implements Disposable{
     }
 
     public void processKeyDown(int x, int y, int mb) {
-        this.itempickup.processKeyDown(x, y, mb);
+        itempickup.processKeyDown(x, y, mb);
+        a.updateClick(x, y);
+        b.updateClick(x, y);
+
     }
 
     public void setItemArray(ArrayList<Fixture> items) {
@@ -70,8 +74,8 @@ public class HUD implements Disposable{
     }
 
     public void update(Viewport staticView) {
-        this.a.updateLocation(staticView.getScreenHeight());
-        this.b.updateLocation(staticView.getScreenHeight());
+        this.a.updateLocation(staticView.getScreenWidth(), staticView.getScreenHeight());
+        this.b.updateLocation(staticView.getScreenWidth(), staticView.getScreenHeight());
         this.energyUI.updateLocation(staticView.getScreenHeight());
         this.healthUI.updateLocation(staticView.getScreenHeight());
         this.itempickup.updateLocation(staticView.getScreenHeight(), staticView.getScreenWidth());

@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.rastera.hubg.Screens.HUBGGame;
-import com.rastera.hubg.Util.ItemLoader;
+import com.rastera.hubg.Util.ItemList;
 
 import java.util.ArrayList;
 
@@ -73,7 +73,7 @@ public class ItemPickUp extends Sprite {
         sb.begin();
 
         for (int i = 0; i < this.items.size(); i++) {
-            sb.draw(ItemLoader.itemGraphics.get(this.items.get(i).getUserData()), this.getX() + 2 , this.getY() + 2 - (this.itemHeight + 4)*(i+1), this.itemHeight, this.itemHeight);
+            sb.draw(ItemList.itemGraphics.get(this.items.get(i).getUserData()), this.getX() + 2 , this.getY() + 2 - (this.itemHeight + 4)*(i+1), this.itemHeight, this.itemHeight);
         }
 
         sb.end();
