@@ -709,7 +709,9 @@ public class HUBGGame implements Screen {
                 int currentammo = player.ammo;
                 player.ammo = Math.max(0, player.ammo - WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]) + player.gunAmmo[gameHUD.getBoxSelected()]);
                 if (player.ammo == 0) {
-                    player.gunAmmo[gameHUD.getBoxSelected()] = Math.min(currentammo, WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]));
+                    if (currentammo != 0) {
+                        player.gunAmmo[gameHUD.getBoxSelected()] = Math.min(currentammo, WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]));
+                    }
                 } else {
                     player.gunAmmo[gameHUD.getBoxSelected()] = WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]);
                 }
@@ -722,7 +724,7 @@ public class HUBGGame implements Screen {
                 conn.write(32, new int[] {player.ammo, player.gunAmmo[0], player.gunAmmo[1]});
             }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.R) && player.gunAmmo[gameHUD.getBoxSelected()] < WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()])) {
+            if (Gdx.input.isKeyPressed(Input.Keys.R) && player.gunAmmo[gameHUD.getBoxSelected()] < WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]) && player.ammo != 0) {
                 if (!reloading) {
                     this.actions.add("Reloading weapon...");
                 }
