@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.rastera.hubg.Scene.HUD;
+import com.rastera.hubg.Sprites.Item;
 import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Util.ItemList;
+import com.rastera.hubg.Util.WeaponList;
 
 public class WeaponBox extends Sprite {
     private int weaponID = 0;
@@ -20,7 +22,7 @@ public class WeaponBox extends Sprite {
     private ShapeRenderer sr;
     private Player player;
     private HUD parent;
-    private boolean active = false;
+    public boolean active = false;
 
     private int screenHeight;
     private int screenWidth;
@@ -45,6 +47,10 @@ public class WeaponBox extends Sprite {
 
         if (getX() < mx && mx < getX() + width-2 && getY() < mx && my < getY() + 50) {
             active = true;
+            if (player.weapon.getCurrentWeapon() != player.playerWeapons[boxID]) {
+                player.weapon.setCurrentWeapon(player.playerWeapons[boxID]);
+                parent.game.conn.write(31, new int[] {parent.game.ID, player.playerWeapons[boxID]});
+            }
         } else {
             active = false;
         }

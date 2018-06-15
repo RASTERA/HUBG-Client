@@ -2,6 +2,7 @@ package com.rastera.hubg.Sprites;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -18,10 +19,11 @@ public class Enemy extends Sprite {
     private TextureRegion playerStand;
     private Texture playerImage;
     private float travelx, travely, travelr, distx, disty, distr;
+    public Weapon weapon;
 
     public Enemy(World world, HUBGGame screen, String name, long[] info){
         super(new Texture(Gdx.files.internal("penguin.png")));
-
+        this.weapon = new Weapon(screen);
         this.world = world;
 
         this.name = name;
@@ -88,6 +90,7 @@ public class Enemy extends Sprite {
         this.setOrigin(this.getWidth() / 2, this.getHeight() / 2);
         this.setPosition(this.b2body.getPosition().x - this.getWidth() / 2, this.b2body.getPosition().y - this.getHeight() / 2);
         this.setRotation(MathUtils.radiansToDegrees * this.b2body.getAngle());
+        weapon.update(this.b2body.getPosition().x, this.b2body.getPosition().y,this.b2body.getAngle());
     }
 
     public void defineEnemy(long[] location) {
@@ -111,5 +114,13 @@ public class Enemy extends Sprite {
 
     public int getId() {
         return this.id;
+    }
+
+    public void draw(Batch sb) {
+        if (this.weapon.active) {
+            weapon.draw(sb);
+        }
+
+        super.draw(sb);
     }
 }

@@ -47,8 +47,6 @@ public class ItemPickUp extends Sprite {
         y = this.screenHeight / 2 - y;
 
         for (int i = 0; i < this.items.size(); i++) {
-            System.out.println("clicking " + x + " " + y + " " +(this.getX() + 2) + " " + (this.getX() + this.width - 2 + " " + (this.getY() + 2 - (this.itemHeight + 4)*(i+1)) + " " + (this.getY() + 2 - (this.itemHeight + 4)*(i+1) + this.itemHeight)));
-
             if (x > this.getX() + 2 && x < this.getX() + this.width - 2  && y > this.getY() + 2 - (this.itemHeight + 4)*(i+1) && y < this.getY() + 2 - (this.itemHeight + 4)*(i+1) + this.itemHeight){
                 this.game.pickupItem(this.items.get(i));
             }

@@ -21,18 +21,19 @@ import java.util.HashMap;
 
 public class HUD implements Disposable{
     private ShapeRenderer sr;
-    private WeaponBox a;
-    private WeaponBox b;
+    public WeaponBox a;
+    public WeaponBox b;
     private HUDBar healthUI;
     private HUDBar energyUI;
     private BitmapFont font;
     private ArrayList<Fixture> itemArray;
     private ItemPickUp itempickup;
     private Player player;
+    public HUBGGame game;
 
     public HUD (SpriteBatch sb, Viewport staticView, Player player, HUBGGame game, BitmapFont font) {
         BitmapFont font1 = font;
-        HUBGGame game1 = game;
+        this.game = game;
         this.sr = new ShapeRenderer();
         this.sr.setProjectionMatrix(staticView.getCamera().combined);
 
@@ -65,6 +66,13 @@ public class HUD implements Disposable{
         itempickup.processKeyDown(x, y, mb);
         a.updateClick(x, y);
         b.updateClick(x, y);
+
+        if (!a.active && !b.active) {
+            if (player.weapon.getCurrentWeapon() != 0) {
+                player.weapon.setCurrentWeapon(0);
+                game.conn.write(31, new int[] {game.ID, 0});
+            }
+        }
 
     }
 

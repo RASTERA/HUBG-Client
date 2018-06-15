@@ -22,14 +22,12 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.rastera.hubg.HUBGMain;
+import com.rastera.hubg.Sprites.*;
 import com.rastera.hubg.Util.ItemList;
+import com.rastera.hubg.Util.WeaponList;
 import com.rastera.hubg.desktop.Communicator;
 import com.rastera.Networking.Message;
 import com.rastera.hubg.Scene.HUD;
-import com.rastera.hubg.Sprites.Brick;
-import com.rastera.hubg.Sprites.Enemy;
-import com.rastera.hubg.Sprites.Item;
-import com.rastera.hubg.Sprites.Player;
 import com.rastera.hubg.Tools.B2WorldCreator;
 
 import com.rastera.hubg.collisionListener;
@@ -54,15 +52,14 @@ public class HUBGGame implements Screen {
     private Viewport staticPort;
     private HUBGMain main;
 
-    private TextureAtlas weaponAtlas;
     private OrthogonalTiledMapRenderer renderer;
     private TiledMapTileLayer displayLayer;
-    private HashMap<String, Sound> soundHashMap = new HashMap<>();
+    private HashMap<Integer, Sound> soundHashMap = new HashMap<>();
     private Music runningMusic;
     private Box2DDebugRenderer b2dr;
     private World world;
     private Player player;
-    private int ID;
+    public int ID;
     private float dTotal = 0;
     public Communicator conn;
     private ArrayList<String> actions = new ArrayList<>();
@@ -91,6 +88,8 @@ public class HUBGGame implements Screen {
     private boolean canShoot = true;
     private float fireDelay = 0;
 
+    public int[] weaponData;
+
     private com.rastera.hubg.desktop.Game parentGame;
 
     // Loading
@@ -112,6 +111,7 @@ public class HUBGGame implements Screen {
         this.main = main;
         this.parentGame = parentGame;
         ItemList.load();
+        WeaponList.load();
         this.displayItems = new LinkedList<>();
         this.itemQueue = new LinkedBlockingQueue<>();
 
@@ -120,8 +120,6 @@ public class HUBGGame implements Screen {
         this.world = new World(new Vector2(0, 0), true);
 
         this.miniMap = new Texture(Gdx.files.internal("minimap.png"));
-
-        this.weaponAtlas = new TextureAtlas(Gdx.files.internal("Weapons.atlas"));
 
         TmxMapLoader mapLoader = new TmxMapLoader();
         TiledMap map = mapLoader.load("hubg.tmx");
@@ -137,8 +135,9 @@ public class HUBGGame implements Screen {
         /////
 
         // Import audio
-        this.soundHashMap.put("1911", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
-        this.soundHashMap.put("AK47", Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
+        this.soundHashMap.put(-1001, Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
+        this.soundHashMap.put(-1002, Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
+        this.soundHashMap.put(-1003, Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
 
         this.runningMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/running.wav"));
 
@@ -278,7 +277,7 @@ public class HUBGGame implements Screen {
                     if (data.getInt("enemy") == this.ID) {
                         // weapon lookup here
 
-                        if (this.player.damage(1)) {
+                        if (this.player.damage(WeaponList.damage.get(data.getInt("weapon")))) {
                             System.out.println("Player dead");
                         }
 
@@ -289,7 +288,7 @@ public class HUBGGame implements Screen {
                         for (Enemy aEnemyList : this.EnemyList) {
                             if (aEnemyList.getId() == data.getInt("attacker")) {
 
-                                this.soundHashMap.get(data.getString("weapon")).play(Math.min(50 / this.dist(this.player.getX(), this.player.getY(), aEnemyList.getX(), aEnemyList.getY()), 1.0f));
+                                this.soundHashMap.get(data.getInt("weapon")).play(Math.min(50 / this.dist(this.player.getX(), this.player.getY(), aEnemyList.getX(), aEnemyList.getY()), 1.0f));
 
                                 break;
                             }
@@ -339,7 +338,23 @@ public class HUBGGame implements Screen {
             case 21:
                 this.GLProcess.add(ServerMessage);
                 break;
-
+            case 30:
+                if (player != null) {
+                    player.playerWeapons = (int[]) ServerMessage.message;
+                } else {
+                    weaponData = (int[]) ServerMessage.message;
+                }
+                break;
+            case 31:
+                int[] data = (int[]) ServerMessage.message;
+                System.out.println(Arrays.toString(data));
+                for (Enemy aEnemyList : this.EnemyList) {
+                    if (aEnemyList.getId() == data[0]) {
+                        aEnemyList.weapon.setCurrentWeapon(data[1]);
+                        break;
+                    }
+                }
+                break;
         }
     }
 
@@ -408,6 +423,7 @@ public class HUBGGame implements Screen {
                                     this.world.setContactListener(new collisionListener(this.gameHUD));
                                     Gdx.input.setInputProcessor(new customInputProcessor(this.gameHUD));
                                     this.connecting = false;
+                                    this.player.playerWeapons = weaponData;
                                 }
 
                             } else if (!this.hasEnemy((int) p[3])) {
@@ -457,7 +473,15 @@ public class HUBGGame implements Screen {
                             this.world.destroyBody(processingItem.body);
 
                             if (res) {
+                                if (player.playerWeapons[0] == 0 || gameHUD.a.active) {
+                                    player.playerWeapons[0] = processingItem.getItemType();
+                                } else if (player.playerWeapons[1] == 0 || gameHUD.b.active) {
+                                    player.playerWeapons[1] = processingItem.getItemType();
+                                } else {
+                                    player.playerWeapons[0] = processingItem.getItemType();
+                                }
 
+                                conn.write(30, player.playerWeapons);
                             }
                         }
 
@@ -634,37 +658,39 @@ public class HUBGGame implements Screen {
             this.pausedLock = true;
         }
 
-        this.fireDelay += dt;
-        if (this.fireDelay >= 0.3) {
-            this.canShoot = true;
-            this.fireDelay -= 0.3;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && this.canShoot) {
-            this.soundHashMap.get(this.player.weapon.getCurrentWeapon()).play();
+        this.fireDelay += dt*1000;
 
-            int enemyID = this.calculateBullet(400);
-
-            try {
-                if (this.networkConnected) {
-                    this.conn.write(11, new JSONObject() {
-                        {
-                            this.put("enemy", enemyID);
-                            this.put("attacker", HUBGGame.this.ID);
-                            this.put("weapon", HUBGGame.this.player.weapon.getCurrentWeapon());
-                        }
-                    }.toString());
-                }
-            } catch (Exception e) {
-                Main.errorQuit(e);
+        if (player.weapon.active) {
+            System.out.println(fireDelay);
+            if (this.fireDelay >= player.weapon.getFireRate()) {
+                this.canShoot = true;
+                this.fireDelay = 0;
             }
+            if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && this.canShoot) {
+                this.soundHashMap.get(this.player.weapon.getCurrentWeapon()).play();
 
-            this.canShoot = false;
-            this.shoot = true;
-        } else {
-            this.shoot = false;
+                int enemyID = this.calculateBullet(400);
+
+                try {
+                    if (this.networkConnected) {
+                        this.conn.write(11, new JSONObject() {
+                            {
+                                this.put("enemy", enemyID);
+                                this.put("attacker", HUBGGame.this.ID);
+                                this.put("weapon", HUBGGame.this.player.weapon.getCurrentWeapon());
+                            }
+                        }.toString());
+                    }
+                } catch (Exception e) {
+                    Main.errorQuit(e);
+                }
+
+                this.canShoot = false;
+                this.shoot = true;
+            } else {
+                this.shoot = false;
+            }
         }
-
-
     }
 
     public void update(float dt) {
@@ -885,10 +911,6 @@ public class HUBGGame implements Screen {
         }
 
         return angle;
-    }
-
-    public TextureAtlas getWeaponAtlas() {
-        return this.weaponAtlas;
     }
 
     @Override

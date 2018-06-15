@@ -4,39 +4,64 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Screens.HUBGGame;
+import com.rastera.hubg.Util.WeaponList;
 
 public class Weapon extends Sprite {
     private HUBGGame game;
-    private boolean active = false;
-    private String name;
+    public boolean active = false;
+    private int gun;
 
     public Weapon(HUBGGame game){
-        super(game.getWeaponAtlas().findRegion("AK47"));
-
-        this.name = "AK47";
+        super(WeaponList.blank);
         this.game = game;
     }
 
-    public void setCurrentWeapon(String Weapon) {
-        this.name = Weapon;
-        this.setRegion(this.game.getWeaponAtlas().findRegion(Weapon));
-        this.setSize(this.getWidth() / 5/ HUBGMain.PPM, this.getHeight() /5/ HUBGMain.PPM);
-    }
+    public void setCurrentWeapon(int weapon) {
 
-    public String getCurrentWeapon() {
-        return this.name;
+        this.gun = weapon;
+
+        if (weapon != 0) {
+            System.out.println("switched");
+            this.setTexture(WeaponList.graphics.get(weapon));
+            this.setSize(this.getTexture().getWidth() / 4 / HUBGMain.PPM, this.getTexture().getHeight() / 4 / HUBGMain.PPM);
+            active = true;
+        } else {
+            active = false;
+        }
     }
 
     public void update(float x, float y, float r) {
-
         this.setOrigin(0 , this.getHeight() / 2);
         this.setPosition(x, y - this.getHeight() / 2);
         this.setRotation(MathUtils.radiansToDegrees * r);
+    }
 
+    public int getCurrentWeapon() {
+        return gun;
     }
 
     public int getScopeSize() {
-        int scopeSize = 5;
-        return scopeSize;
+        if (active) {
+            return WeaponList.scope.get(gun);
+        } else {
+            return 2;
+        }
     }
+
+    public int getFireRate() {
+        if (active) {
+            return WeaponList.rof.get(gun);
+        } else {
+            return 0;
+        }
+    }
+
+    public int getAccuracy() {
+        if (active) {
+            return WeaponList.accuracy.get(gun);
+        } else {
+            return 0;
+        }
+    }
+
 }

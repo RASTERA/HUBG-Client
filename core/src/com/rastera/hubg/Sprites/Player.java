@@ -20,7 +20,7 @@ public class Player extends Sprite {
     private TextureRegion marioStand;
     private Texture playerImage;
     public Weapon weapon;
-    public int[] playerWeapons = {-1001, 0};
+    public int[] playerWeapons = {-1001, -1002};
 
 
     public Player(World world, HUBGGame screen, long[] location){
@@ -30,8 +30,6 @@ public class Player extends Sprite {
         this.weapon = new Weapon(screen);
 
         this.definePlayer(location);
-
-        this.weapon.setCurrentWeapon("1911");
 
         this.setBounds(0, 0, 100 / HUBGMain.PPM, 100 / HUBGMain.PPM);
 
@@ -88,7 +86,9 @@ public class Player extends Sprite {
 
     @Override
     public void draw (Batch batch) {
-        this.weapon.draw(batch);
+        if (weapon.active) {
+            this.weapon.draw(batch);
+        }
         super.draw(batch);
     }
 

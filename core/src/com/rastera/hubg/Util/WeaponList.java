@@ -7,25 +7,35 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class WeaponList {
-    public static HashMap<Integer, Texture> itemGraphics = new HashMap<>();
-    public static HashMap<Integer, String> itemName = new HashMap<>();
-    public static HashMap<Integer, String> itemDescription = new HashMap<>();
-    public static HashMap<Integer, String> itemType = new HashMap<>();
+    public static HashMap<Integer, Integer> accuracy = new HashMap<>();
+    public static HashMap<Integer, Integer> rounds = new HashMap<>();
+    public static HashMap<Integer, Integer> rof = new HashMap<>();
+    public static HashMap<Integer, Integer> reloadTime = new HashMap<>();
+    public static HashMap<Integer, Integer> damage = new HashMap<>();
+    public static HashMap<Integer, Integer> scope = new HashMap<>();
+    public static HashMap<Integer, Texture> graphics = new HashMap<>();
+    public static Texture blank;
 
 
     public static void load() {
-        Scanner loader = new Scanner(Gdx.files.internal("itemData.txt").read());
+        blank = new Texture(Gdx.files.internal("blank.png"));
+        Scanner loader = new Scanner(Gdx.files.internal("weaponData.txt").read());
         String[] data;
+        int id;
 
         loader.nextLine();
 
         while (loader.hasNext()){
             data = loader.nextLine().replaceAll("\n","").split(",");
+            id = Integer.parseInt(data[0]);
 
-            itemGraphics.put(Integer.parseInt(data[0]), new Texture(Gdx.files.internal(data[3])));
-            itemName.put(Integer.parseInt(data[0]), data[1]);
-            itemDescription.put(Integer.parseInt(data[0]), data[2]);
-            itemType.put(Integer.parseInt(data[0]), data[4]);
+            accuracy.put(id, Integer.parseInt(data[1]));
+            rounds.put(id, Integer.parseInt(data[2]));
+            rof.put(id, Integer.parseInt(data[3]));
+            reloadTime.put(id, Integer.parseInt(data[4]));
+            damage.put(id, Integer.parseInt(data[5]));
+            scope.put(id, Integer.parseInt(data[6]));
+            graphics.put(id, new Texture(Gdx.files.internal(data[7])));
         }
     }
 }
