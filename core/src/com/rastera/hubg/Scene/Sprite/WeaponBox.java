@@ -92,11 +92,9 @@ public class WeaponBox extends Sprite {
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
-        System.out.println("Box ID:" + boxID);
-
-        if (player.playerWeapons != null &&     player.playerWeapons[boxID] < 0) {
+        if (player.playerWeapons != null && player.playerWeapons[boxID] < 0) {
             sb.begin();
-            Util.centerText(sb, HUBGGame.latoFont, 0.2f, "" + WeaponList.getAmmo(player.playerWeapons[boxID]), (int) getX(), (int) getY());
+            Util.centerText(sb, HUBGGame.latoFont, 0.2f, player.gunAmmo[boxID] + "/" + player.ammo, (int) getX(), (int) getY());
             sb.end();
         }
     }

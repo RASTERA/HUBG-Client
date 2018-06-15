@@ -76,6 +76,16 @@ public class HUD implements Disposable{
 
     }
 
+    public int getBoxSelected() {
+        if(a.active) {
+            return 0;
+        } else if (b.active) {
+            return 1;
+        }
+
+        return 2;
+    }
+
     public void setItemArray(ArrayList<Fixture> items) {
         ArrayList<Fixture> itemArray = items;
         this.itempickup.items = items;

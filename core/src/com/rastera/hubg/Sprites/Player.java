@@ -20,6 +20,8 @@ public class Player extends Sprite {
     private TextureRegion marioStand;
     private Texture playerImage;
     public Weapon weapon;
+    public int ammo = 0;
+    public int[] gunAmmo = {0, 0};
     public int[] playerWeapons = {-1001, -1002};
 
 

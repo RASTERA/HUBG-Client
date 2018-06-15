@@ -18,21 +18,7 @@ public class WeaponList {
 
     public static Texture blank;
 
-    public static void reload(int id, int amount) {
-        ammoHashMap.put(id, ammoHashMap.get(id) + amount);
-    }
-
-    public static boolean fire(int id) {
-        if (ammoHashMap.get(id) - 1 >= 0) {
-            ammoHashMap.put(id, ammoHashMap.get(id) - 1);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public static int getAmmo(int id) {
-        System.out.println(id);
         return ammoHashMap.get(id);
     }
 
