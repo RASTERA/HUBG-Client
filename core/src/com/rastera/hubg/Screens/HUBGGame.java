@@ -433,6 +433,7 @@ public class HUBGGame implements Screen {
                 switch (pMessage.type) {
                     case -9000: // Clear gc
                         System.gc();
+                        break;
 
                     case 1:
                         System.out.println("Start game:" + pMessage.type);
@@ -440,6 +441,8 @@ public class HUBGGame implements Screen {
                         JSONObject positionJSON;
                         JSONObject user;
                         long[] position;
+
+                        System.out.println("MSG: " + pMessage.message);
 
                         for (String p : (ArrayList<String>) pMessage.message) {
 
