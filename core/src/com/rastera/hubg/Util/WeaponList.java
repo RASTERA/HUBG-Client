@@ -16,17 +16,15 @@ public class WeaponList {
     public static HashMap<Integer, Texture> graphics = new HashMap<>();
     public static HashMap<Integer, Integer> ammoHashMap = new HashMap<>();
 
-    public static Texture blank;
-
-    public static int getAmmo(int id) {
-        return ammoHashMap.get(id);
-    }
+    public static Texture blank;  // A blank texture to "deselect" weapon. Replaces the current texture with a empty one
 
     public static void load() {
         blank = new Texture(Gdx.files.internal("blank.png"));
         Scanner loader = new Scanner(Gdx.files.internal("weaponData.txt").read());
         String[] data;
         int id;
+
+        // Same as the Item List. However, this one loads weapons and contains a lot more information.
 
         loader.nextLine();
 
