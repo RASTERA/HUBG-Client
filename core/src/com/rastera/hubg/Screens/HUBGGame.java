@@ -340,6 +340,9 @@ public class HUBGGame implements Screen {
             case 21:
                 this.GLProcess.add(ServerMessage);
                 break;
+            case 22:
+                this.GLProcess.add(ServerMessage);
+                break;
             case 30:
                 if (player != null) {
                     player.playerWeapons = (int[]) ServerMessage.message;
@@ -413,7 +416,7 @@ public class HUBGGame implements Screen {
 
                 switch (pMessage.type) {
                     case 1:
-                        System.out.println("Start game:" + pMessage.message);
+                        System.out.println("Start game:" + pMessage.type);
 
                         JSONObject positionJSON;
                         JSONObject user;
@@ -495,18 +498,27 @@ public class HUBGGame implements Screen {
                             if (res) {
                                 if (processingItem.getItemType() == -1004) {
                                     player.ammo += 30;
-                                    conn.write(32, new int[] {player.ammo, player.gunAmmo[0], player.gunAmmo[1]});
                                 } else {
-                                    if (player.playerWeapons[0] == 0 || gameHUD.a.active) {
+                                    if (player.playerWeapons[0] == 0) {
                                         player.playerWeapons[0] = processingItem.getItemType();
-                                    } else if (player.playerWeapons[1] == 0 || gameHUD.b.active) {
+                                    } else if (player.playerWeapons[1] == 0) {
                                         player.playerWeapons[1] = processingItem.getItemType();
+                                    } else if (gameHUD.getBoxSelected() != 2) {
+                                        player.ammo += player.gunAmmo[gameHUD.getBoxSelected()];
+                                        player.gunAmmo[gameHUD.getBoxSelected()] = 0;
+                                        conn.write(22, new long[] {player.playerWeapons[gameHUD.getBoxSelected()], (long) (player.b2body.getPosition().x * 1000), (long) (player.b2body.getPosition().y * 1000)});
+
+                                        player.playerWeapons[gameHUD.getBoxSelected()] = processingItem.getItemType();
                                     } else {
+                                        player.ammo += player.gunAmmo[0];
+                                        player.gunAmmo[0] = 0;
+                                        conn.write(22, new long[] {player.playerWeapons[0], (long) (player.b2body.getPosition().x * 1000), (long) (player.b2body.getPosition().y * 1000)});
+
                                         player.playerWeapons[0] = processingItem.getItemType();
                                     }
                                 }
-
                                 conn.write(30, player.playerWeapons);
+                                conn.write(32, new int[] {player.ammo, player.gunAmmo[0], player.gunAmmo[1]});
                             }
                         }
 
@@ -528,6 +540,10 @@ public class HUBGGame implements Screen {
                         }
                         break;
 
+                    case 22:
+                        long[] data = (long[]) pMessage.message;
+                        displayItems.add(new Item((float) data[1] / 1000f, (float) data[2] / 1000f, (int) data[0], world));
+                        break;
 
                 }
             } catch (Exception e) {

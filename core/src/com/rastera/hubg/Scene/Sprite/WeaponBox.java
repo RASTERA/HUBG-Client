@@ -43,7 +43,7 @@ public class WeaponBox extends Sprite {
         this.setPosition(-this.width + (this.width+2) * boxID, screenHeight / -2 + offseth);
     }
 
-    public void updateClick(int mx, int my) {
+    public void updateClick(int mx, int my, boolean uiclick) {
         mx -= screenWidth / 2;
         my = screenHeight / 2 - my;
 
@@ -53,7 +53,7 @@ public class WeaponBox extends Sprite {
                 player.weapon.setCurrentWeapon(player.playerWeapons[boxID]);
                 parent.game.conn.write(31, new int[] {parent.game.ID, player.playerWeapons[boxID]});
             }
-        } else {
+        } else if (!uiclick){
             active = false;
         }
     }

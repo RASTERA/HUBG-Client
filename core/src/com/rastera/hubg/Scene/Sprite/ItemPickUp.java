@@ -43,7 +43,7 @@ public class ItemPickUp extends Sprite {
         this.setPosition(screenWidth / -2 + 5, 0);
     }
 
-    public void processKeyDown (int x, int y, int mb) {
+    public boolean processKeyDown (int x, int y, int mb) {
         System.out.println(x + " " + y);
         x -= this.screenWidth / 2;
         y = this.screenHeight / 2 - y;
@@ -52,9 +52,11 @@ public class ItemPickUp extends Sprite {
             if (x > this.getX() + 2 && x < this.getX() + this.width - 2  && y > this.getY() + 2 - (this.itemHeight + 4)*(i+1) && y < this.getY() + 2 - (this.itemHeight + 4)*(i+1) + this.itemHeight){
 
                 this.game.pickupItem(this.items.get(i));
-
+                return true;
             }
         }
+
+        return false;
 
     }
 

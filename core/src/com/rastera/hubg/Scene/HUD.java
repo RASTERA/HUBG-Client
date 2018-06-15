@@ -63,9 +63,9 @@ public class HUD implements Disposable{
     }
 
     public void processKeyDown(int x, int y, int mb) {
-        itempickup.processKeyDown(x, y, mb);
-        a.updateClick(x, y);
-        b.updateClick(x, y);
+        boolean uiclick = itempickup.processKeyDown(x, y, mb);
+        a.updateClick(x, y, uiclick);
+        b.updateClick(x, y, uiclick);
 
         if (!a.active && !b.active) {
             if (player.weapon.getCurrentWeapon() != 0) {
