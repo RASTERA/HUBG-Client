@@ -157,6 +157,22 @@ public class HUBGGame implements Screen {
         this.gamecam.rotate(90);
         this.gamecam.update();
 
+        // Garbage collector
+        Thread collector = new Thread(() -> {
+           try {
+               while (true) {
+                   System.out.println("Ran GC");
+                   GLProcess.add(Util.messageBuilder(-9000, null));
+                   Thread.sleep(30000);
+               }
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+        });
+
+        collector.setDaemon(true);
+        collector.start();
+
         //Server Loading
         Thread connect = new Thread(() -> {
 
@@ -415,6 +431,9 @@ public class HUBGGame implements Screen {
                 Message pMessage = this.GLProcess.take();
 
                 switch (pMessage.type) {
+                    case -9000: // Clear gc
+                        System.gc();
+
                     case 1:
                         System.out.println("Start game:" + pMessage.type);
 
@@ -812,6 +831,7 @@ public class HUBGGame implements Screen {
 
     @Override
     public void render(float delta) {
+
         this.update(delta);
 
         Gdx.gl.glClearColor(0, 0 ,1 ,1);

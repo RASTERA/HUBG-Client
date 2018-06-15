@@ -47,7 +47,7 @@ public class Weapon extends Sprite {
         if (active) {
             return WeaponList.scope.get(gun);
         } else {
-            return 2;
+            return 2000+2;
         }
     }
 
@@ -66,5 +66,4 @@ public class Weapon extends Sprite {
             return 0;
         }
     }
-
 }
