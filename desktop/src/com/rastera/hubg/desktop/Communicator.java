@@ -78,8 +78,7 @@ public class Communicator {
         System.out.println("Connecting...");
 
         //this.serverSock.setSoTimeout(1000);
-        //Socket serverSock = new Socket(InetAddress.getByName(ip), port);
-        Socket serverSock = new Socket(InetAddress.getByAddress(new byte[] {127,0,0,1}), port);
+        Socket serverSock = new Socket(InetAddress.getByName(ip), port);
 
         // Network object streams
         this.out = new ObjectOutputStream(serverSock.getOutputStream());
