@@ -188,7 +188,6 @@ public class HUBGGame implements Screen {
 
         // Starting the connection thread
         connect.start();
-        connect.setDaemon(true);
 
     }
 
