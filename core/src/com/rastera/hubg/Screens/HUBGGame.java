@@ -349,6 +349,8 @@ public class HUBGGame implements Screen {
                     weaponData[0] = ((int[]) ServerMessage.message)[0];
                     weaponData[1] = ((int[]) ServerMessage.message)[1];
                 }
+
+                System.out.println(Arrays.toString(((int[]) ServerMessage.message)));
                 break;
             case 31:
                 // Setting the right weapon for the enemy
@@ -540,9 +542,8 @@ public class HUBGGame implements Screen {
                                             player.playerWeapons[0] = processingItem.getItemType();
                                         }
                                 }
-
                                 // Update information with server
-                                conn.write(30, player.playerWeapons);
+                                conn.write(30, new int[] {player.playerWeapons[0], player.playerWeapons[1]});
                                 conn.write(32, new int[] {player.ammo, player.gunAmmo[0], player.gunAmmo[1]});
                             }
                         }
