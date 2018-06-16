@@ -60,6 +60,8 @@ public class HUBGMain extends Game implements ApplicationListener{
 	}
 
     public void dispose() {
+		this.game.conn.write(30, this.game.getPlayer().playerWeapons);
+
 		if (this.game != null && this.game.conn != null) {
 			this.game.conn.write(1000, null);
 		}

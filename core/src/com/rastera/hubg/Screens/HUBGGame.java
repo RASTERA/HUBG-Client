@@ -96,7 +96,7 @@ public class HUBGGame implements Screen {
     private float fireDelay = 0;
 
     // The data provided by the server, used to store player info to create player object
-    public int[] weaponData;
+    public int[] weaponData = {0, 0};
     public int[] ammoInfo = {0, 0, 0};
 
     private com.rastera.hubg.desktop.Game parentGame;
@@ -346,7 +346,8 @@ public class HUBGGame implements Screen {
                 if (player != null) {
                     player.playerWeapons = (int[]) ServerMessage.message;
                 } else {
-                    weaponData = (int[]) ServerMessage.message;
+                    weaponData[0] = ((int[]) ServerMessage.message)[0];
+                    weaponData[1] = ((int[]) ServerMessage.message)[1];
                 }
                 break;
             case 31:
@@ -588,13 +589,14 @@ public class HUBGGame implements Screen {
     public int calculateBullet (float range, boolean isScope) {
         range += this.player.getWidth(); // Range of the cast
         this.closestFraction = 99999; // We want the min distance
-        this.raycastPoint = new Vector2(this.player.getLocation().x + range * MathUtils.cos(this.player.getAngle()), this.player.getLocation().y + range * MathUtils.sin(this.player.getAngle()));
         this.raycastID = -1; // The object hit
         float playerAngle = MathUtils.radDeg * this.player.getAngle();
 
         if (!isScope) {
-            playerAngle += (MathUtils.random() - 0.5f) * 30 * WeaponList.accuracy.get(player.playerWeapons[gameHUD.getBoxSelected()]) / 100;
+            playerAngle += (MathUtils.random() - 0.5f) * 60 * WeaponList.accuracy.get(player.playerWeapons[gameHUD.getBoxSelected()]) / 100;
         }
+
+        this.raycastPoint = new Vector2(this.player.getLocation().x + range * MathUtils.cosDeg(playerAngle), this.player.getLocation().y + range * MathUtils.sinDeg(playerAngle));
 
         // Callback after the ray cast is hit
         RayCastCallback callback = (fixture, point, normal, fraction) -> {
@@ -1068,6 +1070,10 @@ public class HUBGGame implements Screen {
         // Resizing the viewports to display the graphics properly
         this.gamePort.update(width, height);
         this.staticPort.update(width, height);
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     @Override
