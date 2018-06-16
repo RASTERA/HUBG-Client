@@ -60,8 +60,6 @@ public class HUBGGame implements Screen {
     private HashMap<Integer, Sound> soundHashMap = new HashMap<>(); // A hashmap that contains all the sounds for the game
     private Music runningMusic;
     private Music reloadMusic;
-    private Box2DDebugRenderer b2dr;
-    private World world;
 
     private Player player;
     public int ID;  // The current ID of the player
@@ -587,11 +585,16 @@ public class HUBGGame implements Screen {
     }
 
     // Calculate the raycast
-    public int calculateBullet (float range) {
+    public int calculateBullet (float range, boolean isScope) {
         range += this.player.getWidth(); // Range of the cast
         this.closestFraction = 99999; // We want the min distance
         this.raycastPoint = new Vector2(this.player.getLocation().x + range * MathUtils.cos(this.player.getAngle()), this.player.getLocation().y + range * MathUtils.sin(this.player.getAngle()));
         this.raycastID = -1; // The object hit
+        float playerAngle = MathUtils.radDeg * this.player.getAngle();
+
+        if (!isScope) {
+            playerAngle += (MathUtils.random() - 0.5f) * 30 * WeaponList.accuracy.get(player.playerWeapons[gameHUD.getBoxSelected()]) / 100;
+        }
 
         // Callback after the ray cast is hit
         RayCastCallback callback = (fixture, point, normal, fraction) -> {
@@ -604,7 +607,7 @@ public class HUBGGame implements Screen {
         };
 
         // Ray case
-        this.world.rayCast(callback, this.player.getLocation(), new Vector2(this.player.getLocation().x + range * MathUtils.cos(this.player.getAngle()), this.player.getLocation().y + range * MathUtils.sin(this.player.getAngle())));
+        this.world.rayCast(callback, this.player.getLocation(), new Vector2(this.player.getLocation().x + range * MathUtils.cosDeg(playerAngle), this.player.getLocation().y + range * MathUtils.sinDeg(playerAngle)));
 
         return this.raycastID;
     }
@@ -784,7 +787,7 @@ public class HUBGGame implements Screen {
 
                 this.soundHashMap.get(this.player.weapon.getCurrentWeapon()).play();
 
-                int enemyID = this.calculateBullet(400);
+                int enemyID = this.calculateBullet(400, false);
 
                 try {
                     if (this.networkConnected) {
@@ -901,6 +904,7 @@ public class HUBGGame implements Screen {
             Gdx.gl.glDisable(GL20.GL_BLEND);
 
             // Drawing the minimap
+            this.main.batch.setProjectionMatrix(this.staticcam.combined);
             this.main.batch.begin();
             int miniMapSize = 300;
             int minMapPadding = 10;
@@ -949,7 +953,7 @@ public class HUBGGame implements Screen {
             }
 
             if (this.scope && this.player != null && this.player.weapon.getCurrentWeapon() != 0) {
-                this.calculateBullet(400);
+                this.calculateBullet(400, true);
                 drawScopeLine(sr, Color.RED);
             }
 
