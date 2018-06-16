@@ -592,9 +592,9 @@ public class HUBGGame implements Screen {
         this.raycastID = -1; // The object hit
         float playerAngle = MathUtils.radDeg * this.player.getAngle();
 
-        if (!isScope) {
-            playerAngle += (MathUtils.random() - 0.5f) * 60 * WeaponList.accuracy.get(player.playerWeapons[gameHUD.getBoxSelected()]) / 100;
-        }
+        //if (!isScope) {
+        //    playerAngle += (MathUtils.random() - 0.5f) * 60 * WeaponList.accuracy.get(player.playerWeapons[gameHUD.getBoxSelected()]) / 100;
+        //}
 
         this.raycastPoint = new Vector2(this.player.getLocation().x + range * MathUtils.cosDeg(playerAngle), this.player.getLocation().y + range * MathUtils.sinDeg(playerAngle));
 
