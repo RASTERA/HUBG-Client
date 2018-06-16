@@ -6,8 +6,6 @@ import com.rastera.hubg.HUBGMain;
 import com.rastera.hubg.Screens.HUBGGame;
 import com.rastera.hubg.Util.WeaponList;
 
-import java.util.HashMap;
-
 public class Weapon extends Sprite {
     private HUBGGame game;
     public boolean active = false;
@@ -21,6 +19,7 @@ public class Weapon extends Sprite {
     public void setCurrentWeapon(int weapon) {
 
         this.gun = weapon;
+        this.game.reloadTime = 0;
 
         if (weapon != 0) {
 

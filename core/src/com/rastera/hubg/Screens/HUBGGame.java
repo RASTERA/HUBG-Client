@@ -56,6 +56,7 @@ public class HUBGGame implements Screen {
     private TiledMapTileLayer displayLayer;
     private HashMap<Integer, Sound> soundHashMap = new HashMap<>();
     private Music runningMusic;
+    private Music reloadMusic;
     private Box2DDebugRenderer b2dr;
     private World world;
     private Player player;
@@ -95,8 +96,8 @@ public class HUBGGame implements Screen {
 
     private com.rastera.hubg.desktop.Game parentGame;
 
-    private int reloadtime = 0;
-    private boolean reloading = false;
+    public int reloadTime = 0;
+    public boolean reloading = false;
 
     // Loading
 
@@ -144,9 +145,11 @@ public class HUBGGame implements Screen {
         this.soundHashMap.put(-1001, Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
         this.soundHashMap.put(-1002, Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
         this.soundHashMap.put(-1003, Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav")));
+        this.soundHashMap.put(-1007, Gdx.audio.newSound(Gdx.files.internal("sounds/rocket.wav")));
         this.soundHashMap.put(-3000, Gdx.audio.newSound(Gdx.files.internal("sounds/reload.wav")));
 
         this.runningMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/running.wav"));
+        this.reloadMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/reloadMusic.wav"));
 
         HUBGGame.latoFont = new BitmapFont(Gdx.files.internal("fnt/Lato-Regular-64.fnt"), Gdx.files.internal("fnt/lato.png"), false);
         Texture loadingBG = new Texture(Gdx.files.internal("images/menu-background-2.png"));
@@ -697,7 +700,7 @@ public class HUBGGame implements Screen {
 
                 scope = gamecam.zoom > defaultZoom;
 
-                if (!paused && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() / HUBGMain.PPM + defaultZoom) {
+                if (!paused && !reloading && (Gdx.input.isKeyPressed(Input.Keys.SPACE)) && gamecam.zoom < player.weapon.getScopeSize() / HUBGMain.PPM + defaultZoom) {
                     gamecam.zoom += 0.01;
                 } else if (gamecam.zoom > defaultZoom && (!Gdx.input.isKeyPressed(Input.Keys.SPACE) || paused)) {
                     gamecam.zoom -= 0.01;
@@ -706,8 +709,7 @@ public class HUBGGame implements Screen {
             }
         }
 
-
-        this.sprint = this.player.getEnergy() > 0 && !this.paused && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
+        this.sprint = this.player.getEnergy() > 0 && !this.reloading && !this.paused && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
 
         if (this.sprint) {
             if (!this.runningMusic.isPlaying()) {
@@ -745,14 +747,16 @@ public class HUBGGame implements Screen {
         this.fireDelay += dt*1000;
 
         if (reloading) {
-            reloadtime += dt * 1000;
+            reloadTime += dt * 1000;
         }
 
         if (player.weapon.active) {
 
-            if (reloadtime >= WeaponList.reloadTime.get(player.playerWeapons[gameHUD.getBoxSelected()])) {
+            if (reloadTime >= WeaponList.reloadTime.get(player.playerWeapons[gameHUD.getBoxSelected()])) {
 
                 // Reload
+                this.reloadMusic.stop();
+
                 int currentammo = player.ammo;
                 player.ammo = Math.max(0, player.ammo - WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]) + player.gunAmmo[gameHUD.getBoxSelected()]);
                 if (player.ammo == 0) {
@@ -764,7 +768,7 @@ public class HUBGGame implements Screen {
                 }
 
                 reloading = false;
-                reloadtime = 0;
+                reloadTime = 0;
 
                 this.soundHashMap.get(-3000).play(1);
 
@@ -773,6 +777,10 @@ public class HUBGGame implements Screen {
 
             if (Gdx.input.isKeyPressed(Input.Keys.R) && player.gunAmmo[gameHUD.getBoxSelected()] < WeaponList.rounds.get(player.playerWeapons[gameHUD.getBoxSelected()]) && player.ammo != 0) {
                 if (!reloading) {
+                    if (!this.reloadMusic.isPlaying()) {
+                        this.reloadMusic.play();
+                    }
+
                     this.actions.add("Reloading weapon...");
                 }
 
@@ -812,8 +820,12 @@ public class HUBGGame implements Screen {
                 this.shoot = false;
             }
         } else {
-            reloadtime = 0;
+            reloadTime = 0;
             reloading = false;
+        }
+
+        if (!this.reloading && this.reloadMusic.isPlaying()) {
+            this.reloadMusic.stop();
         }
     }
 

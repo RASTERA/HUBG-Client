@@ -49,7 +49,7 @@ public class WeaponBox extends Sprite {
         mx -= screenWidth / 2;
         my = screenHeight / 2 - my;
 
-        if (getX() < mx && mx < getX() + width-2 && getY() < mx && my < getY() + 50) {
+        if (!this.parent.game.reloading && getX() < mx && mx < getX() + width-2 && getY() < mx && my < getY() + 50) {
             active = true;
             if (player.weapon.getCurrentWeapon() != player.playerWeapons[boxID]) {
                 player.weapon.setCurrentWeapon(player.playerWeapons[boxID]);
@@ -99,6 +99,12 @@ public class WeaponBox extends Sprite {
         if (player.playerWeapons != null && player.playerWeapons[boxID] < 0) {
             sb.begin();
             Util.centerText(sb, HUBGGame.latoFont, 0.2f, "" + player.gunAmmo[boxID], (int) getX() + 10, (int) getY() + 10);
+            sb.end();
+        }
+
+        if (this.parent.game.reloading) {
+            sb.begin();
+            Util.centerText(sb, HUBGGame.latoFont, 0.2f, "RELOADING...", (int) (getX() + width / 2), (int) (getY() + 25));
             sb.end();
         }
     }
