@@ -60,8 +60,6 @@ public class HUBGGame implements Screen {
     private HashMap<Integer, Sound> soundHashMap = new HashMap<>(); // A hashmap that contains all the sounds for the game
     private Music runningMusic;
     private Music reloadMusic;
-    private Box2DDebugRenderer b2dr;
-    private World world;
 
     private Player player;
     public int ID;  // The current ID of the player
